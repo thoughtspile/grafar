@@ -55,7 +55,7 @@ Create a new panel inside the DOM element specified. If the `id` is not passed,
 a random one is generated. The Panel created is then stored in a special table 
 and can be accessed as `grafar.panels[<id>]`.
 
-#### `<Panel object>.drawAxes(<Array of strings>)`
+#### `<Panel object>.setAxes(<Array of strings>)`
 
 Assign the names to the axes. Default is `['x', 'y', 'z']`. You *can* assign 
 two axes to make the panel 2D (planar graph), but currently you *can't* add 
@@ -118,7 +118,7 @@ reference to the target Graph object.
 Just a shortened syntax for setting several properties of a Graph at once.
 Returns a reference to the target Graph object, as usual.
 
-#### `<Graph object>.dataInterface()'
+#### `<Graph object>.dataInterface()`
 
 Exposes the WebGL buffers of the graph. In a later section you would see 
 how this can be used for binding a graph to a data generator. Returns 
