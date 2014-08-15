@@ -20,6 +20,7 @@
 		sin: 'Math.sin',
 		cos: 'Math.cos',
 		sqrt: 'Math.sqrt',
+		tan: 'Math.tan',
 		pow: 'grafaryaz.pow',
 		min: 'Math.min',
 		max: 'Math.max',

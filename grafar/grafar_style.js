@@ -48,6 +48,7 @@
 			var rgb = Color.convert(randomLab(), 'rgb');
 			this.palette.push(new THREE.Color('rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ')'));
 		}
+		return this;
 	}
 	
 	Style.prototype.pull = function(id) {

@@ -106,6 +106,10 @@
 		this.parent = parent;
 		if (isExisty(this.parent))
 			this.parent.addChild(this);
+		
+		this.setHiding();
+		this.setPanel();
+		this.setStyle();
 			
 		return this;
 	}
@@ -145,9 +149,13 @@
 		
 		if (isExisty(newStyle)) {
 			this.style = newStyle;
-			this.object.children[0].material = this.style.getParticleMaterial(this.id);
-			this.object.children[1].material = this.style.getLineMaterial(this.id);
+		} else if (this.id !== '$') {
+			this.style = this.parent.style;
+		} else {
+			this.style = new Style();
 		}
+		this.object.children[0].material = this.style.getParticleMaterial(this.id);
+		this.object.children[1].material = this.style.getLineMaterial(this.id);
 		
 		this.children.forEach(function(child) {
 			child.setStyle();

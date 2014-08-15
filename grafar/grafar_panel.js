@@ -82,7 +82,7 @@
 		this.renderer.render(this.scene, this.camera);
 	};
 
-	Panel.prototype.drawAxes = function (len, opts) {
+	Panel.prototype.drawAxes = function (len) {
 		var axes = new THREE.Object3D();
 		
 		axes.add(new THREE.AxisHelper(5));
