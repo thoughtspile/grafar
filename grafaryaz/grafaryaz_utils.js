@@ -36,23 +36,30 @@
 	}
 	
 	// !!! this is called by the constructed functions !!!
-	function traceZeroSet(f, fill) {
+	function traceZeroSet(f, fill, dof) {
 		var timer = new grafar.Timer();
-		if (fill) {
-			var fbord = f;
-			f = function(pt) {return Math.max(fbord(pt), 0);};
-		}
+		//if (fill) {
+		//	var fbord = f;
+		//	f = function(pt) {return Math.max(fbord(pt), 0);};
+		//{}
+		
+		//var fcont = f,
+		//	every = 1;
+		//f = function(pt) {
+		//	return Math.max(fcont(pt), (pt[0] / every - Math.floor(pt[0] / every)) * every);
+		//};
+		
 		var res = [],
 			gradf = grad(f),
-			targetCount = _GY.config.maxSamples;//Math.pow(parserConfig.samples, 2);	
+			targetCount = Math.pow(31, dof);	
 		for (var j = 0; j < targetCount; j++) {
 			var start = [];
-			for (var i = 0; i < 3; i++) // should make no assumptions
+			for (var i = 0; i < dof; i++) // should make no assumptions
 				start[i] = -2 + 4 * Math.random();
 			res.push(start);
 		}
 		res = res.map(function(start) {
-			return newton(start, f, gradf, fill);
+			return newton(start, f, gradf, false); // pass fill here
 		});
 		return res;
 	}
@@ -79,17 +86,17 @@
 
 	function newton(start, f, gradf, acceptNeg) {
 		var prev = [],
-			next = start.slice(),
+			next = start,
 			i = 0;
 		do {
 			prev = next;
 			var nabla = gradf(prev),
 				val = f(prev);
-			if (val <= 0 && norm(nabla) <= tol) 
+			if (acceptNeg && val <= 0) 
 				return prev;
 			next = arraySum(prev, arrayTimes(-val / dot(nabla, nabla), nabla));
 			i++;
-		} while (dist(prev, next) > tol && i < 10 && val !== 0);
+		} while (dist(prev, next) > tol && i < 100 && val !== 0);
 		return next;
 	}
 

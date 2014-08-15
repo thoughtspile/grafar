@@ -438,7 +438,7 @@
 					body = body.replace(new RegExp('\\b' + n + '\\b', 'g'), 'pt[' + i + ']');
 				});
 				//console.log(body);
-				this._f = new Function(this.variables, 'return traceZeroSet(' + new Function('pt', 'return ' + body) + ', false);');
+				this._f = new Function(this.variables, 'return traceZeroSet(' + new Function('pt', 'return ' + body) + ', false,' + this.variables.length + ');');
 			}
 		}
 		return this._f;
