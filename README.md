@@ -12,7 +12,17 @@ into executable JavaScript code.
 
 To get your own copy of grafar, click "Download zip" button on the right. In 
 order for the linking to work properly, unpack the archive into a folder called 
-`js/` in your project.
+`js/` in your project, like this:
+```
+projectDirectory/
+	js/
+		libs/
+		grafar/
+		grafaryaz/
+		loader.js
+		[some custom scripts]
+	[your HTML files here]
+```
 
 Since I never took the time to build the library, it is somewhat tricky to 
 include into your html. I would recommend referencing the `loader.js` file. 
