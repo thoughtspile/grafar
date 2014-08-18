@@ -37,10 +37,9 @@ So, you'd probably want something like this:
 ```
 Of course, you are very welcome to mess it all up! Just remember, the order 
 matters. By the way, take a look at the demos in the `examples` folder -- 
-they do cover the basic usage quite well. The basic example of running 
-grafar is called, rather unimaginatively, `running_grafar_inline_code.html`.
+they do cover the basic usage quite well. Please refer to the example `grafar_basic_usage.html`.
 
-##Basic usage of grafar.
+##Using grafar.
 
 ###Creating panels.
 
@@ -49,15 +48,13 @@ an html `figure` (use a `div`, if you're feeling non-semantic) and a WebGl
 context.
 
 First, you need to create and position the HTML elements that would be used 
-for displaying your graphs. See `grafar_panels.html` for a reference on
+for displaying your graphs. See `grafar_panel_basics.html` for a reference on
 how to achieve this via basic HTML and CSS positioning.
 
 Then you should initialize a panel inside such an element. All the area 
 available would be occupied by the panel (if you are curious, a WebGL context 
 and a camera are created, their output is binded to a `canvas` element, which 
 is then appended to the `figure` specified).
-
-The basic usage is illustrated in the `grafar_panels.html` example.
 
 #### `new grafar.Panel(<DOM element>, [{id: <string>}])`
 
@@ -89,7 +86,7 @@ data and provides some styling options, namely:
 The first three properties are inherited from the parent, if not set explicitly. 
 The graphs present in a scene form a tree structure. When grafar is launched, 
 the root graph, called `$`, is created. It is a predecessor of any graph. Refer
-to `grafar_create_graph.html` for an example.
+to `grafar_graph_basics.html` for an example.
 
 #### `new grafar.Graph([<config>])`
 
