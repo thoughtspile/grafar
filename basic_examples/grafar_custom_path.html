@@ -1,0 +1,22 @@
+<!doctype html>
+
+<head>
+	<title>GitHub hotlinking: a bad practice</title>
+</head>
+
+<body>
+	<!-- Let's try something different! Why not a hotlink to GitHub (Please, do not repeat this)!-->
+	<script src="https://raw.githubusercontent.com/thoughtspile/Grafar/master/loader.js"></script>
+	<script>
+		runGrafar(function() {
+			// this code can use grafar
+			document.write('Hello, I\'m monsieur Grafar. ' + 
+				'I have come here via a hotlink to GitHub. ' + 
+				'Look, I\'ve got something for you: ' + 
+				Object.getOwnPropertyNames(grafar).join(', '));
+		}, 'https://raw.githubusercontent.com/thoughtspile/Grafar/master/'); // <-- notice this root override
+		// this code will never be reached
+		document.write(undefobj);
+	</script>
+</body>
+</html>
