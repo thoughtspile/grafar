@@ -53,7 +53,7 @@
 		parserConfig = {
 			samples: 70,
 			tol: 0.01,
-			maxSamples: 1000
+			samplesPerDOF: 24
 		},
 		compNames = (function() {
 			var temp = {};

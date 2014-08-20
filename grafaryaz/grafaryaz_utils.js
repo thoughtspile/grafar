@@ -51,7 +51,7 @@
 		
 		var res = [],
 			gradf = grad(f),
-			targetCount = Math.pow(31, dof);	
+			targetCount = Math.pow(_GY.config.samplesPerDOF, dof);	
 		for (var j = 0; j < targetCount; j++) {
 			var start = [];
 			for (var i = 0; i < dof; i++) // should make no assumptions
