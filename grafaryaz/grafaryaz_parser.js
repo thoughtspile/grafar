@@ -470,12 +470,12 @@
 					i--;
 				} while (nest !== 0);
 			}
-			while (i >= 0 && /[a-zA-Z0-9_.\-]/.test(str[i]))
+			while (i >= 0 && /[a-zA-Z0-9_.]/.test(str[i]))
 				i--;
 			var baseI = i + 1;
 			
 			i = powI + 1;
-			while (i <= str.length - 1 && /[a-zA-Z0-9_.\-]/.test(str[i]))
+			while (i <= str.length - 1 && /[a-zA-Z0-9_.]/.test(str[i]))
 				i++;
 				
 			if (str[i] === '(') {
