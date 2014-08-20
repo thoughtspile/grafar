@@ -117,9 +117,9 @@
 			chunkSize = order.length;
 		
 		this.data.forEach(function(pt) {
-			buffer[bufferIndex] = pt[indices[0]];
-			buffer[bufferIndex + 1] = pt[indices[1]];
-			buffer[bufferIndex + 2] = pt[indices[2]];
+			buffer[bufferIndex] = pt[indices[0]] || 0;
+			buffer[bufferIndex + 1] = pt[indices[1]] || 0;
+			buffer[bufferIndex + 2] = pt[indices[2]] || 0;
 			bufferIndex += chunkSize;
 		});
 		console.log(new Date().getTime() - s, 'per export');

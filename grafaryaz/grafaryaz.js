@@ -1,6 +1,7 @@
 (function(global) {	
 	var _GY = global.grafaryaz || (global.grafaryaz = {}),
 		union = _GY.union,
+		isExisty = _GY.isExisty,
 		MathSystem = _GY.MathSystem;
 	
 	
@@ -42,9 +43,9 @@
 	}
 	
 	Context.prototype.bindBuffer = function(wrapper) {
-		this.buffers.push(wrapper);		
+		this.buffers.push(wrapper);
 		if (wrapper.names.indexOf('$i') === -1)
-			this.target = union(this.target, wrapper.names);
+			this.target = union(this.target, wrapper.names.filter(isExisty));
 		else
 			this.indexNeeded = true;
 	}
