@@ -78,33 +78,36 @@
 	}());
 
 	Panel.prototype.render = function() {
-		this.renderer.clear();
+		this.renderer.clear(true, true, true);
 		this.renderer.render(this.scene, this.camera);
 	};
 
 	Panel.prototype.drawAxes = function (len) {
 		if (!isExisty(this.axisObject)) {
-			this.axisObject = new THREE.Object3D();		
+			this.axisObject = new THREE.Object3D();
+						
+			var axisGeometry = new THREE.BufferGeometry();
+			axisGeometry.addAttribute('position', new THREE.BufferAttribute(new Float32Array(18), 3));
+			this.axisObject.add(new THREE.Line(
+				axisGeometry, 
+				new THREE.LineBasicMaterial({color: 0x888888}), 
+				THREE.LinePieces
+			));
+			
+			for (var i = 0; i < 3; i++) {
+				var geometry = new THREE.BufferGeometry();
+				geometry.addAttribute('position', new THREE.BufferAttribute(axisGeometry.getAttribute('position').array.subarray(i * 6 + 3, i * 6 + 6), 3));
+				this.axisObject.add(new THREE.PointCloud(geometry, new THREE.PointCloudMaterial()));
+			}
+			
 			this.scene.add(this.axisObject);
-		}
+		}		
 		
-		while (this.axisObject.children.length)
-			this.axisObject.remove(this.axisObject.children[0]);
-		
-		if (len) {
-			this.axisObject.add(new THREE.AxisHelper(len));
-			this._axes.forEach(function(axisId, i) {
-				if (isExisty(axisId)) {
-					var label = drawTextLabel(axisId),
-						pos = [0, 0, 0];
-					pos[i] = len;
-					
-					var geometry = new THREE.BufferGeometry();		
-					geometry.addAttribute('position', new THREE.BufferAttribute(new Float32Array(pos), 3));
-					this.axisObject.add(new THREE.PointCloud(geometry, label));
-				}
-			}.bind(this));
-		};
+		if (isExisty(len))
+			setAxisGeometry(this.axisObject.children[0].geometry.getAttribute('position').array, len);
+		this._axes.forEach(function(axisId, i) {
+			drawTextLabel(this.axisObject.children[i + 1].material, axisId || '');
+		}.bind(this));
 		
 		return this;
 	};
@@ -113,43 +116,34 @@
 		axisNames = axisNames.filter(function(n) {return typeof(n) === 'string'}).slice(0, 3);
 		
 		this._axes = [axisNames[1], axisNames[2], axisNames[0]];
-		if (axisNames.length === 3)
-			this.setView3()
-		else if (axisNames.length === 2)
-			this.setView2();
-		else
-			throw new Error('weird number of axes specified.');
+		if (axisNames.length === 3) {
+			this.controls.noRotate = false;
+			this.controls.noPan = false;
+			this.camera.up.set(0, 1, 0);
+		} else if (axisNames.length === 2) {
+			this.controls.noRotate = true;
+			this.controls.noPan = true;
+			this.camera.position.set(0, 5); // preserve distance or something, maybe smooth rotation
+			this.camera.up.set(1, 0, 0);
+		} else {
+			// 1 or >3 axes leads to what?
+		}
 			
-		this.drawAxes(1);
-		
-		return this;
-	}
-			
-	Panel.prototype.setView2 = function() {
-		this.controls.noRotate = true;
-		this.controls.noPan = true;
-		this.camera.position.set(0, 5); // preserve distance or something, maybe smooth rotation
-		this.camera.up.set(1, 0, 0);
+		this.drawAxes(2);
 		
 		return this;
 	};
 		
-	Panel.prototype.setView3 = function() {
-		this.controls.noRotate = false;
-		this.controls.noPan = false;
-		this.camera.up.set(0, 1, 0);
-		
-		return this;
-	};
-		
-	Object.defineProperty(Panel.prototype, 'axes', {
-		get: function() {
-				return this._axes;
-			},
-		set: Panel.prototype.setAxes
-	});
 	
-	function drawTextLabel(str) {
+	function setAxisGeometry(posArray, length) {
+		for (var i = 0; i < 3; i++) {
+			posArray[7 * i] = -length;
+			posArray[7 * i + 3] = length;
+		}
+		return posArray;
+	}
+	
+	function drawTextLabel(mat, str) {
 		var fontSizePx = 48,
 			baselineOffsetPx = .15 * fontSizePx;
 		var canvas = document.createElement('canvas'),
@@ -170,16 +164,14 @@
 		var texture = new THREE.Texture(canvas);
 		texture.needsUpdate = true;
 		  
-		var material = new THREE.PointCloudMaterial({
-			size: config.labelSize / fontSizePx * computedSize,
-			//sizeAttenuation: false,
-			map: texture, 
-			transparent: true
-		});
+		mat.size = config.labelSize / fontSizePx * computedSize;
+		mat.map = texture;
+		mat.transparent = true;
 		
-		return material;
+		return mat;
 	}
 		
+	
 	_G.Panel = Panel;
 	_G.panels = panels;
 }(this))
