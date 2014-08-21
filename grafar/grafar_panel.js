@@ -8,22 +8,12 @@
 		isExisty = _G.isExisty;
 	
 	var panels = {},
-		renderMode = (function() {
-			if (Detector.webgl)
-				return 'webgl';
-			else if (Detector.canvas)
-				return 'canvas';
-			else
-				return 'none';
-		}()),
-		Renderer = (function() {
-			if (Detector.webgl)
-				return function() {return new THREE.WebGLRenderer({ antialias: true })};
-			else if (Detector.canvas)
-				return function() {return new THREE.CanvasRenderer()};
-			else
-				return function() {throw new Error('no 3D support')};
-		}());	
+		renderMode = Detector.webgl? 'webgl': Detector.canvas? 'canvas': 'none',
+		Renderer = {
+			webgl: THREE.WebGLRenderer.bind(null, {antialias: config.antialias}),
+			canvas: THREE.CanvasRenderer,
+			none: Error.bind(null, 'no 3D support')
+		}[renderMode];
 			
 	function Panel(container, opts) {
 		opts = opts || {};
@@ -32,22 +22,20 @@
 		
 		var container = container || config.container,
 		    containerStyle = window.getComputedStyle(container),
-		    width = opts.w || Math.max(parseInt(containerStyle.width), config.minPanelWidth),
-		    height = opts.h || Math.max(parseInt(containerStyle.height), config.minPanelHeight);
+		    width = Math.max(parseInt(containerStyle.width), config.minPanelWidth),
+		    height = Math.max(parseInt(containerStyle.height), config.minPanelHeight);
 
 		this.camera = new THREE.PerspectiveCamera(45, width / height, .1, 500);
 		this.camera.position.set(-4, 4, 5);
 		
 		this.scene = new THREE.Scene();
 		
-		this.renderer = (new Renderer());
+		this.renderer = new Renderer();
 		this.renderer.setSize(width, height);
-		this.renderer.autoClear = false;
 		this.renderer.setClearColor(0xFFFFFF, 1);
 		container.appendChild(this.renderer.domElement);
 		
 		this.controls = new THREE.OrbitControls(this.camera, container);
-		this.controls.addEventListener('change', this.render.bind(this));
 		
 		this.setAxes(config.axes);
 		
@@ -56,30 +44,18 @@
 			this.stats.domElement.style.position = 'absolute';
 			this.stats.domElement.style.top = '0px';
 			container.appendChild(this.stats.domElement);
+		} else {
+			this.stats = {update: function() {}};
 		}
 
 		this.animate();
 	};
 		
-	Panel.prototype.animate = (function() {
-		if (config.debug)
-			return function() {
-				window.requestAnimationFrame(this.animate.bind(this));
-				this.controls.update();
-				this.render();
-				this.stats.update();
-			};
-		else 
-			return function() {
-				window.requestAnimationFrame(this.animate.bind(this));
-				this.controls.update();
-				this.render();
-			};
-	}());
-
-	Panel.prototype.render = function() {
-		this.renderer.clear(true, true, true);
+	Panel.prototype.animate = function() {
+		global.requestAnimationFrame(this.animate.bind(this));
+		this.controls.update();
 		this.renderer.render(this.scene, this.camera);
+		this.stats.update();
 	};
 
 	Panel.prototype.drawAxes = function (len) {

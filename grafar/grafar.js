@@ -103,6 +103,8 @@
 			end: ''
 		},
 		
+		antialias: true,
+		
 		precision: .0001,
 		samples: 41,
 		hide: false,
