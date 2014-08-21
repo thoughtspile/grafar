@@ -83,21 +83,29 @@
 	};
 
 	Panel.prototype.drawAxes = function (len) {
-		var axes = new THREE.Object3D();
+		if (!isExisty(this.axisObject)) {
+			this.axisObject = new THREE.Object3D();		
+			this.scene.add(this.axisObject);
+		}
 		
-		axes.add(new THREE.AxisHelper(5));
-		this._axes.forEach(function(axisId, i) {
-			if (isExisty(axisId)) {
-				var label = drawTextLabel(axisId),
-					pos = [0, 0, 0];
-				pos[i] = len;
-				var geometry = new THREE.Geometry();
-				geometry.vertices.push(new THREE.Vector3(pos[0], pos[1], pos[2]));
-				axes.add(new THREE.PointCloud(geometry, label));
-			}
-		}.bind(this));
+		while (this.axisObject.children.length)
+			this.axisObject.remove(this.axisObject.children[0]);
 		
-		this.scene.add(axes);
+		if (len) {
+			this.axisObject.add(new THREE.AxisHelper(len));
+			this._axes.forEach(function(axisId, i) {
+				if (isExisty(axisId)) {
+					var label = drawTextLabel(axisId),
+						pos = [0, 0, 0];
+					pos[i] = len;
+					
+					var geometry = new THREE.BufferGeometry();		
+					geometry.addAttribute('position', new THREE.BufferAttribute(new Float32Array(pos), 3));
+					this.axisObject.add(new THREE.PointCloud(geometry, label));
+				}
+			}.bind(this));
+		};
+		
 		return this;
 	};
 		
@@ -111,6 +119,9 @@
 			this.setView2();
 		else
 			throw new Error('weird number of axes specified.');
+			
+		this.drawAxes(1);
+		
 		return this;
 	}
 			
