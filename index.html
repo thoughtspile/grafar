@@ -1,322 +1,50 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Grafar by thoughtspile</title>
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-  </head>
-  <body>
-    <div class="wrapper">
-      <header>
-        <h1>Grafar</h1>
-        <p>A mathematical visualization tool in pure javascript.</p>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="chrome=1">
+	<title>Grafar by thoughtspile</title>
 
-        <p class="view"><a href="https://github.com/thoughtspile/Grafar">View the Project on GitHub <small>thoughtspile/Grafar</small></a></p>
+	<link rel="stylesheet" href="stylesheets/styles.css">
+	<link rel="stylesheet" href="stylesheets/pygment_trac.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+</head>
 
+<body>
+<div class="wrapper">
 
-        <ul>
-          <li><a href="https://github.com/thoughtspile/Grafar/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/thoughtspile/Grafar/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/thoughtspile/Grafar">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
-        <h1>
-<a name="grafar-quick-reference" class="anchor" href="#grafar-quick-reference"><span class="octicon octicon-link"></span></a>Grafar quick reference</h1>
-
-<h2>
-<a name="whats-included" class="anchor" href="#whats-included"><span class="octicon octicon-link"></span></a>What's included</h2>
-
+<header>
+<h1>Grafar</h1>
+<p>A mathematical visualization tool in pure javascript.</p>
+<p class="view"><a href="https://github.com/thoughtspile/Grafar">View the Project on GitHub <small>thoughtspile/Grafar</small></a></p>
 <ul>
-<li>grafar -- a WebGL-based library for displaying large amounts of data efficiently.</li>
-<li>grafaryaz -- a source-to-source compiler for translating systems of equations 
-into executable JavaScript code.</li>
-<li>
-<a href="https://github.com/mrdoob/three.js">Three.js r68</a> (with orbit controls and detector) by mrdoob</li>
-<li>
-<a href="https://github.com/Shushik/i-color">i-color</a> by shushik</li>
-</ul><h2>
-<a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting started</h2>
+	<li><a href="https://github.com/thoughtspile/Grafar/zipball/master">Download <strong>ZIP File</strong></a></li>
+	<li><a href="https://github.com/thoughtspile/Grafar/tarball/master">Download <strong>TAR Ball</strong></a></li>
+	<li><a href="https://github.com/thoughtspile/Grafar">View On <strong>GitHub</strong></a></li>
+</ul>
+</header>
 
-<p>To get your own copy of grafar, click the "Download zip" button in the repo. In 
-order for the linking to work properly, unpack the archive into a folder called 
-<code>js/</code> in your project, like this:</p>
-
-<pre><code>projectDirectory/
-    js/
-        libs/
-        grafar/
-        grafaryaz/
-        loader.js
-        [some custom scripts]
-    [your HTML files here]
-</code></pre>
-
-<p>Since I never took the time to build the library, it is slightly tricky to 
-include into your html. I would recommend referencing the <code>loader.js</code> file. 
-It uses LABjs library to download all the project files in the right order 
-and run your code (passed in a callback function) once the files are loaded. 
-So, you'd probably want something like this:</p>
-
-<div class="highlight highlight-html"><pre><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"js/loader.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
-<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span><span class="nt">&gt;</span>
-    <span class="nx">runGrafar</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="p">...</span> <span class="nx">some</span> <span class="nx">code</span> <span class="nx">here</span> <span class="p">...</span> <span class="p">});</span>
-<span class="nt">&lt;/script&gt;</span>
-</pre></div>
-
-<p>Of course, you are very welcome to mess it all up! Just remember, the order 
-matters. By the way, take a look at the demos in the <code>examples</code> folder -- 
-they do cover the basic usage quite well. Please refer to the example <code>grafar_basic_usage.html</code>.</p>
-
-<h2>
-<a name="using-grafar" class="anchor" href="#using-grafar"><span class="octicon octicon-link"></span></a>Using grafar.</h2>
-
-<h3>
-<a name="creating-panels" class="anchor" href="#creating-panels"><span class="octicon octicon-link"></span></a>Creating panels.</h3>
-
-<p>A panel is the area in which your graphs are drawn. It corresponds to 
-an html <code>figure</code> (or a <code>div</code>, if you're feeling non-semantic) and a WebGl
-context.</p>
-
-<p>First, you need to create and position the HTML elements that would be used 
-for displaying your graphs. See <code>grafar_panel_basics.html</code> for a reference on
-how to achieve this via basic HTML and CSS positioning.</p>
-
-<p>Then you should initialize a panel inside such an element. The panel extends to fit
-the element. If you are curious, a WebGL context and a camera are created, their 
-output is binded to a <code>canvas</code> element, which is then appended to the <code>figure</code> specified.</p>
-
-<h4>
-<a name="new-grafarpaneldom-element-id-string" class="anchor" href="#new-grafarpaneldom-element-id-string"><span class="octicon octicon-link"></span></a><code>new grafar.Panel(&lt;DOM element&gt;, [{id: &lt;string&gt;}])</code>
-</h4>
-
-<p>Create a new panel inside the DOM element specified. If the <code>id</code> is left unspecified,
-a random one is generated. The Panel created is then stored in a special table 
-and can be accessed as <code>grafar.panels[&lt;id&gt;]</code>.</p>
-
-<h4>
-<a name="panel-objectsetaxesarray-of-strings" class="anchor" href="#panel-objectsetaxesarray-of-strings"><span class="octicon octicon-link"></span></a><code>&lt;Panel object&gt;.setAxes(&lt;Array of strings&gt;)</code>
-</h4>
-
-<p>Assign the names to the axes. Default is <code>['x', 'y', 'z']</code>. You <em>can</em> assign 
-two axes to make the panel 2D (planar graph), but currently you <em>can't</em> add 
-any data to such a panel (I'm terribly sorry about this). If you change the 
-axis names after drawing them, the graph would not be updated. The instance 
-of <code>Panel</code> on which the method was called is returned.</p>
-
-<h4>
-<a name="panel-objectdrawaxesnumber" class="anchor" href="#panel-objectdrawaxesnumber"><span class="octicon octicon-link"></span></a><code>&lt;Panel object&gt;.drawAxes(&lt;number&gt;)</code>
-</h4>
-
-<p>Display the axes of the given length. The instance of <code>Panel</code> on which the 
-method was called is returned.</p>
-
-<h3>
-<a name="creating-graphs" class="anchor" href="#creating-graphs"><span class="octicon octicon-link"></span></a>Creating graphs</h3>
-
-<p>The Graph is a basic display unit in grafar. It acts as a container for your 
-data and provides some styling options, namely:</p>
-
+<section>
+<h2><a name="whats-included" class="anchor" href="#whats-included"><span class="octicon octicon-link"></span></a>Demos and examples.</h2>
 <ul>
-<li>color (a palette, actually -- refer to docs on grafar.Style),</li>
-<li>visibility (show / hide),</li>
-<li>corresponding panel,</li>
-<li>parent graph.
-The first three properties are inherited from the parent, if not set explicitly. 
-The graphs present in a scene form a tree structure. When grafar is launched, 
-the root graph, called <code>$</code>, is created. It is a predecessor of any graph. Refer
-to <code>grafar_graph_basics.html</code> for an example.</li>
-</ul><h4>
-<a name="new-grafargraphconfig" class="anchor" href="#new-grafargraphconfig"><span class="octicon octicon-link"></span></a><code>new grafar.Graph([&lt;config&gt;])</code>
-</h4>
+	<li><a href="demo_implicit.html">Implicit surfaces</a></li>
+	<li><a href="demo_animation.html">Animation</a></li>
+	<li><a href="grafar_graph_basics.html">Working with graphs (example)</a></li>
+	<li><a href="grafar_panel_basics.html">Working with panels (example)</a></li>
+	<li><a href="grafaryaz_basics.html">The grafaryaz language (example)</a></li>
+</ul>
 
-<p>Create a new empty graph. If the <code>config</code> object passed to this function does 
-not contain a property <code>id</code>, a random id is generated. The Graph is then stored 
-and can be accessed as <code>grafar.graphs[&lt;id&gt;]</code>. Once the graph is created, its 
-<code>setup</code> method is called with .</p>
+<footer>
+<p>This project is maintained by <a href="https://github.com/thoughtspile">thoughtspile</a></p>
+<p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+</footer>
+</div>
+<script src="javascripts/scale.fix.js"></script>
 
-<h4>
-<a name="graph-objectsetstylestyle-object" class="anchor" href="#graph-objectsetstylestyle-object"><span class="octicon octicon-link"></span></a><code>&lt;Graph object&gt;.setStyle(&lt;Style object&gt;)</code>
-</h4>
+</body>
 
-<p>Set the styling of the graph. Refer to docs on <code>grafar.Style</code> for further 
-details.The styles of children objects are updated accordingly. Returns 
-a reference to the target Graph object.</p>
-
-<h4>
-<a name="graph-objectsethidingboolean" class="anchor" href="#graph-objectsethidingboolean"><span class="octicon octicon-link"></span></a><code>&lt;Graph object&gt;.setHiding(&lt;boolean&gt;)</code>
-</h4>
-
-<p>Show / hide the graph (pass <code>true</code> to hide, <code>false</code> to show). The visibility 
-of children objects is updated accordingly. Returns a reference to the target 
-Graph object.</p>
-
-<h4>
-<a name="graph-objectsetpanelpanel-object" class="anchor" href="#graph-objectsetpanelpanel-object"><span class="octicon octicon-link"></span></a><code>&lt;Graph object&gt;.setPanel(&lt;Panel object&gt;)</code>
-</h4>
-
-<p>Display the graph on the Panel specified. Also moves all the children graphs 
-with no explicitly set Panel to this Panel. Returns a reference to the target 
-Graph object.</p>
-
-<h4>
-<a name="graph-objectsetparentgraph-object" class="anchor" href="#graph-objectsetparentgraph-object"><span class="octicon octicon-link"></span></a><code>&lt;Graph object&gt;.setParent(&lt;Graph object&gt;)</code>
-</h4>
-
-<p>Make some other graph the parent of the one on which the method is called.
-The properties of the graph are then updated accordingly. You <code>can</code> make
-graph inherit from itself, but it would not be fun, I promise. Returns a 
-reference to the target Graph object.</p>
-
-<h4>
-<a name="graph-objectsetupparent--panel--style--hide-" class="anchor" href="#graph-objectsetupparent--panel--style--hide-"><span class="octicon octicon-link"></span></a><code>&lt;Graph object&gt;.setup({parent: .., panel: .., style: .., hide: ...})</code>
-</h4>
-
-<p>Just a shortened syntax for setting several properties of a Graph at once.
-Returns a reference to the target Graph object, as usual.</p>
-
-<h4>
-<a name="graph-objectdatainterface" class="anchor" href="#graph-objectdatainterface"><span class="octicon octicon-link"></span></a><code>&lt;Graph object&gt;.dataInterface()</code>
-</h4>
-
-<p>Exposes the WebGL buffers of the graph. In a later section you would see 
-how this can be used for binding a graph to a data generator. Returns 
-a data interface object, <em>not</em> the Graph. THe structure of such an object 
-is similar to</p>
-
-<div class="highlight highlight-javascript"><pre><span class="p">{</span>
-    <span class="nx">buffers</span><span class="o">:</span> <span class="p">{</span>
-        <span class="nx">index</span><span class="o">:</span> <span class="p">..,</span> <span class="c1">// edges: [v_1_start, v_1_end, v_2_start, v_2_end...]</span>
-        <span class="nx">vertex</span><span class="o">:</span> <span class="p">...</span> <span class="c1">// interleaved: [y,z,x, y,z,x...]</span>
-    <span class="p">},</span>
-    <span class="nx">update</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{...}</span>
-<span class="p">}</span>
-</pre></div>
-
-<p>A buffer is, well, a resizeable buffer:</p>
-
-<div class="highlight highlight-javascript"><pre><span class="p">{</span>
-    <span class="nx">array</span><span class="o">:</span> <span class="o">&lt;</span><span class="nx">TypedArray</span><span class="o">&gt;</span><span class="p">,</span> <span class="c1">// read-only</span>
-    <span class="nx">length</span><span class="o">:</span> <span class="o">&lt;</span><span class="nx">number</span><span class="o">&gt;</span>
-<span class="p">}</span>
-</pre></div>
-
-<p>Typically you wouldn't want to set these manually, but if you just feel like
-doing something crazy, check out any of the Graph examples. In order for 
-changes to take place, call update.</p>
-
-<h3>
-<a name="managing-styles" class="anchor" href="#managing-styles"><span class="octicon octicon-link"></span></a>Managing styles.</h3>
-
-<p>A Style is an object which stores the palette, from which the colours for 
-the graphs are drawn. It is not that amazing right now, but I'm planning
-on updating it soon. If several graphs share a single Style, they would
-be displayed in distinct colours from the style's palette. If the palette
-is updated, the colours of the graphs that have already been issued 
-(you set the style of the graph first, updated the style next) remain
-unchanged.</p>
-
-<h4>
-<a name="new-grafarstylepalettesize-number" class="anchor" href="#new-grafarstylepalettesize-number"><span class="octicon octicon-link"></span></a><code>new grafar.Style([{paletteSize: &lt;number&gt;}])</code>
-</h4>
-
-<p>Creates a new style object. The palette consists of paletteSize (or 10 by 
-default) distinct (but possibly very similar, which I do regret) colours.</p>
-
-<h4>
-<a name="style-objectsamplepalettenumber" class="anchor" href="#style-objectsamplepalettenumber"><span class="octicon octicon-link"></span></a><code>&lt;Style object&gt;.samplePalette(&lt;number&gt;)</code>
-</h4>
-
-<p>Resize the palette to a given number of colours. Returns a reference to the
-Style object.</p>
-
-<h4>
-<a name="style-objectsetpalettearray-of-colours" class="anchor" href="#style-objectsetpalettearray-of-colours"><span class="octicon octicon-link"></span></a><code>&lt;Style object&gt;.setPalette(&lt;Array of colours&gt;)</code>
-</h4>
-
-<p>Set the palette explicitly. Acceptable formats for colours include:</p>
-
-<ul>
-<li>Hex number (integer from 0 to 255^3) <code>0xRRGGBB</code>;</li>
-<li>RGB colour <code>rgb(r, g, b)</code>, <code>r</code>, <code>g</code> and <code>b</code> from 0 to 255;</li>
-<li>HSL colour <code>hsl(r, g, b)</code>, I'm not quite sure about the ranges;</li>
-<li>Named colour <code>red</code> or <code>magenta</code> or whatever.
-It basically matches the CSS colours, so check those out.</li>
-</ul><h2>
-<a name="programming-in-grafaryaz" class="anchor" href="#programming-in-grafaryaz"><span class="octicon octicon-link"></span></a>Programming in grafaryaz.</h2>
-
-<p>Grafaryaz is a declarative language developed specifically for approximating 
-continuous mathematical objects. The target object is described with a set 
-of equations and inequalities. It is a very complicated system still in active 
-development, so a myriad of bugs is probably present in it. Beware and feel 
-free to drop me an e-mail at <a href="mailto:v.klepov@gmail.com">v.klepov@gmail.com</a> in case anything goes wrong.</p>
-
-<ul>
-<li>Acceptable variable and function names include anything that would do in 
-a conventional programming language. Please, do not use the underscore <code>_</code> and 
-the dollar mark <code>$</code>. Reserved names include <code>delta</code> and all the standard 
-function names.</li>
-<li>Standard functions include sin, cos, sqrt, exp, abs, log, pow(, ) 
-can also be written as ^</li>
-<li>Comparison operators are <code>==</code> (equals), <code>&lt;=</code> and '&gt;=' and <code>@=</code> for inclusion 
-(as in <code>x @= [1, 3]</code>).</li>
-<li>Statements are joined into a system with an ampersand <code>&amp;</code>.</li>
-<li>A custom function can be defined as follows: <code>&lt;f_id&gt;(&lt;id_1&gt;, .., &lt;id_n&gt;) == ...</code>,
-and then invoked inside an expression as <code>&lt;f_id&gt;(&lt;value_1&gt;, .., &lt;value_n&gt;)</code> or 
-<code>&lt;f_id&gt;(&lt;id_a1&gt;, .., &lt;id_an)</code>. Let me make this even clearer. You can call a
-function with explicit argument values, as in <code>f(1, 2)</code>; you can make a substitution
-as in <code>f(x, y) == x * y &amp; z = f(s, d)</code>, you can mix the two for partial
-application (<code>s == 1 &amp; f(x, y) == x * y &amp; d = f(2, s)</code>). But you <em>can not</em>
-call a function on expressions as in <code>f(x+2, 1)</code>. If you really want to do it, 
-consider something like <code>x_alt == x+2 &amp; z == f(x_alt, 1)</code>.</li>
-<li>You can get a partial derivative of a function as follows:
-<code>delta_&lt;f_id&gt;_&lt;var_id&gt;</code>. Applying this operator does not affect the ordering
-of the variables.</li>
-</ul><p>This intro was far far from comprehensive, so to get a better idea of what to do you
-might want to take a look on <code>grafaryaz_basics.html</code>.</p>
-
-<h2>
-<a name="binding-graphs-with-data-generators" class="anchor" href="#binding-graphs-with-data-generators"><span class="octicon octicon-link"></span></a>Binding graphs with data generators</h2>
-
-<p>So far we've covered the Graphs, which are used for displaying your data, and the
-basic grafaryaz programs for telling the program exactly what data you want. 
-Here is how they can work together. No updates have been implemented at this stage,
-but I'm planning to add them anytime soon.</p>
-
-<h3>
-<a name="new-grafaryazcontext" class="anchor" href="#new-grafaryazcontext"><span class="octicon octicon-link"></span></a>
-<code>new grafaryaz.Context()</code>.</h3>
-
-<p>Creates a grafaryaz parser.</p>
-
-<h3>
-<a name="grafarbinddata-interface-object-context-object" class="anchor" href="#grafarbinddata-interface-object-context-object"><span class="octicon octicon-link"></span></a><code>grafar.bind(&lt;data interface object&gt;, &lt;Context object&gt;)</code>
-</h3>
-
-<p>Any data that is generated by a context is displayed in a graph which has 
-issued the data interface. One context can be shared by different graphs, but 
-not vice versa.</p>
-
-<h3>
-<a name="context-objectsetstring" class="anchor" href="#context-objectsetstring"><span class="octicon octicon-link"></span></a><code>&lt;Context object&gt;.set(&lt;string&gt;)</code>
-</h3>
-
-<p>The program passed inside a string is executed inside the context, the
-result is displayed by the bound graphs.</p>
-      </section>
-      <footer>
-        <p>This project is maintained by <a href="https://github.com/thoughtspile">thoughtspile</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
-    </div>
-    <script src="javascripts/scale.fix.js"></script>
-    
-  </body>
 </html>

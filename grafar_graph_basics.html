@@ -1,0 +1,95 @@
+<!doctype html>
+
+<head>
+	<title>Creating graphs: grafar by example</title>
+	<style>
+		body, figure {
+			margin: 0;
+		}
+		.panel {
+			position: absolute;
+		}
+		#leftPanel {
+			top: 0%;
+			left: 0%;
+			width: 50%;
+			height: 100%;
+		}
+		#rightPanel {
+			top: 0%;
+			left: 50%;
+			width: 50%;
+			height: 100%;
+		}
+	</style>
+</head>
+
+<body>
+	<figure class = "panel" id="leftPanel"></figure>
+	<figure class = "panel" id="rightPanel"></figure>
+	
+	<script src="loader.js"></script>
+	<script>
+		runGrafar(function() {
+			// this function generates a random sample
+			//   from a Normal distribution with mean m and variance s^2
+			function randn(m, s) {
+				return m + (-1.5 + Math.random() + Math.random() + Math.random()) * s;
+			}
+			
+			// this bears almost no relation to what follows
+			var pointsInEach = 100;
+			
+			// create a couple of panels
+			var lPan = new grafar.Panel(document.getElementById('leftPanel')).drawAxes(2),
+				rPan = new grafar.Panel(document.getElementById('rightPanel')).drawAxes(2);
+				
+			// and some graphs
+			var grParent = new grafar.Graph(),
+				grChild1 =  new grafar.Graph(),
+				grChild2 =  new grafar.Graph();
+			// why not create one accessible by id only?
+			new grafar.Graph({id: 'secret_graph'});
+			
+			// Let's throw in a custom style:
+			var boringStyle = new grafar.Style().setPalette(['grey']),
+				cyanStyle = new grafar.Style().setPalette(['cyan']);
+			
+			// Simple setup:
+			grParent.setStyle(cyanStyle);
+			// Chained setup:
+			grChild1.setParent(grParent).setPanel(rPan).setStyle(boringStyle);
+			// Shorthand setup:
+			grChild2.setup({parent: grParent, panel: rPan});
+			
+			// why not set a default panel?
+			grafar.graphs['$'].setPanel(lPan);
+			
+			// see how we can neatly loop over all the graphs:
+			Object.getOwnPropertyNames(grafar.graphs).forEach(function(gName, j) {
+				// get a data interface
+				var di = grafar.graphs[gName].dataInterface(),
+					pos = di.buffers.vertex;
+				// change the number of data points (3 is for [x, y, z] in each point)
+				pos.length = pointsInEach * 3;
+				
+				// just some random points
+				var m = j / 2 - 1, v = .3;				
+				for (var i = 0; i < pointsInEach; i++) {
+					pos.array[i * 3 + 0] = randn(m, v);
+					pos.array[i * 3 + 1] = randn(m, v);
+					pos.array[i * 3 + 2] = randn(m, v);
+				}
+			});
+			
+			// and let's add some nasty blinking:
+			function blink() {
+				// notice how it gets inherited
+				grParent.setHiding(Math.random() > .7);
+				window.setTimeout(blink, 1000);
+			}
+			blink();
+		}, '');
+	</script>
+</body>
+</html>
