@@ -240,3 +240,202 @@
 	
 	_GY.Table = Table;
 }(this));
+
+'use strict';
+
+(function(global) {
+	var _GY = global.grafaryaz || (global.grafaryaz = {}),
+		intersection = _GY.intersection,
+		union = _GY.union;
+	
+	
+	// structure: 
+	// * hash with name / value pairs for each column
+	// * current length
+	// * preallocated size
+	// * content descriptors
+	
+	function Table2(hash, opts) {
+		if (!isExisty(hash))
+			hash = {};
+		if (!isExisty(opts))
+			opts = {};
+		
+		Object.getOwnPropertyNames(hash).forEach(function(name) {
+			this[name] = hash[name];
+		});
+		
+		if (opts.gDesc)
+			this.gDesc = opts.gDesc;
+		else if (opts.cont)
+			this.gDesc = this.data.length + 'c';
+		else 
+			this.gDesc = this.data.length + 'd';
+	}
+
+	// misc
+	Table2.prototype.isEmpty = function() {
+		return Object.getOwnPropertyNames(this).length === 0;
+	};
+	
+	Table2.prototype.rename = function(map) {
+		Table2.call(this, Object.getOwnPropertyNames(map)
+			.reduce(function(pv, cv) {
+				pv[map[cv]] = this[cv];
+				return pv;
+			}.bind(this), {})
+		);
+		return this;
+	}
+	
+	Table2.prototype.clone = function() {
+		return new Table2(Object.getOwnPropertyNames(this)
+			.reduce(function(pv, name) {
+				pv[name] = this[name].constructor(this[name]); // constructor
+				return pv;
+			}.bind(this), {})
+		);
+	};
+
+	// operations
+	Table2.prototype.map = function(stmt) {
+		var indices = stmt.requires.map(function(name) {
+			return this.keys.indexOf(name);
+		}.bind(this));
+		return new Table2(stmt.supplies, evalMap(this.data, stmt.f(), indices), {gDesc: this.gDesc});
+	};
+
+	Table2.prototype.times = function(table2) {
+		if (!(table2 instanceof Table2))
+			throw new Error('non-table right hand argument');
+		if (intersection(Object.getOwnPropertyNames(this), Object.getOwnPropertyNames(table2)).length !== 0)
+			throw new Error('Multiplying non-disjoint tables');
+			
+		if (this.isEmpty())
+			return table2;
+		else if (table2.isEmpty())
+			return this;
+			
+		var resData = [];
+		this.data.forEach(function(e1) {
+			table2.data.forEach(function(e2) {
+				resData.push(e1.concat(e2));
+			});
+		});
+		
+		return new Table(this, {gDesc: this.gDesc + '*' + table2.gDesc}); // gDesc is important
+	};
+	
+	Table2.prototype.select = function(order, target) {
+		var s = new Date().getTime(); // now?		
+		var itemsize = order.length,
+			n = this.length;
+			
+		if (target.length < n * itemsize)
+			throw new Error('Insufficient buffer size for export');
+			
+		for (var j = 0; j < itemsize; j++) {
+			var col = this[order[j]]; // undefined proxy
+			for (var i = 0, k = j; i < n; i++, k += itemsize)
+				target[k] = col[i];
+		}
+		
+		console.log(new Date().getTime() - s, 'per export');
+		return target;
+	};
+	
+	// uglifiers
+	Table2.prototype.computeIndexBuffer = function(buffer) {
+		var cache = true;
+		var actions = this.gDesc.split('*')
+			.map(function(desc) {
+				return {
+					qty: parseFloat(desc.slice(0, desc.length - 1)),
+					type: desc.slice(desc.length - 1)
+				};
+			})
+			.filter(function(node) {
+				return node.qty !== 1;
+			})
+			.reduce(function(pv, cv) {
+				if (pv.length > 0 && (pv[pv.length - 1].type === 'd' && cv.type === 'd'))
+					pv[pv.length - 1].qty *= cv.qty;
+				else
+					pv.push(cv);
+				return pv;
+			}, []);
+		
+		var key = actions.toString();
+		if (cache && Table.indexCache.hasOwnProperty(key)) {
+			buffer.set(Table.indexCache[key]);
+			return buffer;
+		}
+			
+		var indexArray = actions.reduceRight(function(adjacency, cv) {
+			var newAdj = [], 
+				l = cv.qty, 
+				r = adjacency.n;
+			for (var i = 0; i < l; i++) {
+				newAdj = newAdj.concat(adjacency.a);
+				shiftArray(adjacency.a, r);
+			}
+			if (cv.type === 'c') {
+				var path = timesArray(r, makeBasicPath(l));
+				for (var i = 0; i < r; i++) {
+					newAdj = newAdj.concat(path);
+					shiftArray(path, 1);
+				}
+			}
+			return {n: r * l, a: newAdj};
+		}, {n: 1, a: []});//new Uint8Array(0));
+		var temp = new Uint32Array(indexArray.a);
+		
+		if (cache)
+			Table.indexCache[key] = temp;	
+		buffer.set(temp);
+		return buffer;
+	}
+	
+	
+	// utils
+	
+	var arrayPool = {
+		pool: [],
+		get: function(constructor, length) {
+			return this.pool
+					.filter(function(obj) {return (obj instanceof constructor) && (obj.length >= length);})
+					.sort(function(a, b) {return a.length < b.length;})[0] || 
+				new constructor(length);
+		},
+		drop: function(obj) {
+			if (obj.prototype.hasOwnProperty('length'))
+				this.pool.push(obj);
+		}
+	}
+	
+	function makeBasicPath(length) {
+		var basicPath = [];
+		for (var i = 0; i < length - 1; i++)
+			basicPath.push(i, i + 1);
+		return basicPath;
+	}
+	
+	function shiftArray (arr, by) {
+		for (var i = 0; i < arr.length; i++)
+			arr[i] += by;
+		return arr;
+	}
+	
+	function timesArray (n, arr) {
+		for (var i = 0; i < arr.length; i++)
+			arr[i] *= n;
+		return arr;
+	}
+	
+
+	// map
+		
+	// exports
+	
+	_GY.Table2 = Table2;
+}(this));
