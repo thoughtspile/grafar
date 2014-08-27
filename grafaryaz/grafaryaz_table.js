@@ -1,347 +1,157 @@
-'use strict';
-
 (function(global) {
+	'use strict';
+	
 	var _GY = global.grafaryaz || (global.grafaryaz = {}),
+		isExisty = _GY.isExisty,
 		intersection = _GY.intersection,
 		union = _GY.union;
+	
 		
-	function Table(keys, data, opts) {
-		if (keys === undefined)
-			keys = [];
-		else if (!Array.isArray(keys))
-			keys = [keys];
-			
-		if (data === undefined)
-			data = [];
-		else if (!Array.isArray(data))
-			data = [data];
-			
-		if (opts === undefined)
-			opts = {};
-			
-		if (data.length === 0)
-			data.push([]);
-		
-		
-		this.keys = keys;
-		
-		this.data = data.map(function(e) {
-			var temp = Array.isArray(e)? e: [e];
-			temp.length = keys.length;
-			return temp;
-		});
+	function Table2(opts) {
+		opts = opts || {};
+	
+		this.data = {};		
+		this.length = 1;
+		this.capacity = opts.capacity || 1;
 		
 		if (opts.gDesc)
 			this.gDesc = opts.gDesc;
 		else if (opts.cont)
-			this.gDesc = this.data.length + 'c';
+			this.gDesc = '1c';
 		else 
-			this.gDesc = this.data.length + 'd';
-	}
-
-	Table.prototype.isEmpty = function() {
-		return this.keys.length === 0 && this.data.length <= 1;
-	};
-
-	Table.prototype.clone = function() {
-		return new Table(this.keys, this.data);
-	};
-
-	Table.prototype.map = function(stmt) {
-		var indices = stmt.requires.map(function(name) {
-			return this.keys.indexOf(name);
-		}.bind(this));
-		return new Table(stmt.supplies, evalMap(this.data, stmt.f(), indices), {gDesc: this.gDesc});
-	};
-
-	Table.prototype.map2 = function(stmt) {	
-		return new Table(stmt.output, inlineMap(this, stmt.body));
-	};
-
-	Table.prototype.times = function(table2, cache) {
-		//if (cache !== true)
-		cache = false;
-
-		if (!(table2 instanceof Table))
-			throw new Error('non-table right hand argument');
-		if (intersection(this.keys, table2.keys).length !== 0)
-			throw new Error('Multiplying non-disjoint tables');
-			
-		if (this.isEmpty())
-			return table2;
-		else if (table2.isEmpty())
-			return this;
-		
-		var key = '';
-		if (cache) {
-			key = this.makeKey() + table2.makeKey();
-			if (Table.cache.hasOwnProperty(key))
-				return Table.cache[key];
-		}
-			
-		var resData = [];
-		this.data.forEach(function(e1) {
-			table2.data.forEach(function(e2) {
-				resData.push(e1.concat(e2));
-			});
-		});
-		
-		var temp = new Table(union(this.keys, table2.keys), resData, {gDesc: this.gDesc + '*' + table2.gDesc});
-		if (cache)
-			Table.cache[key] = temp;
-		return temp;
-	};
-
-	Table.prototype.makeKey = function() {
-		var key = this.data.length + ':',
-			toBase2 = function(x) {
-				return x.toFixed(2);
-			};
-		for (var i = 0; i < this.data.length; i += 1)
-			key += ' ' + this.data[i].map(toBase2).join(';');
-		//console.log(new Date().getTime() - s, 'to make a key');
-		return key;
-	};
-	
-	Table.prototype.asTypedArray = function(order, buffer) {
-		var s = new Date().getTime();
-		if (order.length > 3)
-			throw new Error('chunk size too big');
-		if (!(buffer instanceof Float32Array) || buffer.length < this.data.length * order.length)
-			buffer = new Float32Array(this.data.length * order.length);
-
-		var indices = order.map(function(name) {
-				return this.keys.indexOf(name);
-			}.bind(this)),
-			bufferIndex = 0,
-			chunkSize = order.length;
-		
-		this.data.forEach(function(pt) {
-			buffer[bufferIndex] = pt[indices[0]] || 0;
-			buffer[bufferIndex + 1] = pt[indices[1]] || 0;
-			buffer[bufferIndex + 2] = pt[indices[2]] || 0;
-			bufferIndex += chunkSize;
-		});
-		console.log(new Date().getTime() - s, 'per export');
-		return buffer;
-	};
-	
-	Table.prototype.computeIndexBuffer = function(buffer) {
-		var cache = true;
-		var actions = this.gDesc.split('*')
-			.map(function(desc) {
-				return {
-					qty: parseFloat(desc.slice(0, desc.length - 1)),
-					type: desc.slice(desc.length - 1)
-				};
-			})
-			.filter(function(node) {
-				return node.qty !== 1;
-			})
-			.reduce(function(pv, cv) {
-				if (pv.length > 0 && (pv[pv.length - 1].type === 'd' && cv.type === 'd'))
-					pv[pv.length - 1].qty *= cv.qty;
-				else
-					pv.push(cv);
-				return pv;
-			}, []);
-		
-		var key = actions.toString();
-		if (cache && Table.indexCache.hasOwnProperty(key)) {
-			buffer.set(Table.indexCache[key]);
-			return buffer;
-		}
-			
-		var indexArray = actions.reduceRight(function(adjacency, cv) {
-			var newAdj = [], 
-				l = cv.qty, 
-				r = adjacency.n;
-			for (var i = 0; i < l; i++) {
-				newAdj = newAdj.concat(adjacency.a);
-				shiftArray(adjacency.a, r);
-			}
-			if (cv.type === 'c') {
-				var path = timesArray(r, makeBasicPath(l));
-				for (var i = 0; i < r; i++) {
-					newAdj = newAdj.concat(path);
-					shiftArray(path, 1);
-				}
-			}
-			return {n: r * l, a: newAdj};
-		}, {n: 1, a: []});//new Uint8Array(0));
-		var temp = new Uint32Array(indexArray.a);
-		
-		if (cache)
-			Table.indexCache[key] = temp;	
-		buffer.set(temp);
-		return buffer;
+			this.gDesc = '1d';
 	}
 	
-	Table.cache = {};
-	Table.indexCache = {};
-
-	
-	// utils
-	
-	function makeBasicPath(length) {
-		var basicPath = [];
-		for (var i = 0; i < length - 1; i++)
-			basicPath.push(i, i + 1);
-		return basicPath;
-	}
-	
-	function shiftArray (arr, by) {
-		for (var i = 0; i < arr.length; i++)
-			arr[i] += by;
-		return arr;
-	}
-	
-	function timesArray (n, arr) {
-		for (var i = 0; i < arr.length; i++)
-			arr[i] *= n;
-		return arr;
-	}
-	
-
-	// map variations
-	
-	function inPlaceEvalMap(data, callback, indices) {
-		var argMap = indices.length? 'pt[' + indices.join('], pt[') + ']' : '',
-			temp = new Function('pt', 'f', 'return f(' + argMap + ');');
-			
-		data.forEach(function(pt, i) {
-			data[i] = temp(pt, callback);
-		});
-	}
-
-	function inlinePtFunction() {
-	}
-
-	function evalMap(data, callback, indices) {
-		var argMap = indices.length? 'pt[' + indices.join('], pt[') + ']' : '',
-			temp = new Function('pt', 'f', 'return f(' + argMap + ');');
-		//console.log(callback());
-		return data.map(function(pt) {
-			return temp(pt, callback);
-		});
-	}
-
-	function inlineMap(domain, fbody) {
-		var arrMap = fbody;
-		domain.keys.forEach(function(n, i) {
-			arrMap = arrMap.replace(new RegExp('\\b' + n + '\\b', 'g'), 'data[i][' + i + ']');
-		});
-		var temp2 = new Function('data', 'var res = []; for (var i = 0; i < data.length; i++) res[i] = ' + arrMap + '; return res;');
-		return temp2(domain.data);
-	}
-	
-		
-	// exports
-	
-	_GY.Table = Table;
-}(this));
-
-'use strict';
-
-(function(global) {
-	var _GY = global.grafaryaz || (global.grafaryaz = {}),
-		intersection = _GY.intersection,
-		union = _GY.union;
-	
-	
-	// structure: 
-	// * hash with name / value pairs for each column
-	// * current length
-	// * preallocated size
-	// * content descriptors
-	
-	function Table2(hash, opts) {
-		if (!isExisty(hash))
-			hash = {};
-		if (!isExisty(opts))
-			opts = {};
-		
-		Object.getOwnPropertyNames(hash).forEach(function(name) {
-			this[name] = hash[name];
-		});
-		
-		if (opts.gDesc)
-			this.gDesc = opts.gDesc;
-		else if (opts.cont)
-			this.gDesc = this.data.length + 'c';
-		else 
-			this.gDesc = this.data.length + 'd';
-	}
-
 	// misc
+	Table2.prototype.schema = function() {
+		return Object.getOwnPropertyNames(this.data);
+	};
+	
+	Table2.prototype.setLength = function(newLength) {
+		this.extend(newLength);
+		this.length = newLength;
+		return this;
+	};
+	
+	Table2.prototype.extend = function(newCapacity) {
+		this.capacity = Math.max(this.capacity, newCapacity);
+		this.schema().forEach(function(name) {
+			if (this.data[name].length < this.capacity) {
+				var temp = arrayPool.get(Float32Array, this.capacity);
+				temp.set(this.data[name].subarray(0, this.length));
+				this.data[name] = temp;
+			}
+		}.bind(this));
+		return this;
+	};
+	
+	Table2.prototype.addCol = function(name) {
+		if (this.schema().indexOf(name) === -1);
+			this.data[name] = arrayPool.get(Float32Array, this.capacity);
+		return this;
+	};
+	
+	Table2.prototype.dropAll = function() {
+		this.schema().forEach(function(name) {
+			arrayPool.push(this.data[name]);
+		}.bind(this));
+		Table2.call(this);
+		return this;
+	};
+	
 	Table2.prototype.isEmpty = function() {
-		return Object.getOwnPropertyNames(this).length === 0;
+		return this.schema().length === 0 && this.length <= 1;
 	};
 	
 	Table2.prototype.rename = function(map) {
-		Table2.call(this, Object.getOwnPropertyNames(map)
+		var s = Date.now();
+		this.schema().forEach(function(name) {
+			map[name] = map.hasOwnProperty(name)? map[name]: name;
+		});
+		this.data = Object.getOwnPropertyNames(map)
 			.reduce(function(pv, cv) {
-				pv[map[cv]] = this[cv];
+				pv[map[cv]] = this.data[cv];
 				return pv;
-			}.bind(this), {})
-		);
+			}.bind(this), {});
+		console.log(Date.now() - s, 'per rename');
 		return this;
-	}
+	};
 	
 	Table2.prototype.clone = function() {
-		return new Table2(Object.getOwnPropertyNames(this)
-			.reduce(function(pv, name) {
-				pv[name] = this[name].constructor(this[name]); // constructor
-				return pv;
-			}.bind(this), {})
-		);
-	};
-
-	// operations
-	Table2.prototype.map = function(stmt) {
-		var indices = stmt.requires.map(function(name) {
-			return this.keys.indexOf(name);
+		var s = Date.now();
+		var temp = new Table2({capacity: this.capacity});
+		temp.setLength(this.length);
+		this.schema().forEach(function(name) {
+			temp.addCol(name);
+			temp.data[name].set(this.data[name].subarray(0, this.length));
 		}.bind(this));
-		return new Table2(stmt.supplies, evalMap(this.data, stmt.f(), indices), {gDesc: this.gDesc});
+		console.log(Date.now() - s, 'per clone');
+		return temp;
+	};
+	
+	// operations
+	Table2.prototype.map = function(f) {
+		var s = Date.now();
+		
+		f(this.data, this.length);
+		
+		console.log(Date.now() - s, 'per map');
+		return this;
 	};
 
 	Table2.prototype.times = function(table2) {
+		var s = Date.now();
 		if (!(table2 instanceof Table2))
 			throw new Error('non-table right hand argument');
-		if (intersection(Object.getOwnPropertyNames(this), Object.getOwnPropertyNames(table2)).length !== 0)
-			throw new Error('Multiplying non-disjoint tables');
-			
-		if (this.isEmpty())
-			return table2;
-		else if (table2.isEmpty())
-			return this;
-			
-		var resData = [];
-		this.data.forEach(function(e1) {
-			table2.data.forEach(function(e2) {
-				resData.push(e1.concat(e2));
-			});
-		});
+		//if (intersection(Object.getOwnPropertyNames(this.active), Object.getOwnPropertyNames(table2.active)).length !== 0)
+		//	throw new Error('Multiplying non-disjoint tables');
 		
-		return new Table(this, {gDesc: this.gDesc + '*' + table2.gDesc}); // gDesc is important
+		if (table2.isEmpty()) {
+			return this;
+		} if (this.isEmpty()) {
+			table2.schema().forEach(function(name) {
+				this.data[name] = table2.data[name];
+			}.bind(this));
+			this.capacity = table2.capacity;
+			this.length = table2.length;
+			this.gDesc = table2.gDesc;
+			return this;
+		}
+		
+		var newLength = this.length * table2.length;
+		this.extend(newLength);
+		table2.extend(newLength);
+		
+		this.schema().forEach(function(name) {
+			this.data[name] = repeatPoints(this.data[name], this.length, table2.length);
+		}.bind(this));
+		table2.schema().forEach(function(name) {
+			this.data[name] = repeatArray(table2.data[name], table2.length, this.length);
+		}.bind(this));
+		this.setLength(newLength);
+		
+		console.log(Date.now() - s, 'per mult');
+		return this;
+		//return new Table(this, {gDesc: this.gDesc + '*' + table2.gDesc}); // gDesc is important
 	};
 	
 	Table2.prototype.select = function(order, target) {
-		var s = new Date().getTime(); // now?		
+		var s = Date.now();
 		var itemsize = order.length,
-			n = this.length;
+			n = this.length,
+			outsize = n * itemsize;
 			
-		if (target.length < n * itemsize)
+		if (target.length < outsize)
 			throw new Error('Insufficient buffer size for export');
 			
 		for (var j = 0; j < itemsize; j++) {
-			var col = this[order[j]]; // undefined proxy
+			var col = this.data[order[j]]; // undefined proxy
 			for (var i = 0, k = j; i < n; i++, k += itemsize)
 				target[k] = col[i];
 		}
 		
-		console.log(new Date().getTime() - s, 'per export');
-		return target;
+		console.log(Date.now() - s, 'per export');
+		return this;
 	};
 	
 	// uglifiers
@@ -366,22 +176,23 @@
 			}, []);
 		
 		var key = actions.toString();
-		if (cache && Table.indexCache.hasOwnProperty(key)) {
-			buffer.set(Table.indexCache[key]);
+		if (cache && Table2.indexCache.hasOwnProperty(key)) {
+			buffer.set(Table2.indexCache[key]);
 			return buffer;
 		}
 			
 		var indexArray = actions.reduceRight(function(adjacency, cv) {
 			var newAdj = [], 
 				l = cv.qty, 
-				r = adjacency.n;
-			for (var i = 0; i < l; i++) {
+				r = adjacency.n,
+				i = 0;
+			for (i = 0; i < l; i++) {
 				newAdj = newAdj.concat(adjacency.a);
 				shiftArray(adjacency.a, r);
 			}
 			if (cv.type === 'c') {
 				var path = timesArray(r, makeBasicPath(l));
-				for (var i = 0; i < r; i++) {
+				for (i = 0; i < r; i++) {
 					newAdj = newAdj.concat(path);
 					shiftArray(path, 1);
 				}
@@ -391,27 +202,52 @@
 		var temp = new Uint32Array(indexArray.a);
 		
 		if (cache)
-			Table.indexCache[key] = temp;	
+			Table2.indexCache[key] = temp;	
 		buffer.set(temp);
-		return buffer;
-	}
+		return this;
+	};
+	
+	Table2.indexCache = {};
 	
 	
 	// utils
 	
 	var arrayPool = {
-		pool: [],
-		get: function(constructor, length) {
-			return this.pool
-					.filter(function(obj) {return (obj instanceof constructor) && (obj.length >= length);})
-					.sort(function(a, b) {return a.length < b.length;})[0] || 
-				new constructor(length);
+		pool: {},
+		get: function(Constructor, length) {
+			if (this.pool.hasOwnProperty(length) && this.pool[length].length !== 0) {
+				console.log('extract', this.pool);
+				return this.pool[length].pop();
+			} else {
+				console.log('new allocation');
+				return new Constructor(length);
+			}
 		},
-		drop: function(obj) {
-			if (obj.prototype.hasOwnProperty('length'))
-				this.pool.push(obj);
+		push: function(obj) {
+			console.log('drop');
+			if (!this.pool.hasOwnProperty(obj.length))
+				this.pool[obj.length] = [];
+			this.pool[obj.length].push(obj);
+			console.log('drop OK');
 		}
+	};
+			
+	function repeatArray(arr, len, times) {
+		var buff = arr.subarray(0, len),
+			newlen = times * len;
+		for (var i = len; i < newlen; i += len)
+			arr.set(buff, i);
+		return arr;
 	}
+
+	function repeatPoints(arr, len, times) {
+		for (var i = len - 1, t = len * times - 1; i >= 0; i--)
+			for (var j = 0; j < times; j++, t--)
+				arr[t] = arr[i];
+		return arr;
+	}
+	
+	// index buffer utils (to be redone)
 	
 	function makeBasicPath(length) {
 		var basicPath = [];
@@ -431,9 +267,7 @@
 			arr[i] *= n;
 		return arr;
 	}
-	
-
-	// map
+		
 		
 	// exports
 	

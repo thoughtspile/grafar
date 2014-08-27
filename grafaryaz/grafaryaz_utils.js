@@ -21,47 +21,36 @@
 		return NaN;
 	};
 	
-	// !!! this is called by the constructed functions !!!
-	function seq(a, b, l) {
+	function seq(a, b, name) {
 		a = Number(a);
 		b = Number(b);
-		l = Number(l);
-		var res = [],
-			step = (b - a) / (l - 1);
-		for (var i = 0; i < l ; i++)
-			res.push(a + i * step);
-		if (l > res.length)
-			res.push(b);
-		return res;
-	}
-	
-	// !!! this is called by the constructed functions !!!
-	function traceZeroSet(f, fill, dof) {
-		var timer = new grafar.Timer();
-		//if (fill) {
-		//	var fbord = f;
-		//	f = function(pt) {return Math.max(fbord(pt), 0);};
-		//{}
-		
-		//var fcont = f,
-		//	every = 1;
-		//f = function(pt) {
-		//	return Math.max(fcont(pt), (pt[0] / every - Math.floor(pt[0] / every)) * every);
-		//};
-		
-		var res = [],
-			gradf = grad(f),
-			targetCount = Math.pow(_GY.config.samplesPerDOF, dof);	
-		for (var j = 0; j < targetCount; j++) {
-			var start = [];
-			for (var i = 0; i < dof; i++) // should make no assumptions
-				start[i] = -2 + 4 * Math.random();
-			res.push(start);
+		return function(data, l) {
+			var step = (b - a) / (l - 1);
+			for (var i = 0; i < l ; i++)
+				data[name][i] = a + i * step;
 		}
-		res = res.map(function(start) {
-			return newton(start, f, gradf, false); // pass fill here
-		});
-		return res;
+	}
+		
+	function traceZeroSet(f, names) {
+		var dof = names.length,
+			gradf = grad(f);
+			//targetCount = Math.pow(_GY.config.samplesPerDOF, dof);
+		return function(data, l) {
+			var res = [];
+				
+			for (var i = 0; i < l; i++) {
+				var start = [];
+				for (var j = 0; j < dof; j++) // should make no assumptions
+					start[j] = -2 + 4 * Math.random();
+				res.push(newton(start, f, gradf, false));
+			}
+			
+			res.forEach(function(row, i) {
+				names.forEach(function(name, j) {
+					data[name][i] = row[j];
+				});
+			});
+		}
 	}
 
 	function PD(fa, overI) {
@@ -166,9 +155,8 @@
 	
 	// exports
 	
-	// these should be inlined or stored in a context
-	global.seq = seq;
-	global.traceZeroSet = traceZeroSet;
+	_GY.seq = seq;
+	_GY.traceZeroSet = traceZeroSet;
 	_GY.pow = pow;
 		
 	// these should be in a Set object or something
