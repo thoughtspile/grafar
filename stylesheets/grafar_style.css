@@ -1,0 +1,47 @@
+body, figure  {
+	margin: 0px;
+}
+
+.panel {
+	position: absolute;
+	background: white;
+}
+
+select {
+	display: inline-block;
+	border: none;
+	border-radius: 3px
+}
+
+input.num {
+	display: inline-block;
+	width: 3em;
+	border: none;
+	border-radius: 3px;
+}
+
+.grafar_ui {
+	float: right;
+	background: #909080;
+	width: 20%;
+	padding: 1% 0%;
+	border-radius: 8px; 
+	color: white;
+}
+
+.grafar_ui_subpanel {
+	padding: 3% 0%;
+}
+
+.grafar_ui_label {
+	padding-left: 8%;
+}
+
+#grafar_logo {
+	font-family: 'Cabin', sans-serif;
+	color: #909080;
+	background: white;
+	font-size: 3em;
+	padding: 0px 0px;
+	text-align:center;
+}

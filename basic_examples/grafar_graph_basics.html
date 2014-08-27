@@ -2,13 +2,8 @@
 
 <head>
 	<title>Creating graphs: grafar by example</title>
+	<link rel="stylesheet" type="text/css" href="stylesheets/grafar_style.css" media="screen" />
 	<style>
-		body, figure {
-			margin: 0;
-		}
-		.panel {
-			position: absolute;
-		}
 		#leftPanel {
 			top: 0%;
 			left: 0%;
@@ -28,7 +23,7 @@
 	<figure class = "panel" id="leftPanel"></figure>
 	<figure class = "panel" id="rightPanel"></figure>
 	
-	<script src="js/loader.js"></script>
+	<script src="github/grafar/loader.js"></script>
 	<script>
 		runGrafar(function() {
 			// this function generates a random sample
@@ -89,7 +84,7 @@
 				window.setTimeout(blink, 1000);
 			}
 			blink();
-		});
+		}, 'github/grafar/');
 	</script>
 </body>
 </html>
