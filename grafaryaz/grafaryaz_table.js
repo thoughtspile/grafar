@@ -146,9 +146,14 @@
 			throw new Error('Insufficient buffer size for export');
 			
 		for (var j = 0; j < itemsize; j++) {
-			var col = this.data[order[j]]; // undefined proxy
-			for (var i = 0, k = j; i < n; i++, k += itemsize)
-				target[k] = col[i];
+			var col = this.data[order[j]];
+			if (isExisty(col)) {
+				for (var i = 0, k = j; i < n; i++, k += itemsize)
+					target[k] = col[i];
+			} else {
+				for (var i = 0, k = j; i < n; i++, k += itemsize)
+					target[k] = 0;
+			}
 		}
 		
 		console.log(Date.now() - s, 'per export');

@@ -37,6 +37,7 @@
 			.add(new THREE.Line(geometry, this.style.getLineMaterial(this.id), THREE.LinePieces));
 			
 		this.setup(gConfig);
+		this.dataInterface();
 			
 		return this;
 	}
@@ -67,7 +68,7 @@
 	Graph.prototype.dataInterface = function() {
 		// no panel would be buggy
 		var target = this;
-		return {
+		this._dataInterface = this._dataInterface || {
 			buffers: {
 				vertex: new AttributeWrapper(target.object.children[1].geometry.getAttribute('position'), Float32Array, this.query('panel')._axes),
 				index: new AttributeWrapper(target.object.children[1].geometry.getAttribute('index'), Uint32Array, ['$i'])
@@ -80,6 +81,7 @@
 			transactionActive: false,
 			morphActive: false
 		};
+		return this._dataInterface;
 	};
 	
 	
@@ -175,7 +177,10 @@
 		//this.update();
 		return this;
 	}
-		
+	
+	Graph.prototype.update = function() {
+	};
+	
 	// *** inheritance ***
 	Graph.prototype.query = function(key) {
 		var path = key.split('.'), temp = this;
