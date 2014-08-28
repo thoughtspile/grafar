@@ -3,7 +3,11 @@
 (function(global) {
 	var _GY = global.grafaryaz || (global.grafaryaz = {});
 	
-	var config = _GY.config; // nope
+	var config = {
+			samples: 70,
+			tol: 0.01,
+			samplesPerDOF: 24
+		};
 
 	// numerics
 
@@ -33,16 +37,33 @@
 		
 	function traceZeroSet(f, names) {
 		var dof = names.length,
-			gradf = grad(f);
-			//targetCount = Math.pow(_GY.config.samplesPerDOF, dof);
+			gradf = grad(f),
+			probeSize = 100,
+			spread = 4;
 		return function(data, l) {
-			var res = [];
+			var probe = [], 
+				res = [];
+				
+			for (var i = 0; i < probeSize; i++) {
+				var start = [];
+				for (var j = 0; j < dof; j++)
+					start[j] = -10 + 20 * Math.random();
+				probe.push(newton(start, f, gradf, false, 100));
+			}	
+			
+			var mean = [];
+			for (var j = 0; j < dof; j++) {
+				mean[j] = 0;
+				for (var i = 0; i < probeSize; i++)
+					mean[j] += probe[i][j];
+				mean[j] /= probeSize;
+			}			
 				
 			for (var i = 0; i < l; i++) {
 				var start = [];
-				for (var j = 0; j < dof; j++) // should make no assumptions
-					start[j] = -2 + 4 * Math.random();
-				res.push(newton(start, f, gradf, false));
+				for (var j = 0; j < dof; j++)
+					start[j] = mean[j] - spread / 2 + spread * Math.random();
+				res.push(newton(start, f, gradf, false, 10));
 			}
 			
 			res.forEach(function(row, i) {
@@ -73,7 +94,7 @@
 		};
 	}
 
-	function newton(start, f, gradf, acceptNeg) {
+	function newton(start, f, gradf, acceptNeg, maxIter) {
 		var prev = [],
 			next = start,
 			i = 0;
@@ -85,7 +106,7 @@
 				return prev;
 			next = arraySum(prev, arrayTimes(-val / dot(nabla, nabla), nabla));
 			i++;
-		} while (dist(prev, next) > tol && i < 100 && val !== 0);
+		} while (dist(prev, next) > tol && i < maxIter && val !== 0);
 		return next;
 	}
 
@@ -163,6 +184,7 @@
 	_GY.firstMatch = firstMatch;
 	_GY.haveCommon = haveCommon;
 	_GY.intersection = intersection;
+	_GY.config = config;
 	_GY.union = union;
 	_GY.unique = unique;
 	_GY.setMinus = setMinus;

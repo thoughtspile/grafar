@@ -22,7 +22,6 @@
 		var temp = this.core.sample();
 		
 		this.buffers.forEach(function(wrapper) {
-			console.log(wrapper);
 			if (wrapper.names.indexOf('$i') === -1) {
 				wrapper.length = temp.length * 3;
 				temp.select(wrapper.names, wrapper.array);
@@ -31,7 +30,6 @@
 					wrapper.length = 40000; // upper bound is lousy
 				else
 					wrapper.length = 0;
-				//console.log('RESIZED GO HERE FIX THIS SHIT', wrapper.array);
 				temp.computeIndexBuffer(wrapper.array);
 			}
 		});

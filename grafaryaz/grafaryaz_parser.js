@@ -5,6 +5,7 @@
 	
 	var _GY = global.grafaryaz || (global.grafaryaz = {}),
 		seq = _GY.seq,
+		parserConfig = _GY.config,
 		traceZeroSet = _GY.traceZeroSet,
 		haveCommon = _GY.haveCommon,
 		isExisty = _GY.isExisty,
@@ -51,11 +52,6 @@
 			pds: new RegExp(regexTemplates.id + '\'' + regexTemplates.id, 'g'),
 			//brackets: /[\[\]\{\}]/g,
 			comparator: /(==|@=|<=|>=)/
-		},
-		parserConfig = {
-			samples: 70,
-			tol: 0.01,
-			samplesPerDOF: 24
 		},
 		compNames = (function() {
 			var temp = {};
@@ -318,7 +314,6 @@
 				this.mode = mode;
 				this.body = r;
 				this.variables = MathSystem.extractVariables(this.body);
-				//console.log(l);
 				this.supplies = MathSystem.extractVariables(l);
 			} else if (parserRegex.signature.test(l)) {
 				this.mode = mode;

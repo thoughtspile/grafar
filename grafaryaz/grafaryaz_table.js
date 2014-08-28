@@ -39,6 +39,7 @@
 			if (this.data[name].length < this.capacity) {
 				var temp = arrayPool.get(Float32Array, this.capacity);
 				temp.set(this.data[name].subarray(0, this.length));
+				arrayPool.push(this.data[name]);
 				this.data[name] = temp;
 			}
 		}.bind(this));
@@ -216,19 +217,15 @@
 		pool: {},
 		get: function(Constructor, length) {
 			if (this.pool.hasOwnProperty(length) && this.pool[length].length !== 0) {
-				console.log('extract', this.pool);
 				return this.pool[length].pop();
 			} else {
-				console.log('new allocation');
 				return new Constructor(length);
 			}
 		},
 		push: function(obj) {
-			console.log('drop');
 			if (!this.pool.hasOwnProperty(obj.length))
 				this.pool[obj.length] = [];
 			this.pool[obj.length].push(obj);
-			console.log('drop OK');
 		}
 	};
 			

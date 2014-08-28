@@ -2,6 +2,7 @@
 
 (function(global) {
 	var _GY = global.grafaryaz || (global.grafaryaz = {}),
+		config = _GY.config,
 		Table2 = _GY.Table2,
 		union = _GY.union,
 		setMinus = _GY.setMinus;
@@ -43,7 +44,6 @@
 					extensions[supplies.join()].first = counter;
 				}
 			}
-			console.log('STEP MAPS', stepMaps);
 			target = joinInput(stepMaps);
 			prePlan = [{maps: stepMaps, extenders: []}].concat(prePlan);
 			counter--;
@@ -63,7 +63,7 @@
 	Plan.prototype.execute = function() {
 		var temp = this.steps.reduce(function(table, step) {
 			return step.proceed(table);
-		}, new Table2({capacity: 1000000}));
+		}, new Table2({capacity: 10000}));
 		return temp;
 	};
 
@@ -80,7 +80,8 @@
 			state.map(map.f());
 		});
 		this.ranges.forEach(function(extender) {
-			var temp = new Table2({capacity: 700}).setLength(700);
+			var len = (extender.mode === 'in'? config.samples: Math.pow(config.samplesPerDOF, extender.variables.length)),
+				temp = new Table2({capacity: len}).setLength(len);
 			extender.supplies.forEach(function(name) {
 				temp.addCol(name);
 			});
