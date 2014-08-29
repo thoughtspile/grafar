@@ -78,7 +78,7 @@
 	
 		
 	var config = {
-		debug: true,
+		debug: false,
 		
 		moduleName: 'grafar',
 		rootGraphId: '$',

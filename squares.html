@@ -22,8 +22,8 @@
 	<script type="text/javascript" src="loader.js"></script>
 	<script type="text/javascript">
 		runGrafar(function() {
-			var mainPan = new grafar.Panel(document.getElementById('plot_area')).drawAxes(2),
-				basicConds = 't @= [-2, 2] & z == 0',
+			var mainPan = new grafar.Panel(document.getElementById('plot_area')).setAxes(['x', 'y']).drawAxes(2),
+				basicConds = 't @= [-2, 2]',
 				sideConts = [];
 			for (var i = 0; i < 4; i++) {
 				var graph = new grafar.Graph({id: 'side-'+i, panel: mainPan});
