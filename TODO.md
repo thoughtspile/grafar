@@ -20,6 +20,7 @@
   2.7 [ ] Some discontinuity detection.
   2.8 [ ] Border / fill mode.
   2.9 [ ] Mess cleaning in base parser.
+  2.10 [ ] New bug found on 29.08.14: the axis indices are screwed up (probably during forwarding).
 
 ##3. Tables
   3.1 [ ] Split proxies into projection and undefined column.
@@ -34,6 +35,7 @@
   4.2 [ ] Add arrows.
   4.3 [ ] Add custom attributes (size, length, etc).
   4.4 [ ] Axis stretching to fit.
+  4.5 [ ] Camera synchronisation.
   
 ##5. Grafar Graphs.
   5.1 [ ] Tree -> class + id to allow for overlapping classes.
