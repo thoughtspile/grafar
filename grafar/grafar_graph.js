@@ -70,7 +70,7 @@
 		var target = this;
 		this._dataInterface = this._dataInterface || {
 			buffers: {
-				vertex: new AttributeWrapper(target.object.children[1].geometry.getAttribute('position'), Float32Array, this.query('panel')._axes),
+				vertex: new AttributeWrapper(target.object.children[1].geometry.getAttribute('position'), Float32Array, this.query('panel')?  this.query('panel')._axes: []),
 				index: new AttributeWrapper(target.object.children[1].geometry.getAttribute('index'), Uint32Array, ['$i'])
 			},
 			update: function() {
@@ -81,7 +81,19 @@
 			transactionActive: false,
 			morphActive: false
 		};
-		return this._dataInterface;
+		return {
+			buffers: {
+				vertex: new AttributeWrapper(target.object.children[1].geometry.getAttribute('position'), Float32Array, this.query('panel')?  this.query('panel')._axes: []),
+				index: new AttributeWrapper(target.object.children[1].geometry.getAttribute('index'), Uint32Array, ['$i'])
+			},
+			update: function() {
+					target.object.children[0].geometry.getAttribute('position').needsUpdate = true;
+					target.object.children[1].geometry.getAttribute('position').needsUpdate = true;
+					target.object.children[1].geometry.getAttribute('index').needsUpdate = true;
+				},
+			transactionActive: false,
+			morphActive: false
+		};;
 	};
 	
 	
