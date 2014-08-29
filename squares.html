@@ -1,0 +1,39 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<title>grafar interface test page</title>
+	<style>
+		#plot_area {
+			width: 100%;
+			height: 100%;
+			background: black;
+		}
+	</style>
+	<link rel="stylesheet" type="text/css" href="stylesheets/grafar_style.css" media="screen" />
+</head>
+
+<body>
+	<figure class="panel" id="plot_area"></figure>	
+	<script type="text/javascript" src="loader.js"></script>
+	<script type="text/javascript">
+		runGrafar(function() {
+			var mainPan = new grafar.Panel(document.getElementById('plot_area')).drawAxes(2),
+				basicConds = 't @= [-2, 2] & z == 0',
+				sideConts = [];
+			for (var i = 0; i < 4; i++) {
+				var graph = new grafar.Graph({id: 'side-'+i, panel: mainPan});
+				sideConts[i] = new grafaryaz.Context();
+				grafar.bind(graph.dataInterface(), sideConts[i]);
+			}
+			
+			new grafar.Process(new grafar.Timer(1000), function (t) {
+				sideConts[0].set(basicConds + '& y == t * sin(ang) + 1 & x == t * cos(ang) & ang ==' + t);
+				sideConts[1].set(basicConds + '& y == t * cos(ang) & x == t * sin(-ang) + 1 & ang ==' + t);
+				sideConts[2].set(basicConds + '& y == t * sin(ang) - 1 & x == t * cos(ang) & ang ==' + t);
+				sideConts[3].set(basicConds + '& y == t * cos(ang) & x == t * sin(-ang) - 1 & ang ==' + t);
+			}).start();
+		}, '');
+	</script>
+</body>
+</html>
