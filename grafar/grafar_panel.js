@@ -121,33 +121,40 @@
 	}
 	
 	function drawTextLabel(mat, str) {
-		var fontSizePx = 48,
-			baselineOffsetPx = .15 * fontSizePx;
-		var canvas = document.createElement('canvas'),
-		    context = canvas.getContext('2d');
-		
-		context.font = 'Lighter ' + fontSizePx + 'px Helvetica';
-		
-		var computedSize = Math.ceil(Math.max(2 * (fontSizePx + baselineOffsetPx), context.measureText(str).width));
-		canvas.width = computedSize;
-		canvas.height = computedSize;
-		
-		context = canvas.getContext('2d');
-		context.font = 'Lighter ' + fontSizePx + 'px Helvetica';
-		context.fillStyle = '#444444';
-		context.textAlign = 'center';
-		context.fillText(str, Math.floor(computedSize / 2), Math.ceil(computedSize / 2) - baselineOffsetPx);
-		
-		var texture = new THREE.Texture(canvas);
-		texture.needsUpdate = true;
-		  
-		mat.size = config.labelSize / fontSizePx * computedSize;
-		mat.map = texture;
+		var memo = drawTextLabel.memo || (drawTextLabel.memo = {});
+		if (!memo.hasOwnProperty(str)) {			
+			var fontSizePx = 48,
+				baselineOffsetPx = .15 * fontSizePx;
+			var canvas = document.createElement('canvas'),
+				context = canvas.getContext('2d');
+			
+			context.font = 'Lighter ' + fontSizePx + 'px Helvetica';
+			
+			var computedSize = Math.ceil(Math.max(2 * (fontSizePx + baselineOffsetPx), context.measureText(str).width));
+			canvas.width = computedSize;
+			canvas.height = computedSize;
+			
+			context = canvas.getContext('2d');
+			context.font = 'Lighter ' + fontSizePx + 'px Helvetica';
+			context.fillStyle = '#444444';
+			context.textAlign = 'center';
+			context.fillText(str, Math.floor(computedSize / 2), Math.ceil(computedSize / 2) - baselineOffsetPx);
+			 
+			memo[str] = {
+				size: config.labelSize / fontSizePx * computedSize,
+				map: new THREE.Texture(canvas)
+			};;
+		}
+		 
+		var memoEntry = memo[str]; 
+		mat.size = memoEntry.size;
+		mat.map = memoEntry.map.clone();
+		mat.map.needsUpdate = true;
 		mat.transparent = true;
 		
 		return mat;
 	}
-		
+	
 	
 	_G.Panel = Panel;
 	_G.panels = panels;
