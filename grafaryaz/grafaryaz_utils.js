@@ -3,7 +3,11 @@
 (function(global) {
 	var _GY = global.grafaryaz || (global.grafaryaz = {});
 	
-	var config = _GY.config; // nope
+	var config = {
+			samples: 100,
+			tol: 0.01,
+			samplesPerDOF: 24
+		};
 
 	// numerics
 
@@ -21,83 +25,191 @@
 		return NaN;
 	};
 	
-	// !!! this is called by the constructed functions !!!
-	function seq(a, b, l) {
+	function seq(a, b, name) {
 		a = Number(a);
 		b = Number(b);
-		l = Number(l);
-		var res = [],
-			step = (b - a) / (l - 1);
-		for (var i = 0; i < l ; i++)
-			res.push(a + i * step);
-		if (l > res.length)
-			res.push(b);
-		return res;
+		return function(data, l) {
+			var step = (b - a) / (l - 1);
+			for (var i = 0; i < l ; i++)
+				data[name][i] = a + i * step;
+		}
 	}
 	
-	// !!! this is called by the constructed functions !!!
-	function traceZeroSet(f, fill, dof) {
-		var timer = new grafar.Timer();
-		//if (fill) {
-		//	var fbord = f;
-		//	f = function(pt) {return Math.max(fbord(pt), 0);};
-		//{}
-		
-		//var fcont = f,
-		//	every = 1;
-		//f = function(pt) {
-		//	return Math.max(fcont(pt), (pt[0] / every - Math.floor(pt[0] / every)) * every);
-		//};
-		
-		var res = [],
-			gradf = grad(f),
-			targetCount = Math.pow(_GY.config.samplesPerDOF, dof);	
-		for (var j = 0; j < targetCount; j++) {
-			var start = [];
-			for (var i = 0; i < dof; i++) // should make no assumptions
-				start[i] = -2 + 4 * Math.random();
-			res.push(start);
-		}
-		res = res.map(function(start) {
-			return newton(start, f, gradf, false); // pass fill here
-		});
-		return res;
-	}
-
-	function PD(fa, overI) {
-		return function(pt) {
-			var fc = fa(pt),
-				alt = pt.slice();
-			alt[overI] += diffStep;
-			return (fa(alt) - fc) / diffStep;
-		};
-	}
-
-	function grad(fa) {
-		return function(pt) {
-			var fc = fa(pt);
-			return pt.map(function(targ, i) {
-				var alt = pt.slice();
-				alt[i] += diffStep;
-				return (fa(alt) - fc) / diffStep;
+	//this version reuses random
+	function traceZeroSet2(f, names) {
+		var dof = names.length,
+			gradf = grad(f, dof),
+			probeSize = 100,
+			useProbing = true;
+			
+		return function(data, l) {
+			var s = Date.now();
+			var probe = [], 
+				res = [],
+				mean = [],
+				spread = [];
+				
+			var rand = randomArray(probeSize, dof, 'u'),
+				pt = [];
+			for (var i = 0; i < probeSize; i++) {
+				var row = rand[i];
+				for (var j = 0; j < dof; j++)
+					pt[j] = 10 * row[j];
+				probe.push(newton(pt, f, gradf, false, 100));
+			}
+			
+			for (var j = 0; j < dof; j++) {
+				var jmin = probe[0][j],
+					jmax = probe[0][j],
+					jsum = probe[0][j];
+				for (var i = 1; i < probeSize; i++) {
+					var val = probe[i][j];
+					jmin = Math.min(val, jmin);
+					jmax = Math.max(val, jmax);
+					jsum += val;
+				}
+				mean[j] = jsum / probeSize;
+				spread[j] = 1.2 * (jmax - jmin);
+			}
+			console.log(Date.now() - s, 'per probe');
+			
+			var rand = randomArray(l, dof, 'n'),
+				pt = [];
+			for (var i = 0; i < l; i++) {
+				var row = rand[i];
+				for (var j = 0; j < dof; j++)
+					pt[j] = mean[j] + spread[j] / 2 * row[j];
+				res.push(newton(pt, f, gradf, false, 10));
+			}
+			
+			res.forEach(function(row, i) {
+				names.forEach(function(name, j) {
+					data[name][i] = row[j];
+				});
 			});
+		}
+	}
+	
+	function traceZeroSet(f, names) {
+		var dof = names.length,
+			gradf = grad(f, dof),
+			probeSize = 100;
+			
+		return function(data, l) {
+			var s = Date.now();
+			var probe = [],
+				mean = [],
+				spread = [];
+				
+			var pt = [];
+			for (var i = 0; i < probeSize; i++) {
+				for (var j = 0; j < dof; j++)
+					pt[j] = -10 + 20 * Math.random();
+				probe.push(newton(pt, f, gradf, false, 100));
+			}
+			
+			for (var j = 0; j < dof; j++) {
+				var jmin = probe[0][j],
+					jmax = probe[0][j],
+					jsum = probe[0][j];
+				for (var i = 1; i < probeSize; i++) {
+					var val = probe[i][j];
+					jmin = Math.min(val, jmin);
+					jmax = Math.max(val, jmax);
+					jsum += val;
+				}
+				mean[j] = jsum / probeSize;
+				spread[j] = 1.5 * (jmax - jmin);
+			}
+			console.log('probe stats', mean, spread, dof, probe);
+			console.log(Date.now() - s, 'per probe');
+			
+			var res = probe,
+			    pt = [];
+			for (var i = probeSize; i < l; i++) {
+				for (var j = 0; j < dof; j++)
+					pt[j] = mean[j] + spread[j] / 2 * (Math.random() + Math.random() - 1);
+				res.push(newton(pt, f, gradf, false, 10));
+			}
+			
+			res.forEach(function(row, i) {
+				names.forEach(function(name, j) {
+					data[name][i] = row[j];
+				});
+			});
+		}
+	}
+	
+	function randomArray(len, itemsize, mode) {			
+		var arr = randomArray.memo[mode],
+			randf = randomFuncs[mode],
+			memolen = arr.length,
+			memoitemsize = randomArray.memo.itemsize[mode];
+		if (memoitemsize < itemsize)
+			for (var i = 0; i < memolen; i++) {
+				var pt = arr[i];
+				for (var j = memoitemsize; j < itemsize; j++)
+					pt[j] = randf();
+			}
+		if (memolen < len)
+			for (var i = memolen; i < len; i++) {
+				var pt = [];
+				for (var j = 0; j < itemsize; j++)
+					pt[j] = randf();
+				arr[i] = pt;
+			}
+		randomArray.memo.itemsize[mode] = itemsize;
+		return arr;
+	};
+	
+	var randomFuncs = {
+		'n': function() {
+			return -1 + Math.random() + Math.random();
+		},
+		'u': function() {
+			return -1 + 2 * Math.random();
+		},
+		'i': function(top) {
+			return Math.floor(top * Math.random());
+		},
+	};
+	
+	randomArray.memo = {
+		'n': [],
+		'u': [],
+		'itemsize': {
+			'n': 0, 
+			'u': 0
+		}
+	};
+
+	function grad(fa, nargs) {
+		return function(pt, val, out) {
+			for (var i = 0; i < nargs; i++) {
+				pt[i] += diffStep;
+				out[i] = (fa(pt) - val) / diffStep;
+				pt[i] -= diffStep;
+			}
 		};
 	}
 
-	function newton(start, f, gradf, acceptNeg) {
-		var prev = [],
-			next = start,
+	function newton(start, f, gradf, acceptNeg, maxIter) {
+		var pt = start.slice(),
+			offset = [],
+			nabla = [],
 			i = 0;
-		do {
-			prev = next;
-			var nabla = gradf(prev),
-				val = f(prev);
-			if (acceptNeg && val <= 0) 
-				return prev;
-			next = arraySum(prev, arrayTimes(-val / dot(nabla, nabla), nabla));
+		
+		while (true) {
+			var val = f(pt);
+			gradf(pt, val, nabla);
+			if (val === 0)
+				return pt;
+			arrayTimes(-val / dot(nabla, nabla), nabla, offset);
+			if (norm(offset) < tol || i === maxIter)
+				return pt;
+			arraySum(pt, offset, pt);
 			i++;
-		} while (dist(prev, next) > tol && i < 100 && val !== 0);
-		return next;
+		}
 	}
 
 	
@@ -135,46 +247,64 @@
 	function isExisty(obj) {
 		return typeof(obj) !== 'undefined' && obj !== null;
 	}
+	
+	
 	// linear algebra
-
+	function zeroVector(len) {
+		var zero = [];
+		for (var i = 0; i < len; i++)
+			zero[i] = 0;
+		return zero;
+	}
+	
 	function dot(a, b) {
-		return a.map(function(ai ,i) {
-				return ai * b[i];
-			}).reduce(function(pv, cv) {
-				return pv + cv;
-			}, 0);
+		var temp = 0,
+			l = a.length;
+		for (var i = 0; i < l; i++)
+			temp += a[i] * b[i];
+		return temp;
 	}
 	
 	function norm(a) {
-		return dist(a, a.map(function() {return 0;}));
+		var norm = 0,
+			l = a.length;
+		for (var i = 0; i < l; i++)
+			norm += Math.abs(a[i]);
+		return norm;
 	}
 	
 	function dist(a, b) {
-		return a.map(function(ai, i) {return Math.abs(ai - b[i]);}).reduce(function(pv, cv) {return pv+cv;}, 0);
+		var dist = 0,
+			l = a.length;
+		for (var i = 0; i < l; i++)
+			dist += Math.abs(a[i] - b[i]);
+		return dist;
 	}
 
-	function arraySum(a, b) {
-		return a.map(function(ai, i) {
-				return ai + b[i];
-			});
+	function arraySum(a, b, out) {
+		var l = a.length;
+		for (var i = 0; i < l; i++)
+			out[i] = a[i] + b[i];
 	}
 
-	function arrayTimes(n, b) {
-		return b.map(function(bi) {return n * bi;});
+	function arrayTimes(n, b, out) {
+		var l = b.length;
+		for (var i = 0; i < l; i++)
+			out[i] = n * b[i];
 	}
 	
 	
 	// exports
 	
-	// these should be inlined or stored in a context
-	global.seq = seq;
-	global.traceZeroSet = traceZeroSet;
+	_GY.seq = seq;
+	_GY.traceZeroSet = traceZeroSet;
 	_GY.pow = pow;
 		
 	// these should be in a Set object or something
 	_GY.firstMatch = firstMatch;
 	_GY.haveCommon = haveCommon;
 	_GY.intersection = intersection;
+	_GY.config = config;
 	_GY.union = union;
 	_GY.unique = unique;
 	_GY.setMinus = setMinus;

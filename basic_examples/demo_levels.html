@@ -1,0 +1,75 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<title>Level curves</title>
+	<link rel="stylesheet" type="text/css" href="stylesheets/grafar_style.css" media="screen" />
+	<style>
+		#plot_area {
+			width: 78%;
+			height: 100%;
+		}
+		#grafar_ui {
+			width: 22%;			
+		}
+	</style>
+</head>
+
+<body>
+	<figure class="panel" id="plot_area"></figure>
+	<div class="grafar_ui">
+		<h1 id="grafar_logo">grafar jr.</h1>
+		<div id="options"></div>
+	</div>
+	
+	<script type="text/javascript" src="js/loader.js"></script>
+	<script type="text/javascript">
+		runGrafar(function() {
+			grafar.ui([
+					{type: 'group', col: '#4671D5', init: [
+						{type: 'label', init: 'f(x, y) = '},
+						{type: 'select', id: 'f', init: grafar.demos.explicit, bind: plotSurf}]
+					},
+					{type: 'group', col: 'orange', id: 'height',init: [
+						{type: 'label', init: '{(x, y) | f(x,y) = '},
+						{type: 'number', id: 'zVal', init: 0, bind: plotLevel},
+						{type: 'label', init: '}'}]
+					}
+				], {container: 'options'});				
+			
+			var mainPan = new grafar.Panel(document.getElementById('plot_area')).drawAxes(2);
+			
+			
+			var	domain = 'x @= [-2, 2] & y @= [-2, 2]',
+				surf = new grafar.Graph(),
+				gySurf = new grafaryaz.Context(),
+				level = new grafar.Graph(),
+				gyLevel = new grafaryaz.Context(),
+				plane = new grafar.Graph(),
+				gyPlane = new grafaryaz.Context();
+				
+			grafar.graphs['$'].setPanel(mainPan); // weird
+			surf.object.children[0].visible = false;
+			plane.object.children[0].visible = false;
+			
+			grafar.bind(level.dataInterface(), gyLevel);
+			grafar.bind(plane.dataInterface(), gyPlane);
+			grafar.bind(surf.dataInterface(), gySurf);
+			
+			plotSurf();
+						
+			function plotSurf() {
+				gySurf.set(domain + ' & z == ' + grafar.demos.explicit[grafar.UI.f.val]);
+				plotLevel();
+			}
+			
+			function plotLevel() {
+				var h = grafar.UI.zVal.val,
+					func = grafar.demos.explicit[grafar.UI.f.val];
+				gyLevel.set('z == ' + h + ' & ' + func + ' == ' + h);
+				gyPlane.set(domain + '& z == ' + h);
+			}
+		});
+	</script>
+</body>
+</html>

@@ -4,6 +4,9 @@
 	// import
 	
 	var _GY = global.grafaryaz || (global.grafaryaz = {}),
+		seq = _GY.seq,
+		parserConfig = _GY.config,
+		traceZeroSet = _GY.traceZeroSet,
 		haveCommon = _GY.haveCommon,
 		isExisty = _GY.isExisty,
 		firstMatch = _GY.firstMatch,
@@ -50,11 +53,6 @@
 			//brackets: /[\[\]\{\}]/g,
 			comparator: /(==|@=|<=|>=)/
 		},
-		parserConfig = {
-			samples: 70,
-			tol: 0.01,
-			samplesPerDOF: 24
-		},
 		compNames = (function() {
 			var temp = {};
 			temp['>='] = 'geq';
@@ -71,16 +69,16 @@
 	}
 		
 	function MathSystem(str, targetRef) {
-		var s = new Date().getTime();
+		var s = Date.now();
 		
 		var nodes = MathSystem.strToAtomicNodes(str);
-		console.log('atomic node soup', snapNodeState(nodes), 'in', new Date().getTime() - s);
+		console.log('atomic node soup', snapNodeState(nodes), 'in', Date.now() - s);
 		nodes = MathSystem.collapseNodes(nodes);
-		console.log('molecular node soup', snapNodeState(nodes), 'in', new Date().getTime() - s);
+		console.log('molecular node soup', snapNodeState(nodes), 'in', Date.now() - s);
 		
 		this.plan = new Plan(nodes, targetRef);
 		
-		console.log(new Date().getTime() - s, 'ms per parse');
+		console.log(Date.now() - s, 'ms per parse');
 	}
 
 	MathSystem.strToAtomicNodes = function(str) {
@@ -316,7 +314,6 @@
 				this.mode = mode;
 				this.body = r;
 				this.variables = MathSystem.extractVariables(this.body);
-				//console.log(l);
 				this.supplies = MathSystem.extractVariables(l);
 			} else if (parserRegex.signature.test(l)) {
 				this.mode = mode;
@@ -406,49 +403,31 @@
 	};
 
 	Node.prototype.f = function() {
-		// we would like to make these functions pass-by-reference, so that they need to accept a single array argument.
-		//
-		// it is OK with in (since it currently takes no arguments)
-		// it is OK with implicit, since the input is generated inside traceZeroSet and is output-ordered
-		// the problem arises when using eq-map.
-		//   * the actual input is stored in a table object, and its order depends on some random things like the order of applying extensions
-		//   * the desired input order depends on the whole other set of random things, like the order in which the statements were listed
-		//
-		// possible solutions:
-		//   * have a set of variables appear in a deterministic order (such as lexicographic or something).
-		//   this would lead to complications in both table multiplication and node merging
-		//   * transform table order to match the desired eq-map order.
-		//   this would involve reordering in times. To match the state after eq-map, two strategies can be used:
-		//   reorder the R1 mappings after merge or apply a special table reordering step.
-		//   * transform the nodes' input order. This is my current favourite. We simply need to change the order in which the input variables
-		//   are listed after the planning step terminates. The drawback: on different Plan runs we might need to re-construct the functions.
-		//   Besides, it is not quite clear as to how we can determine the state output order (but should be fairly simple).
-		// 
-		// And a side note regarding the method used now: we have to implicitly create an arguments object with a necessary ordering.
-		// this is both time- and space-consuming activity. Besides, the Array->Array maps have an added benefit of neatness.
 		var body = MathSystem.formatFunction(this.body);
-		if (this._f === null) {
-			if (this.mode === 'eq')
-				this._f = new Function(this.variables, 'return [' + body + '];');
-			else if (this.mode === 'in')
-				this._f = new Function(this.variables, 'return seq(' + body + ',' + parserConfig.samples + ');');
-			else if (this.mode === 'implicit') {
-				//console.log(this.body, body);				
+		if (!isExisty(this._f)) {
+			if (this.mode === 'eq') {
+				this.variables.forEach(function(n, i) {
+					body = body.replace(new RegExp('\\b' + n + '\\b', 'g'), 'data[\'' + n + '\'][i]');
+				});
+				var output = this.supplies.map(function(n) { return 'data[\'' + n + '\'][i]'; }),
+					input = [body];
+				this._f = new Function('data', 'l', 'for (var i = 0; i < l; i++) {' + output.map(function(o, i) {
+					return o + '=' + input[i] + ';'
+				}) + '}');
+			} else if (this.mode === 'in') {
+				var sides = body.split(','),
+					min = sides[0],
+					max = sides[1];
+				this._f = seq(min, max, this.supplies[0]);
+			} else if (this.mode === 'implicit') {		
 				this.variables.forEach(function(n, i) {
 					body = body.replace(new RegExp('\\b' + n + '\\b', 'g'), 'pt[' + i + ']');
 				});
-				//console.log(body);
-				this._f = new Function(this.variables, 'return traceZeroSet(' + new Function('pt', 'return ' + body) + ', false,' + this.variables.length + ');');
+				this._f = traceZeroSet(new Function('pt', 'return ' + body), this.variables);
 			}
 		}
 		return this._f;
 	};
-
-	function IdNode(name) {
-		Node.call(this, name, name, 'eq');
-	}
-
-	IdNode.prototype = new Node();
 
 
 	function inlineSubstitute(body, name, sub) {
@@ -505,5 +484,4 @@
 	_GY.MathSystem = MathSystem;
 	_GY.config = parserConfig;
 	_GY.Node = Node;
-	_GY.IdNode = IdNode;
 }(this));

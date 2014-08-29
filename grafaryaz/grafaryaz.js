@@ -23,17 +23,18 @@
 		
 		this.buffers.forEach(function(wrapper) {
 			if (wrapper.names.indexOf('$i') === -1) {
-				wrapper.length = temp.data.length * 3;
-				temp.asTypedArray(wrapper.names, wrapper.array);
+				wrapper.length = temp.length * 3;
+				temp.select(wrapper.names, wrapper.array);
 			} else {
 				if (temp.gDesc.indexOf('c') !== -1)
 					wrapper.length = 40000; // upper bound is lousy
 				else
 					wrapper.length = 0;
-				//console.log('RESIZED GO HERE FIX THIS SHIT', wrapper.array);
 				temp.computeIndexBuffer(wrapper.array);
 			}
 		});
+		
+		temp.dropAll();
 		
 		this.onUpdate.forEach(function(action) {
 			action();

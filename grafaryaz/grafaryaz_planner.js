@@ -2,13 +2,10 @@
 
 (function(global) {
 	var _GY = global.grafaryaz || (global.grafaryaz = {}),
-		Table = _GY.Table,
-		//Node = _GY.Node,
-		//IdNode = _GY.IdNode,
+		config = _GY.config,
+		Table2 = _GY.Table2,
 		union = _GY.union,
 		setMinus = _GY.setMinus;
-	// note:
-	//   Node and IdNode / Plan are cyclically defined with parser_script
 
 	function joinInput(nodes) {
 		return nodes.map(function(f) {
@@ -19,7 +16,6 @@
 	
 	
 	function Plan(nodes, targetRef) {
-		//this.steps = [];
 		var target = targetRef.slice(),
 			extensions = {},
 			prePlan = [],
@@ -48,7 +44,6 @@
 					extensions[supplies.join()].first = counter;
 				}
 			}
-			//console.log('STEP MAPS', stepMaps);
 			target = joinInput(stepMaps);
 			prePlan = [{maps: stepMaps, extenders: []}].concat(prePlan);
 			counter--;
@@ -57,10 +52,6 @@
 		Object.getOwnPropertyNames(extensions).forEach(function(names) {
 			extensions[names].first += prePlan.length;
 			extensions[names].last += prePlan.length;
-			for (var i = extensions[names].first + 1; i <= extensions[names].last; i++)
-				names.split(',').forEach(function(name) {
-					prePlan[i].maps.push(new _GY.IdNode(name));
-				});
 			prePlan[extensions[names].first].extenders.push(extensions[names].node);
 		});
 		
@@ -72,25 +63,33 @@
 	Plan.prototype.execute = function() {
 		var temp = this.steps.reduce(function(table, step) {
 			return step.proceed(table);
-		}, new Table());
+		}, new Table2({capacity: 10000}));
 		return temp;
 	};
 
 	Plan.Step = function(maps, extenders) {
 		this.ranges = extenders;
-		this.map = maps.reduce(function(pv, cv) {return pv.merge(cv);}, new _GY.Node());
+		this.maps = maps;
 	};
 
 	Plan.Step.prototype.proceed = function(state) {
-		var s = new Date().getTime();
-		var temp = state.map(this.map);
-		this.ranges.forEach(function(extender) {
-			temp = temp.times(new Table(extender.supplies, extender.f()(), {cont: extender.mode === 'in'}));
+		this.maps.forEach(function(map) {
+			map.supplies.forEach(function(name) {
+				state.addCol(name);
+			});
+			state.map(map.f());
 		});
-		console.log(new Date().getTime() - s, 'ms to proceed (with ' + 
-			this.ranges.length + ' ranges and a ' + 
-			this.map.requires.length + ' -> ' + this.map.supplies.length + ' mapping)');
-		return temp;
+		this.ranges.forEach(function(extender) {
+			var len = (extender.mode === 'in'? config.samples: Math.pow(config.samplesPerDOF, extender.variables.length)),
+				temp = new Table2({capacity: len}).setLength(len);
+			extender.supplies.forEach(function(name) {
+				temp.addCol(name);
+			});
+			temp.map(extender.f());
+			state.times(temp);
+		});
+		
+		return state;
 	};
 	
 	// global

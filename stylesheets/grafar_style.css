@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 body {
 	height: 100%;
 	margin: 0px;
@@ -6,6 +7,15 @@ body {
 
 html {
 	height: 100%;
+=======
+body, figure  {
+	margin: 0px;
+}
+
+.panel {
+	position: absolute;
+	background: white;
+>>>>>>> origin/dev
 }
 
 select {
@@ -45,4 +55,8 @@ input.num {
 	font-size: 3em;
 	padding: 0px 0px;
 	text-align:center;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/dev

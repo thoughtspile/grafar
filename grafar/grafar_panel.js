@@ -22,6 +22,7 @@
 		
 		var container = container || config.container,
 		    containerStyle = window.getComputedStyle(container),
+			bgcolor = containerStyle.backgroundColor,
 		    width = Math.max(parseInt(containerStyle.width), config.minPanelWidth),
 		    height = Math.max(parseInt(containerStyle.height), config.minPanelHeight);
 
@@ -32,7 +33,7 @@
 		
 		this.renderer = new Renderer();
 		this.renderer.setSize(width, height);
-		this.renderer.setClearColor(0xFFFFFF, 1);
+		this.renderer.setClearColor(bgcolor, 1);
 		container.appendChild(this.renderer.domElement);
 		
 		this.controls = new THREE.OrbitControls(this.camera, container);
