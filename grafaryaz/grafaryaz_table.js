@@ -119,17 +119,18 @@
 			return this;
 		}
 		
-		var newLength = this.length * table2.length;
-		this.extend(newLength);
-		table2.extend(newLength);
+		var newLength = this.length * table2.length,
+			oldLength1 = this.length,
+			oldLength2 = table2.length;
+		this.setLength(newLength);
+		table2.setLength(newLength);
 		
 		this.schema().forEach(function(name) {
-			this.data[name] = repeatPoints(this.data[name], this.length, table2.length);
+			this.data[name] = repeatPoints(this.data[name], oldLength1, oldLength2);
 		}.bind(this));
 		table2.schema().forEach(function(name) {
-			this.data[name] = repeatArray(table2.data[name], table2.length, this.length);
+			this.data[name] = repeatArray(table2.data[name], oldLength2, oldLength1);
 		}.bind(this));
-		this.setLength(newLength);
 		
 		console.log(Date.now() - s, 'per mult');
 		return this;
@@ -243,9 +244,11 @@
 	}
 
 	function repeatPoints(arr, len, times) {
-		for (var i = len - 1, t = len * times - 1; i >= 0; i--)
+		for (var i = len - 1, t = len * times - 1; i >= 0; i--) {
+			var val = arr[i];
 			for (var j = 0; j < times; j++, t--)
-				arr[t] = arr[i];
+				arr[t] = val;
+		}
 		return arr;
 	}
 	
