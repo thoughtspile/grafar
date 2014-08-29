@@ -31,12 +31,15 @@
 				grafar.bind(graph.dataInterface(), sideConts[i]);
 			}
 			
-			new grafar.Process(new grafar.Timer(1000), function (t) {
+			var anim = new grafar.Process(new grafar.Timer(1000), function (t) {
 				sideConts[0].set(basicConds + '& y == t * sin(ang) + 1 & x == t * cos(ang) & ang ==' + t);
 				sideConts[1].set(basicConds + '& y == t * cos(ang) & x == t * sin(-ang) + 1 & ang ==' + t);
 				sideConts[2].set(basicConds + '& y == t * sin(ang) - 1 & x == t * cos(ang) & ang ==' + t);
 				sideConts[3].set(basicConds + '& y == t * cos(ang) & x == t * sin(-ang) - 1 & ang ==' + t);
 			}).start();
+			document.getElementById('plot_area').addEventListener('click', function() {
+				anim.active? anim.stop(): anim.start();
+			});
 		}, '');
 	</script>
 </body>

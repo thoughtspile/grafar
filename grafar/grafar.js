@@ -67,7 +67,6 @@
 	
 	Process.prototype.start = function() {
 		this.active = true;
-		this.timer.reset();
 		this.timed();
 		return this;
 	}
