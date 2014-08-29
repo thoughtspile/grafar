@@ -66,34 +66,22 @@
 	}
 	
 	Graph.prototype.dataInterface = function() {
-		// no panel would be buggy
-		var target = this;
+		var objects = this.object.children,
+			panel = this.query('panel');
 		this._dataInterface = this._dataInterface || {
 			buffers: {
-				vertex: new AttributeWrapper(target.object.children[1].geometry.getAttribute('position'), Float32Array, this.query('panel')?  this.query('panel')._axes: []),
-				index: new AttributeWrapper(target.object.children[1].geometry.getAttribute('index'), Uint32Array, ['$i'])
+				vertex: new AttributeWrapper(objects[1].geometry.getAttribute('position'), Float32Array, isExisty(panel)?  panel._axes: []),
+				index: new AttributeWrapper(objects[1].geometry.getAttribute('index'), Uint32Array, ['$i'])
 			},
 			update: function() {
-					target.object.children[0].geometry.getAttribute('position').needsUpdate = true;
-					target.object.children[1].geometry.getAttribute('position').needsUpdate = true;
-					target.object.children[1].geometry.getAttribute('index').needsUpdate = true;
+					objects[0].geometry.getAttribute('position').needsUpdate = true;
+					objects[1].geometry.getAttribute('position').needsUpdate = true;
+					objects[1].geometry.getAttribute('index').needsUpdate = true;
 				},
 			transactionActive: false,
 			morphActive: false
 		};
-		return {
-			buffers: {
-				vertex: new AttributeWrapper(target.object.children[1].geometry.getAttribute('position'), Float32Array, this.query('panel')?  this.query('panel')._axes: []),
-				index: new AttributeWrapper(target.object.children[1].geometry.getAttribute('index'), Uint32Array, ['$i'])
-			},
-			update: function() {
-					target.object.children[0].geometry.getAttribute('position').needsUpdate = true;
-					target.object.children[1].geometry.getAttribute('position').needsUpdate = true;
-					target.object.children[1].geometry.getAttribute('index').needsUpdate = true;
-				},
-			transactionActive: false,
-			morphActive: false
-		};;
+		return this._dataInterface;
 	};
 	
 	
@@ -137,8 +125,11 @@
 		else if (panel instanceof Panel)
 			this.panel = panel;
 		
-		if (this.query('panel'))
-			this.query('panel').scene.add(this.object);
+		var panel = this.query('panel');
+		if (isExisty(panel)) {
+			panel.scene.add(this.object);		
+			this.dataInterface().buffers['vertex'].names = panel._axes;
+		}
 		
 		this.children.forEach(function(child) {
 			child.setPanel();

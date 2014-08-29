@@ -126,7 +126,3 @@
 	_G.Process = Process;
 	_G.bind = bind;
 }(this));
-
-function ST() {
-	return new Date().getTime();
-}
