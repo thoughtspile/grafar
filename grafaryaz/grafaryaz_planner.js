@@ -63,7 +63,7 @@
 	Plan.prototype.execute = function() {
 		var temp = this.steps.reduce(function(table, step) {
 			return step.proceed(table);
-		}, new Table2({capacity: 10000}));
+		}, new Table2());
 		return temp;
 	};
 

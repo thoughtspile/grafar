@@ -71,7 +71,6 @@
 				mean[j] = jsum / probeSize;
 				spread[j] = 1.5 * (jmax - jmin);
 			}
-			console.log('probe stats', mean, spread, names);
 			console.log(Date.now() - s, 'per probe');
 			
 			var pt = [];

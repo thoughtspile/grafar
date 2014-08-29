@@ -107,6 +107,11 @@
 		}
 			
 		this.drawAxes(2);
+		Object.getOwnPropertyNames(_G.graphs).forEach(function(graphName) {
+			var graph = _G.graphs[graphName];
+			if (graph.panel === this)
+				graph.setPanel(this);
+		}.bind(this));
 		
 		return this;
 	};
