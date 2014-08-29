@@ -32,6 +32,7 @@
 		this.scene = new THREE.Scene();
 		
 		this.renderer = new Renderer();
+		this.renderer.antialias = config.antialias;
 		this.renderer.setSize(width, height);
 		this.renderer.setClearColor(bgcolor, 1);
 		container.appendChild(this.renderer.domElement);
