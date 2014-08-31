@@ -20,6 +20,7 @@
   * [ ] Some discontinuity detection.
   * [ ] Border / fill mode.
   * [ ] Mess cleaning in base parser.
+  * [ ] launcher.js default path.
 
 ##3. Tables
   * [ ] Split proxies into projection and undefined column.
