@@ -14,12 +14,7 @@
 		this.length = 1;
 		this.capacity = opts.capacity || 1;
 		
-		if (opts.gDesc)
-			this.gDesc = opts.gDesc;
-		else if (opts.cont)
-			this.gDesc = '1c';
-		else 
-			this.gDesc = '1d';
+		this.gDesc = '';
 	}
 	
 	// misc
@@ -94,7 +89,12 @@
 	Table2.prototype.map = function(f) {
 		var s = Date.now();
 		
-		f(this.data, this.length);
+		var extras = {
+			continuous: false,
+			ordered: false
+		};
+		f(this.data, this.length, extras);
+		this.gDesc = this.gDesc || this.length + (extras.continuous? 'c': 'd');
 		
 		console.log(Date.now() - s, 'per map');
 		return this;
@@ -131,10 +131,10 @@
 		table2.schema().forEach(function(name) {
 			this.data[name] = repeatArray(table2.data[name], oldLength2, oldLength1);
 		}.bind(this));
+		this.gDesc = this.gDesc + '*' + table2.gDesc;
 		
 		console.log(Date.now() - s, 'per mult');
 		return this;
-		//return new Table(this, {gDesc: this.gDesc + '*' + table2.gDesc}); // gDesc is important
 	};
 	
 	Table2.prototype.select = function(order, target) {
