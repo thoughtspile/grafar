@@ -37,6 +37,9 @@
   * [ ] Axis stretching to fit.
   * [ ] Bug: axis resizing.
   * [ ] Set camera position. (Maybe some automation.)
+  * [ ] Other plot types (like bar chart)
+  * [ ] Dig axis labelling position
+  * [ ] Implement axis ticks
   
 ##5. Grafar Graphs.
   * [ ] Tree -> class + id to allow for overlapping classes.
