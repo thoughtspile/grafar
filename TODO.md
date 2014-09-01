@@ -11,7 +11,6 @@
   * [ ] Polyfills.
   
 ##2. Grafaryaz parser
-  * [ ] Fix g-descriptors.
   * [ ] Fix index buffer.
   * [ ] Allow infinite domains based on FOV.
   * [ ] Detect periodic functions and speed up via "instancing".
@@ -23,6 +22,10 @@
   * [ ] launcher.js default path.
 
 ##3. Tables
+  * [ ] Fix g-descriptors.
+    * [x] In-table logic
+	* [ ] Move to Typed Arrays
+	* [ ] Check memoization
   * [ ] Split proxies into projection and undefined column.
   * [ ] Add extras to map.
   * [ ] Implement filtering in select.
