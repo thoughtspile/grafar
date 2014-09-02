@@ -23,9 +23,16 @@
 
 ##3. Tables
   * [ ] Fix g-descriptors.
-    * [x] In-table logic
-	* [ ] Move to Typed Arrays
-	* [ ] Check memoization
+    * [x] In-table logic (1.09)
+	* [x] Move to Typed Arrays (2.09)
+	* [x] Pre-determine length (2.09)
+	* [x] Move length determination to separate function (2.09)
+	* [ ] String is poor format for gDesc
+	* [ ] Implement in static memory
+	* [ ] Memo minGraphDescriptor
+	* [ ] Memo indexBufferSize
+	* [x] WTF happened to another half of edges? (2.09)
+	* [x] Check table memoization (2.09)
   * [ ] Split proxies into projection and undefined column.
   * [ ] Add extras to map.
   * [ ] Implement filtering in select.

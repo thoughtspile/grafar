@@ -23,13 +23,10 @@
 		
 		this.buffers.forEach(function(wrapper) {
 			if (wrapper.names.indexOf('$i') === -1) {
-				wrapper.length = temp.length * 3;
+				wrapper.length = temp.length * wrapper.names.length;  // look out for 2D
 				temp.select(wrapper.names, wrapper.array);
 			} else {
-				if (temp.gDesc.indexOf('c') !== -1)
-					wrapper.length = 40000; // upper bound is lousy
-				else
-					wrapper.length = 0;
+				wrapper.length = temp.indexBufferSize();
 				temp.computeIndexBuffer(wrapper.array);
 			}
 		});

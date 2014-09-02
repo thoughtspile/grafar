@@ -161,14 +161,13 @@
 		return this;
 	};
 	
-	// uglifiers
-	Table2.prototype.computeIndexBuffer = function(buffer) {
-		var cache = true;
-		var actions = this.gDesc.split('*')
+	Table2.prototype.minGraphDescriptor = function() {
+		// maybe this logic should occur at gDesc modification
+		return this.gDesc.split('*')
 			.map(function(desc) {
 				return {
-					qty: parseFloat(desc.slice(0, desc.length - 1)),
-					type: desc.slice(desc.length - 1)
+					qty: parseInt(desc),
+					type: desc[desc.length - 1]
 				};
 			})
 			.filter(function(node) {
@@ -181,36 +180,48 @@
 					pv.push(cv);
 				return pv;
 			}, []);
-		
-		var key = actions.toString();
-		if (cache && Table2.indexCache.hasOwnProperty(key)) {
-			buffer.set(Table2.indexCache[key]);
-			return buffer;
-		}
+	};
+	
+	Table2.prototype.indexBufferSize = function() {
+		var temp = this.minGraphDescriptor().reduceRight(function(pv, cv) {
+			var v = cv.qty,
+				e = cv.type === 'c'? v - 1: 0;
+			return {v: pv.v * v, e: v * pv.e + e * pv.v};
+		}, {v: 1, e: 0}).e * 2;
+		console.log('predicted', temp);
+		return temp;
+	};
+	
+	Table2.prototype.computeIndexBuffer = function(buffer) {
+		var actions = this.minGraphDescriptor(),		
+			key = actions.toString();
 			
-		var indexArray = actions.reduceRight(function(adjacency, cv) {
-			var newAdj = [], 
-				l = cv.qty, 
-				r = adjacency.n,
-				i = 0;
-			for (i = 0; i < l; i++) {
-				newAdj = newAdj.concat(adjacency.a);
-				shiftArray(adjacency.a, r);
-			}
-			if (cv.type === 'c') {
-				var path = timesArray(r, makeBasicPath(l));
-				for (i = 0; i < r; i++) {
-					newAdj = newAdj.concat(path);
-					shiftArray(path, 1);
+		if (!Table2.indexCache.hasOwnProperty(key)) {		
+			var totalLength = this.indexBufferSize();	
+			Table2.indexCache[key] = actions.reduceRight(function(pv, cv) {
+				var v = cv.qty,
+					e = cv.type === 'c'? v - 1: 0,
+					newAdj = new Uint32Array(v * pv.e.length + (e * pv.v) * 2),				
+					i = 0;
+				
+				for (i = 0; i < v; i++) {
+					newAdj.set(pv.e, i * pv.e.length);
+					incArray(pv.e, pv.v);
 				}
-			}
-			return {n: r * l, a: newAdj};
-		}, {n: 1, a: []});//new Uint8Array(0));
-		var temp = new Uint32Array(indexArray.a);
+				
+				if (cv.type === 'c') {
+					var path = timesArray(pv.v, pathGraph(v));
+					for (i = 0; i < pv.v; i++) {
+						newAdj.set(path, v * pv.e.length + i * e * 2);
+						incArray(path, 1);
+					}
+				}
+				
+				return {v: pv.v * v, e: newAdj};
+			}, {v: 1, e: new Uint32Array(0)}).e;
+		}
 		
-		if (cache)
-			Table2.indexCache[key] = temp;	
-		buffer.set(temp);
+		buffer.set(Table2.indexCache[key]);
 		return this;
 	};
 	
@@ -254,14 +265,17 @@
 	
 	// index buffer utils (to be redone)
 	
-	function makeBasicPath(length) {
-		var basicPath = [];
-		for (var i = 0; i < length - 1; i++)
-			basicPath.push(i, i + 1);
+	function pathGraph(vert, out) {
+		var edge = vert - 1,
+			basicPath = new Uint32Array(edge * 2);
+		for (var i = 0, j = 0; i < edge; i++, j += 2) {
+			basicPath[j] = i;
+			basicPath[j + 1] = i + 1;
+		}
 		return basicPath;
 	}
 	
-	function shiftArray (arr, by) {
+	function incArray (arr, by) {
 		for (var i = 0; i < arr.length; i++)
 			arr[i] += by;
 		return arr;
