@@ -25,6 +25,7 @@
 				graph = new grafar.Graph({panel: mainPan}),
 				context = new grafaryaz.Context();				
 			grafar.bind(graph.dataInterface(), context);
+			graph.object.children[1].visible = false;
 			
 			new grafar.Process(new grafar.Timer(1000), function (t) {
 				context.set('x @= [-20, 20] & y @= [-20, 20] & z == sin(x) * cos(y * x + $e)'.replace(/\$e/g, t));
