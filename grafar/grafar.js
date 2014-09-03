@@ -97,7 +97,7 @@
 			alpha: 0,
 			fill: false,
 			type: 'l',
-			radius: .05,
+			radius: 2,
 			start: '',
 			end: ''
 		},

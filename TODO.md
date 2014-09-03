@@ -1,50 +1,109 @@
 ##1. General
-  1.1 [ ] Propose restructure.
-  1.2 [ ] Alternate generators.
-  1.3 [ ] Need moar demos.
-  1.4 [ ] Annotated source.
-  1.5 [ ] Decent documentation.
-  1.6 [ ] Performance cleanup.
-  1.7 [ ] Compile in several flavours.
-  1.8 [ ] Common event loop with balancing and stats.
-  1.9 [ ] Allow runtime configuring.
-  1.10 [ ] Polyfills.
+  * [ ] Propose restructure.
+  * [ ] Alternate generators.
+    * [ ] csv
+	* [ ] JSON
+	* [ ] graph data
+  * [ ] Need moar demos.
+  * [ ] Annotate source.
+  * [ ] Write decent documentation.
+    * [ ] Update existing
+	* [ ] Put into wiki
+  * [ ] Performance cleanup.
+    * [ ] drawTextLabel: store canvas
+	* [ ] validate any allocations
+	* [ ] expose ArrayPool and use it in indexArrays and WebGL buffer alloc
+  * [ ] Compile in several flavours.
+    * [ ] with Three
+	* [ ] minimal Three
+	* [ ] no Three
+	* [ ] parser only (+ table?)
+	* [ ] table only
+	* [ ] renderer + table
+  * [ ] Common event loop with load balancing and stats.
+  * [ ] Allow runtime configuring.
+    * [ ] Check config fields
+	* [ ] merge configs from G & GY
+  * [ ] Polyfills.
+    * [ ] Typed Arrays
+	* [ ] ES5 array methods
+  * [ ] launcher.js default path.
   
 ##2. Grafaryaz parser
-  2.1 [ ] Fix g-descriptors.
-  2.2 [ ] Fix index buffer.
-  2.3 [ ] Allow infinite domains based on FOV.
-  2.4 [ ] Detect periodic functions and speed up via "instancing".
-  2.5 [ ] Use algorithmic differentiation.
-  2.6 [ ] Use interval arithmetic.
-  2.7 [ ] Some discontinuity detection.
-  2.8 [ ] Border / fill mode.
-  2.9 [ ] Mess cleaning in base parser.
+  * [ ] Allow infinite domains based on FOV.
+    * [ ] accessors for camera position
+	* [ ] passing parameters to GY (or other syncing)
+	* [ ] Rewrite seq for undefined top / bottom
+  * [ ] Detect periodic functions and speed up via "instancing".
+    * [ ] identify periodic functions
+	* [ ] identify the period
+	* [ ] split into the periodic and aperiodic partss
+	* [ ] how does the period translate with substitution (e.g. P(sin(t)))
+  * [ ] What about the benefits of using interpolation?
+  * [ ] Use algorithmic / symbolic differentiation.
+  * [ ] Use interval arithmetic.
+    * [ ] Dig into symbolic extrema
+	* [ ] Implement base class for interval operators and functions
+	* [ ] Uses: find out if roots exist, project along
+  * [ ] discontinuity detection.
+  * [ ] Border / fill mode.
+  * [ ] clean the mess in base parser.
 
 ##3. Tables
-  3.1 [ ] Split proxies into projection and undefined column.
-  3.2 [ ] Add extras to map.
-  3.3 [ ] Implement filtering in select.
-  3.4 [ ] Implement views (select should return one).
-  3.5 [ ] Split select into *real* select and asSometing.
-  3.6 [ ] Move to a separate class.
+  * [ ] Fix g-descriptors.
+    * [x] In-table logic (1.09)
+	* [x] Move to Typed Arrays (2.09)
+	* [x] Pre-determine length (2.09)
+	* [x] Move length determination to separate function (2.09)
+	* [ ] String is poor format for gDesc
+	* [ ] Implement in static memory
+	* [ ] Memo minGraphDescriptor (or move to table ops)
+	* [ ] Memo indexBufferSize
+	* [ ] Smaller items based on data length (Uint8 etc.)
+	* [x] WTF happened to another half of edges? (2.09)
+	* [x] Check table memoization (2.09)
+  * [ ] Split proxies into projection and undefined column.
+  * [ ] Add extras to map.
+    * [x] continuous
+	* [ ] actual size (ivalidTail or what?)
+	* [ ] ordered
+  * [ ] Implement filtering in select.
+  * [ ] Split select into *real* select and asSometing.
+    * [ ] views (select should return one).
+	* [ ] asArrayBuffer.
+  * [ ] Move Table to a separate accessible class.
 
 ##4. Grafar rendering
-  4.1 [ ] Add triangle plot.
-  4.2 [ ] Add arrows.
-  4.3 [ ] Add custom attributes (size, length, etc).
-  4.4 [ ] Axis stretching to fit.
+  * [ ] Add triangle plot.
+  * [ ] Add arrows.
+  * [ ] Add custom attributes
+	* [ ] size
+	* [ ] length
+	* [ ] what else?
+  * [ ] Axis stretching to fit (related to FOV).
+  * [ ] Bug: axis resizing.
+  * [ ] Set camera position. (Maybe some automation.)
+  * [ ] Other plot types
+    * [ ] bar charts
+	* [ ] review 1D plots
+	* [ ] what else?
+  * [ ] Dig axis labelling position
+  * [ ] Implement axis ticks
+  * [ ] Fix canvas rendering
   
 ##5. Grafar Graphs.
-  5.1 [ ] Tree -> class + id to allow for overlapping classes.
+  * [ ] Tree -> class + id to allow for overlapping classes.
+  * [ ] Where do coordinate permutations go?
 
 ##6. Style
-  6.1 [ ] Dig into colour schemes (nicer feel).
-  6.2 [ ] Add hierarchical hue distance.
-  6.3 [ ] Single-hue colour schemes for ordinal data.
+  * [ ] Dig into colour schemes (nicer feel).
+  * [ ] Add hierarchical hue distance.
+  * [ ] Single-hue colour schemes for ordinal data.
+  * [ ] Particle size should depend on scale
   
 ##7. Grafaryaz planner
-  7.1 [ ] Known bug: if a value is mapped onto and required on several steps, the map is performed more than once.
-  7.2 [ ] Dig into parallelization options.
-  7.3 [ ] Test performance of R^n->R^m maps vs R^n->R^1.
-  7.4 [ ] (Based on 7.3) condense or sparse steps.
+  * [ ] Bug: if a value is mapped onto and required on several steps, the map is performed more than once.
+  * [ ] Dig into parallelization options.
+  * [ ] Better / faster step structure
+    * [ ] Test performance of R^n->R^m maps vs R^n->R^1.
+    * [ ] condense or sparse steps.

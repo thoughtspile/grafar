@@ -28,10 +28,11 @@
 	function seq(a, b, name) {
 		a = Number(a);
 		b = Number(b);
-		return function(data, l) {
+		return function(data, l, extras) {
 			var step = (b - a) / (l - 1);
 			for (var i = 0; i < l ; i++)
 				data[name][i] = a + i * step;
+			extras.continuous = true;
 		}
 	}
 		
@@ -40,7 +41,7 @@
 			gradf = grad(f, dof),
 			probeSize = 100;
 			
-		return function(data, l) {
+		return function(data, l, extras) {
 			var s = Date.now();
 			var flatData = names.map(function(name) {
 					return data[name];
@@ -81,6 +82,8 @@
 				for (var j = 0; j < dof; j++)
 					flatData[j][i] = pt[j];
 			}
+			
+			extras.continuous = false;
 		}
 	}
 
