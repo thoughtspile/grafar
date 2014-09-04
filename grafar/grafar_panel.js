@@ -127,38 +127,42 @@
 	}
 	
 	function drawTextLabel(mat, str) {
-		var memo = drawTextLabel.memo || (drawTextLabel.memo = {});
-		if (!memo.hasOwnProperty(str)) {			
-			var fontSizePx = 48,
-				baselineOffsetPx = .15 * fontSizePx;
-			var canvas = document.createElement('canvas'),
-				context = canvas.getContext('2d');
-			
-			context.font = 'Lighter ' + fontSizePx + 'px Helvetica';
-			
-			var computedSize = Math.ceil(Math.max(2 * (fontSizePx + baselineOffsetPx), context.measureText(str).width));
-			canvas.width = computedSize;
-			canvas.height = computedSize;
-			
-			context = canvas.getContext('2d');
-			context.font = 'Lighter ' + fontSizePx + 'px Helvetica';
-			context.fillStyle = '#444444';
-			context.textAlign = 'center';
-			context.fillText(str, Math.floor(computedSize / 2), Math.ceil(computedSize / 2) - baselineOffsetPx);
-			 
-			memo[str] = {
-				size: config.labelSize / fontSizePx * computedSize,
-				map: new THREE.Texture(canvas)
-			};;
-		}
-		 
-		var memoEntry = memo[str]; 
-		mat.size = memoEntry.size;
-		mat.map = memoEntry.map.clone();
-		mat.map.needsUpdate = true;
-		mat.transparent = true;
+		var memo = {},
+			fontSizePx = 21,
+			baselineOffsetPx = .15 * fontSizePx;
 		
-		return mat;
+		drawTextLabel = function(mat, str) {
+			if (!memo.hasOwnProperty(str)) {
+				var canvas = document.createElement('canvas'),
+					context = canvas.getContext('2d');
+				
+				context.font = 'Lighter ' + fontSizePx + 'px Helvetica';
+				
+				var computedSize = Math.ceil(Math.max(2 * (fontSizePx + baselineOffsetPx), context.measureText(str).width));
+				canvas.width = computedSize;
+				canvas.height = computedSize;
+				
+				context.font = 'Lighter ' + fontSizePx + 'px Helvetica';
+				context.fillStyle = '#444444';
+				context.textAlign = 'center';
+				context.fillText(str, Math.floor(computedSize / 2), Math.ceil(computedSize / 2) - baselineOffsetPx);
+				 
+				memo[str] = {
+					size: computedSize, /*config.labelSize / fontSizePx * */
+					map: new THREE.Texture(canvas)
+				};
+			}
+			 
+			var memoEntry = memo[str]; 
+			mat.size = memoEntry.size;
+			mat.transparent = true;
+			mat.sizeAttenuation = false;
+			mat.map = memoEntry.map.clone();
+			mat.map.needsUpdate = true;
+			
+			return mat;
+		};
+		return drawTextLabel(mat, str);
 	}
 	
 	

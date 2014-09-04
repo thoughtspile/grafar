@@ -188,7 +188,6 @@
 				e = cv.type === 'c'? v - 1: 0;
 			return {v: pv.v * v, e: v * pv.e + e * pv.v};
 		}, {v: 1, e: 0}).e * 2;
-		console.log('predicted', temp);
 		return temp;
 	};
 	

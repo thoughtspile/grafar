@@ -54,7 +54,7 @@
 	Style.prototype.pull = function(id) {
 		this.materials[id] = {
 			line: new THREE.LineBasicMaterial({}),
-			point: new THREE.PointCloudMaterial({size: config.style.radius, transparent: true, opacity: .5, sizeAttenuation: false})
+			point: new THREE.PointCloudMaterial({size: config.particleRadius, transparent: true, opacity: .5, sizeAttenuation: false})
 		};		
 		this.colors[id] = this.palette[(Object.getOwnPropertyNames(this.colors).length + 1) % this.palette.length];
 		this.updateMaterials(id);

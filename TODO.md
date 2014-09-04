@@ -7,10 +7,10 @@
   * [ ] Need moar demos.
   * [ ] Annotate source.
   * [ ] Write decent documentation.
-    * [ ] Update existing
+    * [ ] Update existing (4.09)
 	* [ ] Put into wiki
   * [ ] Performance cleanup.
-    * [ ] drawTextLabel: store canvas
+    * [ ] drawTextLabel: store canvas || hint: canvas is stored by reference in texture (4.09)
 	* [ ] validate any allocations
 	* [ ] expose ArrayPool and use it in indexArrays and WebGL buffer alloc
   * [ ] Compile in several flavours.
@@ -22,8 +22,9 @@
 	* [ ] renderer + table
   * [ ] Common event loop with load balancing and stats.
   * [ ] Allow runtime configuring.
-    * [ ] Check config fields
-	* [ ] merge configs from G & GY
+    * [x] Check config fields (4.09)
+	* [ ] Should some fields be added to the config?
+	* [ ] merge configs from G & GY (would this work with part-compiles?)
   * [ ] Polyfills.
     * [ ] Typed Arrays
 	* [ ] ES5 array methods

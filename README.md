@@ -64,10 +64,9 @@ and can be accessed as `grafar.panels[<id>]`.
 
 #### `<Panel object>.setAxes(<Array of strings>)`
 
-Assign the names to the axes. Default is `['x', 'y', 'z']`. You *can* assign 
-two axes to make the panel 2D (planar graph), but currently you *can't* add 
-any data to such a panel (I'm terribly sorry about this). If you change the 
-axis names after drawing them, the graph would not be updated. The instance 
+Assign the names to the axes. Default is `['x', 'y', 'z']`. You can assign 
+two axes to make the panel 2D (planar). Only the graphs appended to the panel
+*after* this change would use the new axis set. The instance 
 of `Panel` on which the method was called is returned.
 
 #### `<Panel object>.drawAxes(<number>)`

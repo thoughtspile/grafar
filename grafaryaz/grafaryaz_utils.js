@@ -5,13 +5,12 @@
 	
 	var config = {
 			samples: 100,
-			tol: 0.01,
-			samplesPerDOF: 24
+			tol: 0.001,
+			samplesPerDOF: 24,
+			diffStep: .001
 		};
 
 	// numerics
-
-	var diffStep = 0.001, tol = 0.001;
 
 	function pow (x, p) {
 		var temp = Math.pow(x, p);
@@ -88,6 +87,7 @@
 	}
 
 	function grad(fa, nargs) {
+		var diffStep = config.diffStep;
 		return function(pt, val, out) {
 			for (var i = 0; i < nargs; i++) {
 				pt[i] += diffStep;
@@ -99,6 +99,7 @@
 
 	function newton(start, f, gradf, acceptNeg, maxIter) {
 		var pt = start,
+			tol = config.tol,
 			offset = [],
 			nabla = [],
 			i = 0;

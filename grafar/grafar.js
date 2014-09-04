@@ -81,37 +81,19 @@
 	var config = {
 		debug: true,
 		
-		moduleName: 'grafar',
 		rootGraphId: '$',
-				
+		
 		minPanelWidth: 600,
 		minPanelHeight: 600,
 		container: window,
+		antialias: true,
 		
 		axes: ['x', 'y', 'z'],
 		axisLength: 2,
-		labelSize: .32,
 		
-		style: {
-			overlay: false,
-			color: 'royalblue',
-			alpha: 0,
-			fill: false,
-			type: 'l',
-			radius: 2,
-			start: '',
-			end: ''
-		},
+		particleRadius: 2,
 		
-		antialias: true,
-		
-		precision: .0001,
-		samples: 41,
-		hide: false,
-		
-		chunkTime: 30,
-		tweenTime: 900,
-		
+		tweenTime: 900,		
 		tweenFunction: function(s, e, t) {
 			var part = (1 - Math.cos(Math.PI * t / _G.config.tweenTime)) / 2;  // non-local reference
 			return s * (1 - part) + e * part;

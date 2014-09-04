@@ -204,9 +204,9 @@
 
 	// *** default (root) graph ***
 	new Graph({
-		id: '$',
+		id: config.rootGraphId,
 		style: new Style(),
-		hide: config.hide
+		hide: false
 	});
 	
 	
