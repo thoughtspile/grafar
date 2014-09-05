@@ -48,33 +48,32 @@
 				}),
 				mean = [],
 				spread = [];
-				
-			for (var i = 0; i < probeSize; i++) {
-				var pt = [];
+			
+			var i = 0, pt = [];
+			while (i < probeSize) {
 				for (var j = 0; j < dof; j++)
 					pt[j] = -10 + 20 * Math.random();
 				newton(pt, f, gradf, false, 100);
-				for (var j = 0; j < dof; j++)
-					flatData[j][i] = pt[j];
+				if (f(pt) < tol) {
+					for (var j = 0; j < dof; j++)
+						flatData[j][i] = pt[j];
+				}
+				i++;
 			}
 			
 			for (var j = 0; j < dof; j++) {
 				var col = flatData[j],
 					jmin = Number.POSITIVE_INFINITY,
 					jmax = Number.NEGATIVE_INFINITY,
-					jsum = 0,
-					sampleSize = 0;
+					jsum = 0;
 				for (var i = 0; i < probeSize; i++) {
 					var val = col[i];
-					if (!isNaN(val)) {
-						jmin = Math.min(val, jmin);
-						jmax = Math.max(val, jmax);
-						jsum += val;
-						sampleSize++;
-					}
+					jmin = Math.min(val, jmin);
+					jmax = Math.max(val, jmax);
+					jsum += val;
 				}
-				mean[j] = jsum / sampleSize;
-				spread[j] = 1.5 * (jmax - jmin);
+				mean[j] = jsum / probeSize;
+				spread[j] = 2 * (jmax - jmin);
 			}
 			if (names.length === 3)
 				console.log('probe', names, mean, spread);
