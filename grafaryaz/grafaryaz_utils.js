@@ -62,16 +62,22 @@
 				var col = flatData[j],
 					jmin = Number.POSITIVE_INFINITY,
 					jmax = Number.NEGATIVE_INFINITY,
-					jsum = 0;
+					jsum = 0,
+					sampleSize = 0;
 				for (var i = 0; i < probeSize; i++) {
 					var val = col[i];
-					jmin = Math.min(val, jmin);
-					jmax = Math.max(val, jmax);
-					jsum += val;
+					if (!isNaN(val)) {
+						jmin = Math.min(val, jmin);
+						jmax = Math.max(val, jmax);
+						jsum += val;
+						sampleSize++;
+					}
 				}
-				mean[j] = jsum / probeSize;
+				mean[j] = jsum / sampleSize;
 				spread[j] = 1.5 * (jmax - jmin);
 			}
+			if (names.length === 3)
+				console.log('probe', names, mean, spread);
 			console.log(Date.now() - s, 'per probe');
 			
 			var pt = [];
