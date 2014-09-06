@@ -44,8 +44,12 @@
 	Table2.prototype.addCol = function(name, upfunc) {
 		if (this.schema().indexOf(name) === -1);
 			this.data[name] = arrayPool.get(Float32Array, this.capacity);
+			
 		if (isExisty(upfunc))
-			this.map(upfunc);		
+			this.update(upfunc);
+		else
+			console.warn('adding an uninitialized column to a table is discouraged');
+			
 		return this;
 	};
 	
@@ -88,7 +92,7 @@
 	};
 	
 	// operations
-	Table2.prototype.map = function(f) {
+	Table2.prototype.update = function(f) {
 		var s = Date.now();
 		
 		var extras = {
@@ -102,6 +106,12 @@
 		return this;
 	};
 
+	// inconsistent alias
+	Table2.prototype.map = function(f) {
+		console.warn('Table2.map is obsolete. Use Table2.update instead');
+		return this.update(f);
+	}
+	
 	Table2.prototype.times = function(table2) {
 		var s = Date.now();
 		if (!(table2 instanceof Table2))
