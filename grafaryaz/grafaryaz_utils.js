@@ -37,6 +37,7 @@
 		
 	function traceZeroSet(f, names) {
 		var dof = names.length,
+			tol = config.tol,
 			gradf = grad(f, dof),
 			probeSize = 100;
 			

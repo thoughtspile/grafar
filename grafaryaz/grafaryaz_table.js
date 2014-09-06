@@ -41,9 +41,11 @@
 		return this;
 	};
 	
-	Table2.prototype.addCol = function(name) {
+	Table2.prototype.addCol = function(name, upfunc) {
 		if (this.schema().indexOf(name) === -1);
 			this.data[name] = arrayPool.get(Float32Array, this.capacity);
+		if (isExisty(upfunc))
+			this.map(upfunc);		
 		return this;
 	};
 	
