@@ -3,6 +3,19 @@
 (function(global) {
 	var _G = global.grafar || (global.grafar = {});
 	
+	var stats = {
+		frames: 0,
+		start: Date.now(),
+		get totalTime() {
+			return Date.now() - this.start;
+		},
+		get averageFrameTime() {
+			return this.totalTime / this.frames;
+		},
+		get averageFPS() {
+			return 1000 * this.frames / this.totalTime;
+		}
+	};
 			
 	function makeID(obj) {
 		while (true) {
@@ -102,6 +115,7 @@
 	
 	// export
 	
+	_G.stats = stats;
 	_G.config = config;
 	_G.isExisty = isExisty;
 	_G.makeID = makeID;
