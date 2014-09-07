@@ -239,6 +239,9 @@
 	Table2.indexCache = {};
 	
 	
+	// the universal table
+	var UNIVERSAL = new Table2();
+	
 	// utils
 	
 	var arrayPool = {

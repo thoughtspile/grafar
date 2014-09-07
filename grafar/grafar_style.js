@@ -45,8 +45,9 @@
 	Style.prototype.samplePalette = function(paletteSize) {
 		paletteSize = paletteSize || 10;
 		for (var i = 0; i < paletteSize; i++) {
-			var rgb = Color.convert(randomLab(), 'rgb');
-			this.palette.push(new THREE.Color('rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ')'));
+			var rgb = Color.convert(randomLab(), 'rgb'),
+				rgb2 = new THREE.Color('rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ')');
+			this.palette.push(rgb2);
 		}
 		return this;
 	}
