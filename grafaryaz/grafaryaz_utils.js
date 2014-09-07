@@ -49,16 +49,17 @@
 				mean = [],
 				spread = [];
 			
-			var i = 0, pt = [];
-			while (i < probeSize) {
+			var pt = [], 
+				realSize = 0;
+			for (var i = 0; i < probeSize; i++) {
 				for (var j = 0; j < dof; j++)
 					pt[j] = -10 + 20 * Math.random();
 				newton(pt, f, gradf, false, 100);
 				if (f(pt) < tol) {
 					for (var j = 0; j < dof; j++)
 						flatData[j][i] = pt[j];
+					realSize++;
 				}
-				i++;
 			}
 			
 			for (var j = 0; j < dof; j++) {
@@ -66,26 +67,28 @@
 					jmin = Number.POSITIVE_INFINITY,
 					jmax = Number.NEGATIVE_INFINITY,
 					jsum = 0;
-				for (var i = 0; i < probeSize; i++) {
+				for (var i = 0; i < realSize; i++) {
 					var val = col[i];
 					jmin = Math.min(val, jmin);
 					jmax = Math.max(val, jmax);
 					jsum += val;
 				}
-				mean[j] = jsum / probeSize;
+				mean[j] = jsum / realSize;
 				spread[j] = 2 * (jmax - jmin);
 			}
-			if (names.length === 3)
-				console.log('probe', names, mean, spread);
 			console.log(Date.now() - s, 'per probe');
 			
 			var pt = [];
-			for (var i = probeSize; i < l; i++) {
+			for (var i = realSize; i < l; i++) {
 				for (var j = 0; j < dof; j++)
-					pt[j] = mean[j] + spread[j] / 2 * (Math.random() + Math.random() - 1);
+					pt[j] = mean[j] + spread[j] * (Math.random() - .5);
 				newton(pt, f, gradf, false, 10);
-				for (var j = 0; j < dof; j++)
-					flatData[j][i] = pt[j];
+				if (f(pt) < tol)
+					for (var j = 0; j < dof; j++)
+						flatData[j][i] = pt[j];
+				else
+					for (var j = 0; j < dof; j++)
+						flatData[j][i] = 0;
 			}
 			
 			extras.continuous = false;
