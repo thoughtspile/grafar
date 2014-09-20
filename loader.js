@@ -24,7 +24,7 @@ var runGrafar = function(callback, pathOverride) {
 		.script('src/core/grafar_panel.js').wait()
 		.script('src/core/grafar_graph.js')
 		
-		.script('src/legecy/grafar_samples.js')
+		.script('src/legacy/grafar_samples.js')
 		.script('src/legacy/grafar_ui.js')
 		
 		.wait(callback);
