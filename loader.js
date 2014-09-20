@@ -13,19 +13,19 @@ var runGrafar = function(callback, pathOverride) {
 		.script('libs/i-color.min.js')
 		.wait()
 		
-		.script('grafaryaz/grafaryaz_utils.js').wait()
-		.script('grafaryaz/grafaryaz_table.js').wait()
-		.script('grafaryaz/grafaryaz_planner.js').wait()
-		.script('grafaryaz/grafaryaz_parser.js').wait()
-		.script('grafaryaz/grafaryaz.js')
+		.script('src/core/grafaryaz_utils.js').wait()
+		.script('src/dataset/grafaryaz_table.js').wait()
+		.script('src/generators/grafaryaz_planner.js').wait()
+		.script('src/generators/grafaryaz_parser.js').wait()
+		.script('src/grafaryaz.js')
 	
-		.script('grafar/grafar.js').wait()
-		.script('grafar/grafar_style.js')
-		.script('grafar/grafar_panel.js').wait()
-		.script('grafar/grafar_graph.js')
+		.script('src/grafar.js').wait()
+		.script('src/core/grafar_style.js')
+		.script('src/core/grafar_panel.js').wait()
+		.script('src/core/grafar_graph.js')
 		
-		.script('grafar/grafar_samples.js')
-		.script('grafar/grafar_ui.js')
+		.script('src/legecy/grafar_samples.js')
+		.script('src/legacy/grafar_ui.js')
 		
 		.wait(callback);
 }
