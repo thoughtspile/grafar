@@ -1,10 +1,8 @@
-(function(global) {
-	'use strict';
+'use strict';
 	
-	var _GY = global.grafaryaz || (global.grafaryaz = {}),
-		isExisty = _GY.isExisty,
-		intersection = _GY.intersection,
-		union = _GY.union;
+(function(global) {
+	var _G = global.grafar,
+		isExisty = _G.isExisty;
 	
 		
 	function Table2(opts) {
@@ -110,7 +108,7 @@
 	Table2.prototype.map = function(f) {
 		console.warn('Table2.map is obsolete. Use Table2.update instead');
 		return this.update(f);
-	}
+	};
 	
 	Table2.prototype.times = function(table2) {
 		var s = Date.now();
@@ -159,12 +157,14 @@
 			throw new Error('Insufficient buffer size for export');
 			
 		for (var j = 0; j < itemsize; j++) {
-			var col = this.data[order[j]];
+			var col = this.data[order[j]],
+				i = 0,
+				k = j;
 			if (isExisty(col)) {
-				for (var i = 0, k = j; i < n; i++, k += itemsize)
+				for ( ; i < n; i++, k += itemsize)
 					target[k] = col[i];
 			} else {
-				for (var i = 0, k = j; i < n; i++, k += itemsize)
+				for ( ; i < n; i++, k += itemsize)
 					target[k] = 0;
 			}
 		}
@@ -207,8 +207,7 @@
 		var actions = this.minGraphDescriptor(),		
 			key = actions.toString();
 			
-		if (!Table2.indexCache.hasOwnProperty(key)) {		
-			var totalLength = this.indexBufferSize();	
+		if (!Table2.indexCache.hasOwnProperty(key)) {	
 			Table2.indexCache[key] = actions.reduceRight(function(pv, cv) {
 				var v = cv.qty,
 					e = cv.type === 'c'? v - 1: 0,
@@ -279,7 +278,7 @@
 	
 	// index buffer utils (to be redone)
 	
-	function pathGraph(vert, out) {
+	function pathGraph(vert, out) { // why out? fixit!
 		var edge = vert - 1,
 			basicPath = new Uint32Array(edge * 2);
 		for (var i = 0, j = 0; i < edge; i++, j += 2) {
@@ -304,5 +303,5 @@
 		
 	// exports
 	
-	_GY.Table2 = Table2;
+	_G.Table2 = Table2;
 }(this));

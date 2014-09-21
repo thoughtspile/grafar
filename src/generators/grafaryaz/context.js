@@ -1,11 +1,13 @@
+'use strict';
+
 (function(global) {	
-	var _GY = global.grafaryaz || (global.grafaryaz = {}),
-		union = _GY.union,
-		isExisty = _GY.isExisty,
-		MathSystem = _GY.MathSystem;
+	var _G = global.grafar,
+		union = _G.union,
+		isExisty = _G.isExisty,
+		MathSystem = _G.MathSystem;
 	
 	
-	Context = function() {
+	function Context() {
 		this.core = null;
 		this.buffers = [];
 		this.target = [];
@@ -16,7 +18,7 @@
 	Context.prototype.set = function(str) {
 		this.core = new MathSystem(str, this.target);
 		this.sample();
-	}
+	};
 	
 	Context.prototype.sample = function() {
 		var temp = this.core.sample();
@@ -38,7 +40,7 @@
 		});
 		
 		return temp;
-	}
+	};
 	
 	Context.prototype.bindBuffer = function(wrapper) {
 		this.buffers.push(wrapper);
@@ -46,10 +48,10 @@
 			this.target = union(this.target, wrapper.names.filter(isExisty));
 		else
 			this.indexNeeded = true;
-	}
+	};
 	
 	
 	// exports
 	
-	_GY.Context = Context;
+	_G.Context = Context;
 }(this));

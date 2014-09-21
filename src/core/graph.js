@@ -1,14 +1,12 @@
 'use strict';
 
 (function(global) {	
-	var _G = global.grafar || (global.grafar = {});
-	
-	var makeID = _G.makeID,
+	var _G = global.grafar,
+		THREE = global.THREE,
+		makeID = _G.makeID,
 		Style = _G.Style,
-		Geometry = _G.Geometry,
 		Panel = _G.Panel,
 		panels = _G.panels,
-		Symfun = _G.Symfun,
 		config = _G.config,
 		isExisty = _G.isExisty;
 	
@@ -63,7 +61,7 @@
 				this.target.array = temp;
 			}
 		}
-	}
+	};
 	
 	Graph.prototype.dataInterface = function() {
 		var objects = this.object.children,
@@ -89,12 +87,12 @@
 	Graph.prototype.addChild = function(child) {
 		this.children.push(child);
 		return this;
-	}
+	};
 	
 	Graph.prototype.removeChild = function(child) {
 		this.children.splice(this.children.indexOf(child), 1);
 		return this;
-	}
+	};
 	
 	Graph.prototype.setParent = function(parent) {
 		if (isExisty(this.parent))
@@ -114,7 +112,7 @@
 		this.setStyle();
 			
 		return this;
-	}
+	};
 	
 	Graph.prototype.setPanel = function(panel) {
 		if (this.query('panel'))
@@ -125,7 +123,7 @@
 		else if (panel instanceof Panel)
 			this.panel = panel;
 		
-		var panel = this.query('panel');
+		panel = this.query('panel');
 		if (isExisty(panel)) {
 			panel.scene.add(this.object);		
 			this.dataInterface().buffers['vertex'].names = panel._axes;
@@ -136,7 +134,7 @@
 		});
 		
 		return this;
-	}
+	};
 	
 	Graph.prototype.setHiding = function(hide) {
 		if (isExisty(hide))
@@ -147,7 +145,7 @@
 			child.setHiding();
 		});		
 		return this;
-	}
+	};
 	
 	Graph.prototype.setStyle = function(newStyle) {
 		// this.style.drop();
@@ -166,7 +164,7 @@
 			child.setStyle();
 		});
 		return this;
-	}
+	};
 	
 	Graph.prototype.setup = function(config) {
 		config = config || {};
@@ -179,7 +177,7 @@
 		// redraw
 		//this.update();
 		return this;
-	}
+	};
 	
 	Graph.prototype.update = function() {
 	};
@@ -195,7 +193,7 @@
 			else
 				return null;
 		return temp;
-	}
+	};
 
 	// some useful thingies:
 	//   someGeometry.attributes.position.needsUpdate = true; to update
@@ -203,6 +201,7 @@
 	
 
 	// *** default (root) graph ***
+	// don't use "new" for side effects
 	new Graph({
 		id: config.rootGraphId,
 		style: new Style(),

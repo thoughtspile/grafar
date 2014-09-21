@@ -1,20 +1,18 @@
 'use strict';
 
 (function(global) {
-	// import
-	
-	var _GY = global.grafaryaz || (global.grafaryaz = {}),
-		seq = _GY.seq,
-		parserConfig = _GY.config,
-		traceZeroSet = _GY.traceZeroSet,
-		haveCommon = _GY.haveCommon,
-		isExisty = _GY.isExisty,
-		firstMatch = _GY.firstMatch,
-		intersection = _GY.intersection,
-		union = _GY.union,
-		unique = _GY.unique,
-		setMinus = _GY.setMinus,
-		Plan = _GY.Plan;
+	var _G = global.grafar,
+		seq = _G.seq,
+		parserConfig = _G.config.grafaryaz,
+		traceZeroSet = _G.traceZeroSet,
+		haveCommon = _G.haveCommon,
+		isExisty = _G.isExisty,
+		firstMatch = _G.firstMatch,
+		intersection = _G.intersection,
+		union = _G.union,
+		unique = _G.unique,
+		setMinus = _G.setMinus,
+		Plan = _G.Plan;
 
 		
 	// locals
@@ -481,7 +479,6 @@
 	
 	// exports
 	
-	_GY.MathSystem = MathSystem;
-	_GY.config = parserConfig;
-	_GY.Node = Node;
+	_G.MathSystem = MathSystem;
+	_G.Node = Node;
 }(this));

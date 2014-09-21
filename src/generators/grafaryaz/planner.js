@@ -1,11 +1,11 @@
 'use strict';
 
 (function(global) {
-	var _GY = global.grafaryaz || (global.grafaryaz = {}),
-		config = _GY.config,
-		Table2 = _GY.Table2,
-		union = _GY.union,
-		setMinus = _GY.setMinus;
+	var _G = global.grafar,
+		config = _G.config.grafaryaz,
+		Table2 = _G.Table2,
+		union = _G.union,
+		setMinus = _G.setMinus;
 
 	function joinInput(nodes) {
 		return nodes.map(function(f) {
@@ -94,5 +94,5 @@
 	
 	// global
 	
-	_GY.Plan = Plan;
+	_G.Plan = Plan;
 }(this));

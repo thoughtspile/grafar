@@ -1,9 +1,11 @@
 'use strict';
 
 (function(global) {
-	var _G = global.grafar || (global.grafar = {});
-	
-	var config = _G.config,
+	var _G = global.grafar,
+		Detector = global.Detector,
+		THREE = global.THREE,
+		Stats = global.Stats,
+		config = _G.config,
 		makeID = _G.makeID,
 		isExisty = _G.isExisty;
 	
@@ -20,13 +22,13 @@
 		this.id = opts.id || makeID(panels);		
 		panels[this.id] = this;
 		
-		var container = container || config.container,
-		    containerStyle = window.getComputedStyle(container),
+		container = container || config.container;
+		var containerStyle = window.getComputedStyle(container),
 			bgcolor = containerStyle.backgroundColor,
 		    width = Math.max(parseInt(containerStyle.width), config.minPanelWidth),
 		    height = Math.max(parseInt(containerStyle.height), config.minPanelHeight);
 
-		this.camera = new THREE.PerspectiveCamera(45, width / height, .1, 500);
+		this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 500);
 		this.camera.position.set(-4, 4, 5);
 		
 		this.scene = new THREE.Scene();
@@ -51,7 +53,7 @@
 		}
 
 		this.animate();
-	};
+	}
 		
 	Panel.prototype.animate = function() {
 		global.requestAnimationFrame(this.animate.bind(this));
@@ -91,7 +93,10 @@
 	};
 		
 	Panel.prototype.setAxes = function(axisNames) {
-		axisNames = axisNames.filter(function(n) {return typeof(n) === 'string'}).slice(0, 3);
+		axisNames = axisNames.filter(function(n) {
+				return typeof(n) === 'string';
+			})
+			.slice(0, 3);
 		
 		this._axes = [axisNames[1], axisNames[2], axisNames[0]];
 		if (axisNames.length === 3) {
@@ -129,7 +134,7 @@
 	function drawTextLabel(mat, str) {
 		var memo = {},
 			fontSizePx = 21,
-			baselineOffsetPx = .15 * fontSizePx;
+			baselineOffsetPx = 0.15 * fontSizePx;
 		
 		drawTextLabel = function(mat, str) {
 			if (!memo.hasOwnProperty(str)) {
@@ -168,4 +173,4 @@
 	
 	_G.Panel = Panel;
 	_G.panels = panels;
-}(this))
+}(this));
