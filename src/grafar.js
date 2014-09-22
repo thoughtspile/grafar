@@ -69,8 +69,19 @@
 		}
 	};
 	
+	var update = function() {
+		global.requestAnimationFrame(update);
+		Object.keys(_G.panels || {}).forEach(function(pan) {
+			_G.panels[pan].update();
+		});
+	};
+	
+	
 	// export
 	
 	_G.stats = stats;
 	_G.config = config;
+	_G.update = update;
+	
+	update();
 }(this));

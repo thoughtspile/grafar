@@ -52,23 +52,9 @@
 		} else {
 			this.stats = {update: function() {}};
 		}
-
-		launchUpdates(this);
-		//this.animate();
-	}
-		
-		
-	function launchUpdates(pan) {
-		(function temp() {
-			global.requestAnimationFrame(temp);
-			pan.controls.update();			
-			pan.renderer.render(pan.scene, pan.camera);			
-			pan.stats.update();
-		}());
 	}
 	
-	Panel.prototype.animate = function() {
-		global.requestAnimationFrame(this.animate.bind(this));
+	Panel.prototype.update = function() {
 		this.controls.update();
 		this.renderer.render(this.scene, this.camera);
 		this.stats.update();
