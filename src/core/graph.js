@@ -8,7 +8,8 @@
 		Panel = _G.Panel,
 		panels = _G.panels,
 		config = _G.config,
-		isExisty = _G.isExisty;
+		isExisty = _G.isExisty,
+		pool = _G.pool;
 	
 	var graphs = {};
 	
@@ -27,8 +28,8 @@
 		this.hidden = null;
 			
 		var geometry = new THREE.BufferGeometry();		
-		geometry.addAttribute('position', new THREE.BufferAttribute(new Float32Array(0), 3));
-		geometry.addAttribute('index', new THREE.BufferAttribute(new Uint32Array(0), 2));
+		geometry.addAttribute('position', new THREE.BufferAttribute(pool.get(Float32Array, 0), 3));
+		geometry.addAttribute('index', new THREE.BufferAttribute(pool.get(Uint32Array, 0), 2));
 			
 		this.object = new THREE.Object3D()
 			.add(new THREE.PointCloud(geometry, this.style.getParticleMaterial(this.id)))
@@ -56,8 +57,9 @@
 		},
 		set length (val) {
 			if (val !== this.target.array.length) {
-				var temp = new this.constructor(val);
+				var temp = pool.get(this.constructor, val);
 				temp.set(this.target.array.subarray(0, val));
+				pool.push(this.target.array);
 				this.target.array = temp;
 			}
 		}

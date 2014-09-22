@@ -4,16 +4,39 @@
 	var _G = (global.grafar = {});
 	
 	var stats = {
-		frames: 0,
-		start: Date.now(),
-		get totalTime() {
-			return Date.now() - this.start;
+		actions: {},
+		clocks: {},
+		
+		report: function() {
+			var temp = {},
+				aNames = Object.getOwnPropertyNames(this.actions)
+			aNames.forEach(function(actionName) {
+					var times = this.actions[actionName].times;
+					temp[actionName] = {
+						max: Math.max.apply(null, times),
+						min: Math.min.apply(null, times),
+						average: times.reduce(function(pv, cv) { return pv + cv; }, 0) / times.length,
+						raw: times
+					};
+				}.bind(this));
+			return temp;
 		},
-		get averageFrameTime() {
-			return this.totalTime / this.frames;
+		
+		add: function(name) {
+			this.actions[name] = {
+				times: []
+			};
+			return this;
 		},
-		get averageFPS() {
-			return 1000 * this.frames / this.totalTime;
+		
+		enter: function(name) {
+			this.clocks[name] = Date.now();
+			return this;
+		},
+		
+		exit: function(name) {
+			this.actions[name].times.push(Date.now() - this.clocks[name]);
+			return this;
 		}
 	};
 			

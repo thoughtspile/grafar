@@ -5,12 +5,12 @@
 	
 	
 	function Timer(scale) {
-		this.start = new Date().getTime();
+		this.start = Date.now();
 		this.scale = scale || 1;
 	}
 	
 	Timer.prototype.get = function() {
-		return (new Date().getTime() - this.start) / this.scale;
+		return (Date.now() - this.start) / this.scale;
 	};
 	
 	Timer.prototype.reset = function() {

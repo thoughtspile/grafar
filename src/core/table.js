@@ -2,8 +2,11 @@
 	
 (function(global) {
 	var _G = global.grafar,
-		isExisty = _G.isExisty;
-	
+		pool = _G.pool,
+		isExisty = _G.isExisty,
+		stats = _G.stats;
+		
+	stats.add('rename').add('clone').add('map').add('mult').add('export').add('index');	
 		
 	function Table2(opts) {
 		opts = opts || {};
@@ -30,9 +33,9 @@
 		this.capacity = Math.max(this.capacity, newCapacity);
 		this.schema().forEach(function(name) {
 			if (this.data[name].length < this.capacity) {
-				var temp = arrayPool.get(Float32Array, this.capacity);
+				var temp = pool.get(Float32Array, this.capacity);
 				temp.set(this.data[name].subarray(0, this.length));
-				arrayPool.push(this.data[name]);
+				pool.push(this.data[name]);
 				this.data[name] = temp;
 			}
 		}.bind(this));
@@ -40,8 +43,14 @@
 	};
 	
 	Table2.prototype.addCol = function(name, upfunc) {
-		if (this.schema().indexOf(name) === -1);
-			this.data[name] = arrayPool.get(Float32Array, this.capacity);
+		if (Array.isArray(name)) {
+			name.forEach(function(name1) {
+				this.addCol(name1);
+			}.bind(this));
+		} else {
+			if (this.schema().indexOf(name) === -1);
+				this.data[name] = pool.get(Float32Array, this.capacity);
+		}
 			
 		if (isExisty(upfunc))
 			this.update(upfunc);
@@ -53,7 +62,7 @@
 	
 	Table2.prototype.dropAll = function() {
 		this.schema().forEach(function(name) {
-			arrayPool.push(this.data[name]);
+			pool.push(this.data[name]);
 		}.bind(this));
 		Table2.call(this);
 		return this;
@@ -64,7 +73,7 @@
 	};
 	
 	Table2.prototype.rename = function(map) {
-		var s = Date.now();
+		stats.enter('rename');
 		this.schema().forEach(function(name) {
 			map[name] = map.hasOwnProperty(name)? map[name]: name;
 		});
@@ -73,25 +82,25 @@
 				pv[map[cv]] = this.data[cv];
 				return pv;
 			}.bind(this), {});
-		console.log(Date.now() - s, 'per rename');
+		stats.exit('rename');
 		return this;
 	};
 	
 	Table2.prototype.clone = function() {
-		var s = Date.now();
+		stats.enter('clone')
 		var temp = new Table2({capacity: this.capacity});
 		temp.setLength(this.length);
 		this.schema().forEach(function(name) {
 			temp.addCol(name);
 			temp.data[name].set(this.data[name].subarray(0, this.length));
 		}.bind(this));
-		console.log(Date.now() - s, 'per clone');
+		stats.exit('clone');
 		return temp;
 	};
 	
 	// operations
 	Table2.prototype.update = function(f) {
-		var s = Date.now();
+		stats.enter('map');
 		
 		var extras = {
 			continuous: false,
@@ -100,7 +109,7 @@
 		f(this.data, this.length, extras);
 		this.gDesc = this.gDesc || this.length + (extras.continuous? 'c': 'd');
 		
-		console.log(Date.now() - s, 'per map');
+		stats.exit('map');
 		return this;
 	};
 
@@ -111,7 +120,7 @@
 	};
 	
 	Table2.prototype.times = function(table2) {
-		var s = Date.now();
+		stats.enter('mult');
 		if (!(table2 instanceof Table2))
 			throw new Error('non-table right hand argument');
 		//if (intersection(Object.getOwnPropertyNames(this.active), Object.getOwnPropertyNames(table2.active)).length !== 0)
@@ -143,12 +152,12 @@
 		}.bind(this));
 		this.gDesc = this.gDesc + '*' + table2.gDesc;
 		
-		console.log(Date.now() - s, 'per mult');
+		stats.exit('mult');
 		return this;
 	};
 	
 	Table2.prototype.select = function(order, target) {
-		var s = Date.now();
+		stats.enter('export');
 		var itemsize = order.length,
 			n = this.length,
 			outsize = n * itemsize;
@@ -169,7 +178,7 @@
 			}
 		}
 		
-		console.log(Date.now() - s, 'per export');
+		stats.exit('export');
 		return this;
 	};
 	
@@ -211,7 +220,7 @@
 			Table2.indexCache[key] = actions.reduceRight(function(pv, cv) {
 				var v = cv.qty,
 					e = cv.type === 'c'? v - 1: 0,
-					newAdj = new Uint32Array(v * pv.e.length + (e * pv.v) * 2),				
+					newAdj = pool.get(Uint32Array, v * pv.e.length + (e * pv.v) * 2),				
 					i = 0;
 				
 				for (i = 0; i < v; i++) {
@@ -227,8 +236,9 @@
 					}
 				}
 				
+				pool.push(pv.e);				
 				return {v: pv.v * v, e: newAdj};
-			}, {v: 1, e: new Uint32Array(0)}).e;
+			}, {v: 1, e: pool.get(Uint32Array, 0)}).e;
 		}
 		
 		buffer.set(Table2.indexCache[key]);
@@ -241,23 +251,7 @@
 	// the universal table
 	var UNIVERSAL = new Table2();
 	
-	// utils
-	
-	var arrayPool = {
-		pool: {},
-		get: function(Constructor, length) {
-			if (this.pool.hasOwnProperty(length) && this.pool[length].length !== 0) {
-				return this.pool[length].pop();
-			} else {
-				return new Constructor(length);
-			}
-		},
-		push: function(obj) {
-			if (!this.pool.hasOwnProperty(obj.length))
-				this.pool[obj.length] = [];
-			this.pool[obj.length].push(obj);
-		}
-	};
+	// utils	
 			
 	function repeatArray(arr, len, times) {
 		var buff = arr.subarray(0, len),
@@ -280,7 +274,7 @@
 	
 	function pathGraph(vert, out) { // why out? fixit!
 		var edge = vert - 1,
-			basicPath = new Uint32Array(edge * 2);
+			basicPath = pool.get(Uint32Array, edge * 2);
 		for (var i = 0, j = 0; i < edge; i++, j += 2) {
 			basicPath[j] = i;
 			basicPath[j + 1] = i + 1;

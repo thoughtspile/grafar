@@ -6,8 +6,10 @@
 		norm = _G.norm,
 		arraySum = _G.arraySum,
 		arrayTimes = _G.arrayTimes,
-		config = _G.config.grafaryaz;
+		config = _G.config.grafaryaz,
+		stats = _G.stats;
 	
+	stats.add('probe').add('trace');
 	
 	function pow (x, p) {
 		var temp = Math.pow(x, p);
@@ -38,7 +40,6 @@
 			probeSize = 100;
 			
 		return function(data, l, extras) {
-			var s = Date.now();
 			var flatData = names.map(function(name) {
 					return data[name];
 				}),
@@ -47,7 +48,8 @@
 				i = 0, 
 				j = 0,
 				pt = [];
-				
+			
+			stats.enter('probe');
 			for (i = 0; i < probeSize; i++) {
 				pt = [];
 				for (j = 0; j < dof; j++)
@@ -71,9 +73,10 @@
 				mean[j] = jsum / probeSize;
 				spread[j] = 1.5 * (jmax - jmin);
 			}
-			console.log(Date.now() - s, 'per probe');
+			stats.exit('probe');
 			
 			pt = [];
+			stats.enter('trace');
 			for (i = probeSize; i < l; i++) {
 				for (j = 0; j < dof; j++)
 					pt[j] = mean[j] + spread[j] / 2 * (Math.random() + Math.random() - 1);
@@ -81,6 +84,7 @@
 				for (j = 0; j < dof; j++)
 					flatData[j][i] = pt[j];
 			}
+			stats.exit('trace');
 			
 			extras.continuous = false;
 		};

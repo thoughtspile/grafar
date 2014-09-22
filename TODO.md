@@ -1,5 +1,5 @@
 ##General
-  * [ ] Propose restructure.
+  * [x] Propose restructure.
   * [ ] Alternate generators.
     * [ ] csv
 	* [ ] JSON
@@ -27,15 +27,15 @@
   
 ##Performance
   * [ ] Common event loop with load balancing and stats.
-    * [ ] Add grafar.stats object
+    * [x] Add grafar.stats object
 	* [ ] Fill that object with useful properties
-	* [ ] Report creating
+	* [x] Report creating
 	* [ ] Common event loop
 	* [ ] Load balancing based on execution times
   * [ ] Performance cleanup.
     * [ ] drawTextLabel: store canvas || hint: canvas is stored by reference in texture (4.09)
 	* [ ] validate any allocations
-	* [ ] expose ArrayPool and use it in indexArrays and WebGL buffer allocation.
+	* [x] expose ArrayPool and use it in indexArrays and WebGL buffer allocation.
   
 ##Grafaryaz parser
   * [ ] Allow infinite domains based on FOV.

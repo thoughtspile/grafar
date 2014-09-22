@@ -15,17 +15,18 @@ var runGrafar = function(callback, pathOverride) {
 		
 		.script('src/grafar.js').wait()
 		.script('src/math/misc.js').wait()
-		.script('src/math/polyfills.js').wait()
-		.script('src/math/set.js').wait()
+		.script('src/math/polyfills.js')
+		.script('src/core/pool.js')
+		.script('src/math/set.js')
 		.script('src/math/vector.js').wait()
-		.script('src/math/numerics.js').wait()		
+		.script('src/math/numerics.js')
 		
 		.script('src/core/table.js').wait()
 		.script('src/generators/grafaryaz/planner.js').wait()
 		.script('src/generators/grafaryaz/parser.js').wait()
-		.script('src/generators/grafaryaz/context.js').wait()
+		.script('src/generators/grafaryaz/context.js')
 	
-		.script('src/core/animation.js').wait()
+		.script('src/core/animation.js')
 		.script('src/core/style.js')
 		.script('src/core/panel.js').wait()
 		.script('src/core/graph.js')

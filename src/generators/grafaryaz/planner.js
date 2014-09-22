@@ -74,21 +74,16 @@
 
 	Plan.Step.prototype.proceed = function(state) {
 		this.maps.forEach(function(map) {
-			map.supplies.forEach(function(name) {
-				state.addCol(name);
-			});
-			state.map(map.f());
+			state.addCol(map.supplies, map.f());
 		});
 		this.ranges.forEach(function(extender) {
 			var len = (extender.mode === 'in'? config.samples: Math.pow(config.samplesPerDOF, extender.variables.length)),
-				temp = new Table2({capacity: len}).setLength(len);
-			extender.supplies.forEach(function(name) {
-				temp.addCol(name);
-			});
-			temp.map(extender.f());
+				temp = new Table2({capacity: len})
+					.setLength(len)
+					.addCol(extender.supplies, extender.f());
+			
 			state.times(temp);
 		});
-		
 		return state;
 	};
 	

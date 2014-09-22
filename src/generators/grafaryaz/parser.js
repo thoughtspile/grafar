@@ -12,9 +12,10 @@
 		union = _G.union,
 		unique = _G.unique,
 		setMinus = _G.setMinus,
-		Plan = _G.Plan;
+		Plan = _G.Plan,
+		stats = _G.stats;
 
-		
+	stats.add('parse').add('merge').add('plan');
 	// locals
 	
 	var prefixes = {
@@ -22,7 +23,7 @@
 		cos: 'Math.cos',
 		sqrt: 'Math.sqrt',
 		tan: 'Math.tan',
-		pow: 'grafaryaz.pow',
+		pow: 'grafar.pow',
 		min: 'Math.min',
 		max: 'Math.max',
 		exp: 'Math.exp',
@@ -67,16 +68,16 @@
 	}
 		
 	function MathSystem(str, targetRef) {
-		var s = Date.now();
+		stats.enter('parse');
 		
 		var nodes = MathSystem.strToAtomicNodes(str);
-		console.log('atomic node soup', snapNodeState(nodes), 'in', Date.now() - s);
+		stats.exit('parse').enter('merge');
 		nodes = MathSystem.collapseNodes(nodes);
-		console.log('molecular node soup', snapNodeState(nodes), 'in', Date.now() - s);
+		stats.exit('merge').enter('plan');
 		
 		this.plan = new Plan(nodes, targetRef);
 		
-		console.log(Date.now() - s, 'ms per parse');
+		stats.exit('plan');
 	}
 
 	MathSystem.strToAtomicNodes = function(str) {

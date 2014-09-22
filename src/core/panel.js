@@ -3,6 +3,7 @@
 (function(global) {
 	var _G = global.grafar,
 		Detector = global.Detector,
+		pool = _G.pool,
 		THREE = global.THREE,
 		Stats = global.Stats,
 		config = _G.config,
@@ -52,9 +53,20 @@
 			this.stats = {update: function() {}};
 		}
 
-		this.animate();
+		launchUpdates(this);
+		//this.animate();
 	}
 		
+		
+	function launchUpdates(pan) {
+		(function temp() {
+			global.requestAnimationFrame(temp);
+			pan.controls.update();			
+			pan.renderer.render(pan.scene, pan.camera);			
+			pan.stats.update();
+		}());
+	}
+	
 	Panel.prototype.animate = function() {
 		global.requestAnimationFrame(this.animate.bind(this));
 		this.controls.update();
@@ -67,7 +79,7 @@
 			this.axisObject = new THREE.Object3D();
 						
 			var axisGeometry = new THREE.BufferGeometry();
-			axisGeometry.addAttribute('position', new THREE.BufferAttribute(new Float32Array(18), 3));
+			axisGeometry.addAttribute('position', new THREE.BufferAttribute(pool.get(Float32Array, 18), 3));
 			this.axisObject.add(new THREE.Line(
 				axisGeometry, 
 				new THREE.LineBasicMaterial({color: 0x888888}), 
