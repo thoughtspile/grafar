@@ -5,40 +5,40 @@
 	
 	stats.add('alloc').add('free');
 	
-	var arrayPool = {
-		pool: {},
+	var arrayPool = {};
+	
+	arrayPool.pool = {};
 		
-		get: function(Constructor, length) {
-			stats.enter('alloc');
-			var classKey = Constructor.toString(),
-				constructorKey = length.toString(),
-				classPool = this.pool[classKey],
-				temp = null;
-			if (isExisty(classPool) && isExisty(classPool[constructorKey]) && classPool[constructorKey].length !== 0)
-				temp = classPool[constructorKey].pop();
-			else
-				temp = new Constructor(length);
-			stats.exit('alloc');
-			return temp;
-		},
+	arrayPool.get = function(Constructor, length) {
+		stats.enter('alloc');
+		var classKey = Constructor.toString(),
+			constructorKey = length.toString(),
+			classPool = this.pool[classKey],
+			temp = null;
+		if (isExisty(classPool) && isExisty(classPool[constructorKey]) && classPool[constructorKey].length !== 0)
+			temp = classPool[constructorKey].pop();
+		else
+			temp = new Constructor(length);
+		stats.exit('alloc');
+		return temp;
+	};
 		
-		push: function(obj) {
-			stats.enter('free');
-			var classKey = obj.constructor.toString(),
-				constructorKey = obj.length.toString();
-				
-			if (!isExisty(this.pool[classKey]))
-				this.pool[classKey] = {};
-			if (!isExisty(this.pool[classKey][constructorKey]))
-				this.pool[classKey][constructorKey] = [];
-				
-			this.pool[classKey][constructorKey].push(obj);
-			stats.exit('free');
-		},
+	arrayPool.push = function(obj) {
+		stats.enter('free');
+		var classKey = obj.constructor.toString(),
+			constructorKey = obj.length.toString();
+			
+		if (!isExisty(this.pool[classKey]))
+			this.pool[classKey] = {};
+		if (!isExisty(this.pool[classKey][constructorKey]))
+			this.pool[classKey][constructorKey] = [];
+			
+		this.pool[classKey][constructorKey].push(obj);
+		stats.exit('free');
+	};
 		
-		flush: function() {
-			this.pool = {};
-		}
+	arrayPool.flush = function() {
+		this.pool = {};
 	};
 	
 	

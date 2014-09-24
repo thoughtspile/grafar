@@ -5,12 +5,11 @@
 		makeID = _G.makeID,
 		isExisty = _G.isExisty;
 	
-	var objectList = {}, 
-		typedList = {};	
+	var objects = {};
 	
 	function Observable() {
-		var id = makeID(objectList);
-		objectList[id] = this;
+		var id = makeID(objects);
+		objects[id] = this;
 		this.id = id;
 		
 		this.handlers = {};
@@ -44,7 +43,6 @@
 	
 	// export
 	
-	_G.observer = observer;
-	_G.objectList = objectList;
+	_G.objects = objects;
 	_G.Observable = Observable;
 }(this));
