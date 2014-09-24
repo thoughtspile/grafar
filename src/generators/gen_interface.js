@@ -10,6 +10,7 @@
 	
 	function Generator() {
 		Observable.call(this);
+		this.actions = [];
 	}
 	
 	Generator.prototype = new Observable();
@@ -20,8 +21,12 @@
 	Generator.prototype.update = function() {
 	};
 	
-	Generator.prototype.execute = function() {
+	Generator.prototype.execute = function(Table) {
+		this.actions.forEach(function(action) {
+			action(Table);
+		});
 	};
+	
 	
 	// exports
 	

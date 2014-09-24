@@ -5,10 +5,11 @@
 		union = _G.union,
 		isExisty = _G.isExisty,
 		Generator = _G.Generator,
+		generators = _G.generators,
 		MathSystem = _G.MathSystem;
 	
 	
-	function Context() {
+	function Cont() {
 		Generator.call(this);
 		
 		this.core = null;
@@ -18,14 +19,14 @@
 		this.onUpdate = [];
 	}
 	
-	Context.prototype = new Generator();
+	Cont.prototype = new Generator();
 	
-	Context.prototype.set = function(str) {
+	Cont.prototype.set = function(str) {
 		this.core = new MathSystem(str, this.target);
 		this.sample();
 	};
 	
-	Context.prototype.sample = function() {
+	Cont.prototype.sample = function() {
 		var temp = this.core.sample();
 		
 		this.buffers.forEach(function(wrapper) {
@@ -47,7 +48,7 @@
 		return temp;
 	};
 	
-	Context.prototype.bindBuffer = function(wrapper) {
+	Cont.prototype.bindBuffer = function(wrapper) {
 		this.buffers.push(wrapper);
 		if (wrapper.names.indexOf('$i') === -1)
 			this.target = union(this.target, wrapper.names.filter(isExisty));
@@ -58,5 +59,5 @@
 	
 	// exports
 	
-	_G.Context = Context;
+	generators.Cont = Cont;
 }(this));

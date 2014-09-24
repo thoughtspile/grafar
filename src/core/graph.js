@@ -202,11 +202,7 @@
 		return temp;
 	};
 
-	// some useful thingies:
-	//   someGeometry.attributes.position.needsUpdate = true; to update
-	//   someGeometry.dispose(); might be useful n some way
 	
-
 	// *** default (root) graph ***
 	// don't use "new" for side effects
 	new Graph({
@@ -217,6 +213,7 @@
 	
 	
 	// export
+	
 	_G.graphs = graphs;
 	_G.Graph = Graph;
 }(this));
