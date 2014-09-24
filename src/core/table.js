@@ -4,11 +4,14 @@
 	var _G = global.grafar,
 		pool = _G.pool,
 		isExisty = _G.isExisty,
-		stats = _G.stats;
+		stats = _G.stats,
+		Observable = _G.Observable;
 		
 	stats.add('rename').add('clone').add('map').add('mult').add('export').add('index');	
-		
+	
+	
 	function Table2(opts) {
+		Observable.call(this);
 		opts = opts || {};
 	
 		this.data = {};		
@@ -17,6 +20,8 @@
 		
 		this.gDesc = '';
 	}
+	
+	Table2.prototype = new Observable();
 	
 	// misc
 	Table2.prototype.schema = function() {

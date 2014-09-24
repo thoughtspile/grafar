@@ -4,16 +4,21 @@
 	var _G = global.grafar,
 		union = _G.union,
 		isExisty = _G.isExisty,
+		Generator = _G.Generator,
 		MathSystem = _G.MathSystem;
 	
 	
 	function Context() {
+		Generator.call(this);
+		
 		this.core = null;
 		this.buffers = [];
 		this.target = [];
 		this.indexNeeded = false;
 		this.onUpdate = [];
 	}
+	
+	Context.prototype = new Generator();
 	
 	Context.prototype.set = function(str) {
 		this.core = new MathSystem(str, this.target);

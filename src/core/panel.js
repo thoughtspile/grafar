@@ -8,6 +8,7 @@
 		Stats = global.Stats,
 		config = _G.config,
 		makeID = _G.makeID,
+		Observable = _G.Observable,
 		isExisty = _G.isExisty;
 	
 	var panels = {},
@@ -19,6 +20,8 @@
 		}[renderMode];
 			
 	function Panel(container, opts) {
+		Observable.call(this);
+	
 		opts = opts || {};
 		this.id = opts.id || makeID(panels);		
 		panels[this.id] = this;
@@ -53,6 +56,8 @@
 			this.stats = {update: function() {}};
 		}
 	}
+	
+	Panel.prototype = new Observable();
 	
 	Panel.prototype.update = function() {
 		this.controls.update();

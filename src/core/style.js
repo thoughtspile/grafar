@@ -6,6 +6,7 @@
 		THREE = global.THREE,
 		isExisty = _G.isExisty,
 		config = _G.config,
+		Observable = _G.Observable,
 		makeID = _G.makeID;
 		
 	var styles = {};
@@ -19,8 +20,10 @@
 	}
 	
 	function Style(init) {
+		Observable.call(this);
+		
 		init = init || {};
-	
+			
 		this.id = init.id || makeID(styles);		
 		styles[this.id] = this;
 		
@@ -42,6 +45,8 @@
 		
 		return this;
 	}
+	
+	Style.prototype = new Observable();
 	
 	Style.prototype.samplePalette = function(paletteSize) {
 		paletteSize = paletteSize || 10;

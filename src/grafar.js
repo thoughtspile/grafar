@@ -68,7 +68,7 @@
 			diffStep: 0.001
 		}
 	};
-	
+		
 	var update = function() {
 		global.requestAnimationFrame(update);
 		Object.keys(_G.panels || {}).forEach(function(pan) {

@@ -9,12 +9,15 @@
 		panels = _G.panels,
 		config = _G.config,
 		isExisty = _G.isExisty,
+		Observable = _G.Observable,
 		pool = _G.pool;
 	
 	var graphs = {};
 	
 	// *** constructor ***
 	function Graph(gConfig) {
+		Observable.call(this);
+	
 		gConfig = gConfig || {};
 		
 		this.id = gConfig.id || makeID(graphs);		
@@ -40,6 +43,8 @@
 			
 		return this;
 	}
+	
+	Graph.prototype = new Observable();
 	
 	// data interface	
 	function AttributeWrapper(attribute, constructor, names) {
