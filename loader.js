@@ -14,8 +14,8 @@ var runGrafar = function(callback, pathOverride) {
 		.wait()
 		
 		.script('src/grafar.js').wait()
-		.script('src/math/misc.js').wait()
 		.script('src/math/polyfills.js')
+		.script('src/math/misc.js').wait()
 		.script('src/core/observer.js')
 		.script('src/core/pool.js')
 		

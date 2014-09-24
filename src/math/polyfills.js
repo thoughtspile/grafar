@@ -1,8 +1,7 @@
 'use strict';
 
 (function(global) {
-	var _G = global.grafar,
-		isExisty = _G.isExisty;
+	var _G = global.grafar;
 		
 	
 	var typedArrays = [
@@ -11,8 +10,15 @@
 	];
 	
 	typedArrays.forEach(function(name) {
-		if (!isExisty(global[name]))
-			global[name] = Array;
 	});
+	
+	window.performance = window.performance || {};
+	window.performance.now = 
+		window.performance.now ||
+		window.performance.mozNow ||
+		window.performance.msNow ||
+		window.performance.oNow ||
+		window.performance.webkitNow ||
+		Date.now;
 	
 }(this));
