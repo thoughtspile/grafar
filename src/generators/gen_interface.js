@@ -21,9 +21,9 @@
 	Generator.prototype.update = function() {
 	};
 	
-	Generator.prototype.execute = function(Table) {
+	Generator.prototype.execute = function(table) {
 		this.actions.forEach(function(action) {
-			action(Table);
+			action(table);
 		});
 	};
 	

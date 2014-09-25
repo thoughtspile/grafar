@@ -3,6 +3,7 @@
 (function(global) {	
 	var _G = global.grafar,
 		union = _G.union,
+		Table2 = _G.Table2,
 		isExisty = _G.isExisty,
 		Generator = _G.Generator,
 		generators = _G.generators,
@@ -27,7 +28,9 @@
 	};
 	
 	Cont.prototype.sample = function() {
-		var temp = this.core.sample();
+		this.actions = this.core.plan.sequence();
+		var temp = new Table2();
+		this.execute(temp);
 		
 		this.buffers.forEach(function(wrapper) {
 			if (wrapper.names.indexOf('$i') === -1) {

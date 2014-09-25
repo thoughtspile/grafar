@@ -3,7 +3,6 @@
 (function(global) {
 	var _G = global.grafar,
 		seq = _G.seq,
-		Table2 = _G.Table2,
 		parserConfig = _G.config.grafaryaz,
 		traceZeroSet = _G.traceZeroSet,
 		haveCommon = _G.haveCommon,
@@ -243,16 +242,6 @@
 			return prefixes.hasOwnProperty(match)? prefixes[match]: match;
 		});	
 		return str;		
-	};
-
-	
-	MathSystem.prototype.sample = function() {
-		var temp1 = this.plan.sequence(),
-			tab = new Table2();
-		temp1.forEach(function(f) {
-			f(tab);
-		});
-		return tab;
 	};
 
 

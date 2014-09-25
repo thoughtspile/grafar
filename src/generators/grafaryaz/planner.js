@@ -70,7 +70,7 @@
 			step.ranges.forEach(function(extender) {
 				var len = (extender.mode === 'in'? config.samples: Math.pow(config.samplesPerDOF, extender.variables.length));
 				pv.push(function(tab) {
-					tab.times(new Table2({capacity: len})
+					tab.times(new Table2({capacity: len}) // argh
 						.setLength(len)
 						.addCol(extender.supplies, extender.f())
 					);
