@@ -37,6 +37,7 @@
 							max: Math.max.apply(null, times),
 							min: Math.min.apply(null, times),
 							average: times.reduce(function(pv, cv) { return pv + cv; }, 0) / times.length,
+							total: times.reduce(function(pv, cv) { return pv + cv; }, 0),
 							raw: times
 						};
 				}.bind(this));

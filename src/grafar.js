@@ -33,10 +33,10 @@
 	};
 		
 	var update = function() {
-		global.requestAnimationFrame(update);
 		Object.keys(_G.panels || {}).forEach(function(pan) {
 			_G.panels[pan].update();
 		});
+		global.requestAnimationFrame(update);
 	};
 	
 	

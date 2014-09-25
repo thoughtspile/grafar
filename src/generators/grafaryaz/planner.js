@@ -60,32 +60,31 @@
 		});
 	}
 
-	Plan.prototype.execute = function() {
-		var temp = this.steps.reduce(function(table, step) {
-			return step.proceed(table);
-		}, new Table2());
-		return temp;
+	Plan.prototype.sequence = function() {
+		return this.steps.reduce(function(pv, step) {
+			step.maps.forEach(function(map) {
+				pv.push(function(tab) {
+					tab.addCol(map.supplies, map.f());
+				});
+			});
+			step.ranges.forEach(function(extender) {
+				var len = (extender.mode === 'in'? config.samples: Math.pow(config.samplesPerDOF, extender.variables.length));
+				pv.push(function(tab) {
+					tab.times(new Table2({capacity: len})
+						.setLength(len)
+						.addCol(extender.supplies, extender.f())
+					);
+				});
+			});
+			return pv;
+		}, []);
 	};
-
+	
 	Plan.Step = function(maps, extenders) {
 		this.ranges = extenders;
 		this.maps = maps;
 	};
-
-	Plan.Step.prototype.proceed = function(state) {
-		this.maps.forEach(function(map) {
-			state.addCol(map.supplies, map.f());
-		});
-		this.ranges.forEach(function(extender) {
-			var len = (extender.mode === 'in'? config.samples: Math.pow(config.samplesPerDOF, extender.variables.length)),
-				temp = new Table2({capacity: len})
-					.setLength(len)
-					.addCol(extender.supplies, extender.f());
-			
-			state.times(temp);
-		});
-		return state;
-	};
+	
 	
 	// global
 	

@@ -4,21 +4,18 @@
 	var _G = global.grafar;
 		
 	
-	var typedArrays = [
-		'Float32Array',
-		'Uint8Array'
-	];
+	global.Float32Array = global.Float32Array || Array;
+	global.Uint32Array = global.Uint32Array || Array;
+	global.Uint8Array = global.Uint8Array || Array;
 	
-	typedArrays.forEach(function(name) {
-	});
-	
-	window.performance = window.performance || {};
-	window.performance.now = 
-		window.performance.now ||
-		window.performance.mozNow ||
-		window.performance.msNow ||
-		window.performance.oNow ||
-		window.performance.webkitNow ||
-		Date.now;
+	global.performance = global.performance || {};
+	global.performance.now = 
+		global.performance.now ||
+		global.performance.mozNow ||
+		global.performance.msNow ||
+		global.performance.oNow ||
+		global.performance.webkitNow ||
+		Date.now ||
+		function() { return new Date().getTime(); };
 	
 }(this));
