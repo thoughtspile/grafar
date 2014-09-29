@@ -39,11 +39,24 @@
 		global.requestAnimationFrame(update);
 	};
 	
+	function setup(changes, target) {
+		target = target || config;
+		Object.keys(changes).forEach(function(name) {
+			if (target.hasOwnProperty(name))
+				if (name !== 'grafaryaz')
+					target[name] = changes[name];
+				else
+					setup(changes[name], config.grafaryaz);
+		});
+		return _G;
+	}
+	
 	
 	// export
 	
 	_G.config = config;
 	_G.update = update;
+	_G.setup = setup;
 	
 	update();
 }(this));
