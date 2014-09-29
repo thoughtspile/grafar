@@ -60,5 +60,4 @@
 	_G.stats = stats;
 	_G.isExisty = isExisty;
 	_G.makeID = makeID;
-	_G.bind = bind;
 }(this));

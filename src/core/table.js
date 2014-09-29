@@ -27,7 +27,7 @@
 	
 	// misc
 	Table2.prototype.postRequest = function(names) {
-		this.requests = union(this.requests, names);
+		this.requests = union(this.requests, names.filter(isExisty));
 		return this;
 	};
 	

@@ -16,16 +16,18 @@
 	
 	Cont.prototype = new Generator();
 	
-	Cont.prototype.set = function(str, table) {		
-		 // TODO catchall target if table missing
-		this.actions = new MathSystem(str, table.requests.filter(function(n) { return n !== '$i'; })).plan.sequence();
+	Cont.prototype.set = function(str, table) {	
+		table = table || this.table;
 		
-		this.execute(table);
-		
-		table.dispatch('update');		
-		// check async
-		table.dropAll();
-				
+		if (isExisty(table)) {
+			// TODO catchall target if table missing
+			this.actions = new MathSystem(str, table.requests.filter(function(n) { return n !== '$i'; })).plan.sequence();
+			this.execute(table);
+			table.dispatch('update');		
+			// check async
+			table.dropAll();
+		}		
+			
 		return this;
 	};
 		

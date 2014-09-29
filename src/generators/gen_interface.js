@@ -4,6 +4,7 @@
 	var _G = global.grafar,
 		union = _G.union,
 		Observable = _G.Observable,
+		Table2 = _G.Table2,
 		isExisty = _G.isExisty;
 	
 	var generators = {};
@@ -22,10 +23,18 @@
 	};
 	
 	Generator.prototype.execute = function(table) {
+		table = table || this.table || new Table2();
+		
 		this.actions.forEach(function(action) {
 			action(table);
 		});
+		
 		return table;
+	};
+	
+	Generator.prototype.data = function(table) {
+		this.table = table;
+		return this;
 	};
 	
 	
