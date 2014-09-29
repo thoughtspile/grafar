@@ -5,6 +5,7 @@
 		pool = _G.pool,
 		isExisty = _G.isExisty,
 		stats = _G.stats,
+		union = _G.union,
 		Observable = _G.Observable;
 		
 	stats.add('rename').add('clone').add('map').add('mult').add('export').add('index');	
@@ -17,6 +18,7 @@
 		this.data = {};		
 		this.length = 1;
 		this.capacity = opts.capacity || 1;
+		this.requests = [];
 		
 		this.gDesc = '';
 	}
@@ -24,6 +26,11 @@
 	Table2.prototype = new Observable();
 	
 	// misc
+	Table2.prototype.postRequest = function(names) {
+		this.requests = union(this.requests, names);
+		return this;
+	};
+	
 	Table2.prototype.schema = function() {
 		return Object.getOwnPropertyNames(this.data);
 	};
@@ -69,7 +76,12 @@
 		this.schema().forEach(function(name) {
 			pool.push(this.data[name]);
 		}.bind(this));
-		Table2.call(this);
+		
+		this.data = {};
+		this.length = 1;
+		this.capacity = 1;
+		this.gDesc = '';
+		
 		return this;
 	};
 	

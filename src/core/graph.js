@@ -49,7 +49,6 @@
 	function AttributeWrapper(attribute, names) {
 		this.names = names;
 		this.target = attribute;
-		console.log('init', this.target);
 	}
 	
 	AttributeWrapper.prototype = {
@@ -88,11 +87,24 @@
 		return this._dataInterface;
 	};
 	
-	Graph.prototype.data = function(context) {
+	Graph.prototype.data = function(table) {
 		this.dataInterface().buffers.forEach(function(buffer) {
-			context.buffers.push(buffer);
-			context.on('update', function() { buffer.update(); });
+			table.postRequest(buffer.names);
+			
+			if (buffer.names.indexOf('$i') === -1)
+				table.on('update', function() {
+					buffer.length = table.length * buffer.names.length;  // look out for 2D -- all is OK, but still
+					table.select(buffer.names, buffer.array);
+					buffer.update();
+				});
+			else
+				table.on('update', function() {
+					buffer.length = table.indexBufferSize();
+					table.computeIndexBuffer(buffer.array);
+					buffer.update();
+				});
 		});
+		
 		return this;
 	};
 	
