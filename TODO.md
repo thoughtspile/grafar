@@ -21,9 +21,15 @@
 	* [ ] Should some fields be added to the config?
 	* [ ] merge configs from G & GY (would this work with part-compiles?)
   * [ ] Polyfills.
-    * [ ] Typed Arrays
+    * [x] Typed Arrays
 	* [ ] ES5 array methods
   * [ ] launcher.js default path.
+  
+## Restructure
+  * [x] Dispatcher
+  * [x] Graph-Table binding
+  * [ ] Generator-Table binding
+  * [ ] 
   
 ##Performance
   * [ ] Common event loop with load balancing and stats.
@@ -58,7 +64,7 @@
   * [ ] clean the mess in base parser.
 
 ##Tables
-  * [ ] Adopt a table-centered process
+  * [x] Adopt a table-centered process
   * [ ] Increase the naming consistency with DB
     * [x] map -> update
   * [ ] new -> univers.select

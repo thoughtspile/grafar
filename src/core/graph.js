@@ -44,8 +44,10 @@
 	}
 	
 	Graph.prototype = new Observable();
+
 	
-	// data interface	
+	// data interface
+	
 	function AttributeWrapper(attribute, names) {
 		this.names = names;
 		this.target = attribute;
@@ -87,6 +89,9 @@
 		return this._dataInterface;
 	};
 	
+	
+	// the new interface 
+	
 	Graph.prototype.data = function(table) {
 		this.dataInterface().buffers.forEach(function(buffer) {
 			table.postRequest(buffer.names);
@@ -116,6 +121,7 @@
 	
 	
 	// *** setters ***
+	
 	Graph.prototype.addChild = function(child) {
 		this.children.push(child);
 		return this;
@@ -211,7 +217,9 @@
 		return this;
 	};
 	
+	
 	// *** inheritance ***
+	
 	Graph.prototype.query = function(key) {
 		var path = key.split('.'), temp = this;
 		for (var i = 0; i < path.length; i++)
