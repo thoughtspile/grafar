@@ -25,6 +25,7 @@
 		this.actions.forEach(function(action) {
 			action(table);
 		});
+		return table;
 	};
 	
 	

@@ -2,18 +2,20 @@
 
 (function(global) {
 	var _G = global.grafar,
-		seq = _G.seq,
 		parserConfig = _G.config.grafaryaz,
+		stats = _G.stats,
+		
+		seq = _G.seq,
 		traceZeroSet = _G.traceZeroSet,
+		
 		haveCommon = _G.haveCommon,
 		isExisty = _G.isExisty,
 		firstMatch = _G.firstMatch,
-		intersection = _G.intersection,
 		union = _G.union,
 		unique = _G.unique,
 		setMinus = _G.setMinus,
-		Plan = _G.Plan,
-		stats = _G.stats;
+		
+		Plan = _G.Plan;
 
 	stats.add('parse').add('merge').add('plan');
 	// locals

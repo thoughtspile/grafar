@@ -16,13 +16,7 @@
 	function isExisty(obj) {
 		return typeof(obj) !== 'undefined' && obj !== null;
 	}
-	
-	function bind(di, context) {
-		context.bindBuffer(di.buffers.vertex);
-		context.bindBuffer(di.buffers.index);
-		context.onUpdate.push(di.update);
-	}
-	
+		
 	var stats = {
 		actions: {},
 		clocks: {},

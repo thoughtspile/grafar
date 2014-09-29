@@ -39,7 +39,6 @@
 			.add(new THREE.Line(geometry, this.style.getLineMaterial(this.id), THREE.LinePieces));
 			
 		this.setup(gConfig);
-		this.dataInterface();
 			
 		return this;
 	}
@@ -47,10 +46,10 @@
 	Graph.prototype = new Observable();
 	
 	// data interface	
-	function AttributeWrapper(attribute, constructor, names) {
+	function AttributeWrapper(attribute, names) {
 		this.names = names;
 		this.target = attribute;
-		this.constructor = constructor;
+		console.log('init', this.target);
 	}
 	
 	AttributeWrapper.prototype = {
@@ -61,12 +60,19 @@
 			return this.target.array.length;
 		},
 		set length (val) {
-			if (val !== this.target.array.length) {
-				var temp = pool.get(this.constructor, val);
-				temp.set(this.target.array.subarray(0, val));
+			var oldArr = this.target.array,
+				oldVal = oldArr.length;
+			if (val !== oldVal) {
+				var temp = pool.get(oldArr.constructor, val);
+				// do we really need to copy?
+				temp.set(oldArr.subarray(0, Math.min(oldVal, val)));
 				pool.push(this.target.array);
 				this.target.array = temp;
 			}
+		},
+		update: function() {
+			this.target.needsUpdate = true;
+			return this;
 		}
 	};
 	
@@ -74,19 +80,26 @@
 		var objects = this.object.children,
 			panel = this.query('panel');
 		this._dataInterface = this._dataInterface || {
-			buffers: {
-				vertex: new AttributeWrapper(objects[1].geometry.getAttribute('position'), Float32Array, isExisty(panel)?  panel._axes: []),
-				index: new AttributeWrapper(objects[1].geometry.getAttribute('index'), Uint32Array, ['$i'])
-			},
-			update: function() {
-					objects[0].geometry.getAttribute('position').needsUpdate = true;
-					objects[1].geometry.getAttribute('position').needsUpdate = true;
-					objects[1].geometry.getAttribute('index').needsUpdate = true;
-				},
-			transactionActive: false,
-			morphActive: false
+			buffers: [
+				new AttributeWrapper(objects[1].geometry.getAttribute('position'), isExisty(panel)?  panel._axes: []),
+				new AttributeWrapper(objects[1].geometry.getAttribute('index'), ['$i'])
+			]
 		};
 		return this._dataInterface;
+	};
+	
+	Graph.prototype.data = function(context) {
+		this.dataInterface().buffers.forEach(function(buffer) {
+			context.buffers.push(buffer);
+			context.on('update', function() { buffer.update(); });
+		});
+		return this;
+	};
+	
+	Graph.prototype.enable = function(attr, alias) {
+	};
+	
+	Graph.prototype.disable = function(attr, alias) {
 	};
 	
 	
@@ -133,7 +146,9 @@
 		panel = this.query('panel');
 		if (isExisty(panel)) {
 			panel.scene.add(this.object);		
-			this.dataInterface().buffers['vertex'].names = panel._axes;
+			// woah!
+			console.log('woah!');
+			this.dataInterface().buffers[0].names = panel._axes;
 		}
 		
 		this.children.forEach(function(child) {
@@ -181,12 +196,7 @@
 		this.setStyle(config.style);
 		this.setHiding(config.hide);
 		
-		// redraw
-		//this.update();
 		return this;
-	};
-	
-	Graph.prototype.update = function() {
 	};
 	
 	// *** inheritance ***

@@ -59,6 +59,10 @@
 	
 	Panel.prototype = new Observable();
 	
+	Panel.prototype.setContainer = function(container) {
+		return this;
+	};
+	
 	Panel.prototype.update = function() {
 		this.controls.update();
 		this.renderer.render(this.scene, this.camera);

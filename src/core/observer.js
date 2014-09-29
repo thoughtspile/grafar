@@ -17,7 +17,7 @@
 	
 	Observable.prototype.on = function(event, handler) {
 		if (!isExisty(this.handlers[event]))
-			this.handlers[event] = {};
+			this.handlers[event] = [];
 		this.handlers[event].push(handler);
 		return this;
 	};
