@@ -41,11 +41,12 @@
 		this.renderer.antialias = config.antialias;
 		this.renderer.setSize(width, height);
 		this.renderer.setClearColor(bgcolor, 1);
-		container.appendChild(this.renderer.domElement);
 		
 		this.controls = new THREE.OrbitControls(this.camera, container);
 		
 		this.setAxes(config.axes);
+		
+		this.setContainer(container);
 		
 		if (config.debug) {
 			this.stats = new Stats();
@@ -60,6 +61,7 @@
 	Panel.prototype = new Observable();
 	
 	Panel.prototype.setContainer = function(container) {
+		container.appendChild(this.renderer.domElement);
 		return this;
 	};
 	

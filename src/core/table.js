@@ -6,6 +6,10 @@
 		isExisty = _G.isExisty,
 		stats = _G.stats,
 		union = _G.union,
+		repeatArray = _G.repeatArray,
+		repeatPoints = _G.repeatPoints,
+		incArray = _G.incArray,
+		timesArray = _G.timesArray,
 		Observable = _G.Observable;
 		
 	stats.add('rename').add('clone').add('map').add('mult').add('export').add('index');	
@@ -25,12 +29,17 @@
 	
 	Table2.prototype = new Observable();
 	
-	// misc
-	Table2.prototype.postRequest = function(names) {
+	// async
+	Table2.prototype.postRequest = function(names, onComplete) {
 		this.requests = union(this.requests, names.filter(isExisty));
 		return this;
 	};
 	
+	Table2.prototype.postUpdate = function(update, onComplete) {
+		return this;
+	};
+	
+	// misc
 	Table2.prototype.schema = function() {
 		return Object.getOwnPropertyNames(this.data);
 	};
@@ -88,21 +97,7 @@
 	Table2.prototype.isEmpty = function() {
 		return this.schema().length === 0 && this.length <= 1;
 	};
-	
-	Table2.prototype.rename = function(map) {
-		stats.enter('rename');
-		this.schema().forEach(function(name) {
-			map[name] = map.hasOwnProperty(name)? map[name]: name;
-		});
-		this.data = Object.getOwnPropertyNames(map)
-			.reduce(function(pv, cv) {
-				pv[map[cv]] = this.data[cv];
-				return pv;
-			}.bind(this), {});
-		stats.exit('rename');
-		return this;
-	};
-	
+		
 	Table2.prototype.clone = function() {
 		stats.enter('clone')
 		var temp = new Table2({capacity: this.capacity});
@@ -130,12 +125,6 @@
 		return this;
 	};
 
-	// inconsistent alias
-	Table2.prototype.map = function(f) {
-		console.warn('Table2.map is obsolete. Use Table2.update instead');
-		return this.update(f);
-	};
-	
 	Table2.prototype.times = function(table2) {
 		stats.enter('mult');
 		if (!(table2 instanceof Table2))
@@ -173,6 +162,20 @@
 		return this;
 	};
 	
+	Table2.prototype.rename = function(map) {
+		stats.enter('rename');
+		this.schema().forEach(function(name) {
+			map[name] = map.hasOwnProperty(name)? map[name]: name;
+		});
+		this.data = Object.getOwnPropertyNames(map)
+			.reduce(function(pv, cv) {
+				pv[map[cv]] = this.data[cv];
+				return pv;
+			}.bind(this), {});
+		stats.exit('rename');
+		return this;
+	};
+	
 	Table2.prototype.select = function(order, target) {
 		stats.enter('export');
 		var itemsize = order.length,
@@ -199,6 +202,7 @@
 		return this;
 	};
 	
+	// indexing
 	Table2.prototype.minGraphDescriptor = function() {
 		// maybe this logic should occur at gDesc modification
 		return this.gDesc.split('*')
@@ -264,29 +268,10 @@
 	
 	Table2.indexCache = {};
 	
-	
-	// utils	
-			
-	function repeatArray(arr, len, times) {
-		var buff = arr.subarray(0, len),
-			newlen = times * len;
-		for (var i = len; i < newlen; i += len)
-			arr.set(buff, i);
-		return arr;
-	}
-
-	function repeatPoints(arr, len, times) {
-		for (var i = len - 1, t = len * times - 1; i >= 0; i--) {
-			var val = arr[i];
-			for (var j = 0; j < times; j++, t--)
-				arr[t] = val;
-		}
-		return arr;
-	}
-	
+		
 	// index buffer utils (to be redone)
 	
-	function pathGraph(vert, out) { // why out? fixit!
+	function pathGraph(vert) {
 		var edge = vert - 1,
 			basicPath = pool.get(Uint32Array, edge * 2);
 		for (var i = 0, j = 0; i < edge; i++, j += 2) {
@@ -295,20 +280,7 @@
 		}
 		return basicPath;
 	}
-	
-	function incArray (arr, by) {
-		for (var i = 0; i < arr.length; i++)
-			arr[i] += by;
-		return arr;
-	}
-	
-	function timesArray (n, arr) {
-		for (var i = 0; i < arr.length; i++)
-			arr[i] *= n;
-		return arr;
-	}
-		
-		
+			
 	// exports
 	
 	_G.Table2 = Table2;

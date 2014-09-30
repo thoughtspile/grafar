@@ -17,6 +17,35 @@
 		return typeof(obj) !== 'undefined' && obj !== null;
 	}
 		
+	function repeatArray(arr, len, times) {
+		var buff = arr.subarray(0, len),
+			newlen = times * len;
+		for (var i = len; i < newlen; i += len)
+			arr.set(buff, i);
+		return arr;
+	}
+
+	function repeatPoints(arr, len, times) {
+		for (var i = len - 1, t = len * times - 1; i >= 0; i--) {
+			var val = arr[i];
+			for (var j = 0; j < times; j++, t--)
+				arr[t] = val;
+		}
+		return arr;
+	}
+	
+	function incArray (arr, by) {
+		for (var i = 0; i < arr.length; i++)
+			arr[i] += by;
+		return arr;
+	}
+	
+	function timesArray (n, arr) {
+		for (var i = 0; i < arr.length; i++)
+			arr[i] *= n;
+		return arr;
+	}
+	
 	var stats = {
 		actions: {},
 		clocks: {},
@@ -60,4 +89,8 @@
 	_G.stats = stats;
 	_G.isExisty = isExisty;
 	_G.makeID = makeID;
+	_G.incArray = incArray;
+	_G.timesArray = timesArray;
+	_G.repeatArray = repeatArray;
+	_G.repeatPoints = repeatPoints;
 }(this));
