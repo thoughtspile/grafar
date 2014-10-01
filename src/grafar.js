@@ -1,7 +1,8 @@
 'use strict';
 
 (function(global) {
-	var _G = (global.grafar = {});
+	var _G = (global.grafar = {}),
+		panels = [];
 				
 	var config = {
 		debug: true,
@@ -16,7 +17,7 @@
 		axes: ['x', 'y', 'z'],
 		axisLength: 2,
 		
-		particleRadius: 2,
+		particleRadius: 4,
 		
 		tweenTime: 900,		
 		tweenFunction: function(s, e, t) {
@@ -33,9 +34,9 @@
 	};
 		
 	var update = function() {
-		Object.keys(_G.panels || {}).forEach(function(pan) {
-			_G.panels[pan].update();
-		});
+		var len = panels.length;
+		for (var i = 0; i < len; i++)
+			panels[i].update();
 		global.requestAnimationFrame(update);
 	};
 	
@@ -55,6 +56,7 @@
 	// export
 	
 	_G.config = config;
+	_G.panels = panels;
 	_G.update = update;
 	_G.setup = setup;
 	

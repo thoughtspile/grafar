@@ -38,11 +38,12 @@
 	function Process(timer, callback) {
 		this.timer = timer;
 		this.active = true;
+		var self = this;
 		this.timed = function() {
-			callback(this.timer.get());
-			if (this.active)
-				window.requestAnimationFrame(this.timed);
-		}.bind(this);
+			callback(self.timer.get());
+			if (self.active)
+				window.requestAnimationFrame(self.timed);
+		};
 		return this;
 	}
 	

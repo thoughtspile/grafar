@@ -36,6 +36,7 @@
 		
 	function traceZeroSet(f, names) {
 		var dof = names.length,
+			tol = config.tol,
 			gradf = grad(f, dof),
 			probeSize = 100;
 			
@@ -47,7 +48,8 @@
 				spread = [],
 				i = 0, 
 				j = 0,
-				pt = [];
+				pt = [],
+				realSize = 0;
 			
 			stats.enter('probe');
 			for (i = 0; i < probeSize; i++) {
@@ -55,8 +57,11 @@
 				for (j = 0; j < dof; j++)
 					pt[j] = -10 + 20 * Math.random();
 				newton(pt, f, gradf, false, 100);
-				for (j = 0; j < dof; j++)
-					flatData[j][i] = pt[j];
+				if (f(pt) < tol) {
+					for (var j = 0; j < dof; j++)
+						flatData[j][i] = pt[j];
+					realSize++;
+				}
 			}
 			
 			for (j = 0; j < dof; j++) {
@@ -64,25 +69,29 @@
 					jmin = Number.POSITIVE_INFINITY,
 					jmax = Number.NEGATIVE_INFINITY,
 					jsum = 0;
-				for (i = 0; i < probeSize; i++) {
+				for (i = 0; i < realSize; i++) {
 					var val = col[i];
 					jmin = Math.min(val, jmin);
 					jmax = Math.max(val, jmax);
 					jsum += val;
 				}
-				mean[j] = jsum / probeSize;
+				mean[j] = jsum / realSize;
 				spread[j] = 1.5 * (jmax - jmin);
 			}
 			stats.exit('probe');
 			
 			pt = [];
 			stats.enter('trace');
-			for (i = probeSize; i < l; i++) {
+			for (i = realSize; i < l; i++) {
 				for (j = 0; j < dof; j++)
 					pt[j] = mean[j] + spread[j] / 2 * (Math.random() + Math.random() - 1);
 				newton(pt, f, gradf, false, 10);
-				for (j = 0; j < dof; j++)
-					flatData[j][i] = pt[j];
+				if (f(pt) < tol)
+					for (var j = 0; j < dof; j++)
+						flatData[j][i] = pt[j];
+				else
+					for (var j = 0; j < dof; j++)
+						flatData[j][i] = 0;
 			}
 			stats.exit('trace');
 			
@@ -114,8 +123,12 @@
 			if (val === 0)
 				return pt;
 			arrayTimes(-val / dot(nabla, nabla), nabla, offset);
-			if (norm(offset) < tol || i === maxIter)
+			if (norm(offset) < tol)
 				return pt;
+			if (i === maxIter || pt.indexOf(NaN) !== -1) {
+				pt[0] = NaN;
+				return pt;
+			}
 			arraySum(pt, offset, pt);
 			i++;
 		}

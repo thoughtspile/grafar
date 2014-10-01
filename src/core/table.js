@@ -75,8 +75,6 @@
 			
 		if (isExisty(upfunc))
 			this.update(upfunc);
-		else
-			console.warn('adding an uninitialized column to a table is discouraged');
 			
 		return this;
 	};

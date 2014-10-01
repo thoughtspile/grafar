@@ -11,7 +11,7 @@
 		Observable = _G.Observable,
 		isExisty = _G.isExisty;
 	
-	var panels = {},
+	var panels = _G.panels,
 		renderMode = Detector.webgl? 'webgl': Detector.canvas? 'canvas': 'none',
 		Renderer = {
 			webgl: THREE.WebGLRenderer.bind(null, {antialias: config.antialias}),
@@ -22,9 +22,8 @@
 	function Panel(container, opts) {
 		Observable.call(this);
 	
-		opts = opts || {};
-		this.id = opts.id || makeID(panels);		
-		panels[this.id] = this;
+		opts = opts || {};		
+		panels.push(this);
 		
 		container = container || config.container;
 		var containerStyle = window.getComputedStyle(container),
@@ -181,5 +180,4 @@
 	
 	
 	_G.Panel = Panel;
-	_G.panels = panels;
 }(this));

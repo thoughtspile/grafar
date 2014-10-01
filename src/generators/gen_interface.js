@@ -25,9 +25,9 @@
 	Generator.prototype.execute = function(table) {
 		table = table || this.table || new Table2();
 		
-		this.actions.forEach(function(action) {
-			action(table);
-		});
+		var queue = this.actions;
+		for (var i = 0; i < queue.length; i++)
+			queue[i](table);
 		
 		return table;
 	};

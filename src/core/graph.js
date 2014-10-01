@@ -6,7 +6,6 @@
 		makeID = _G.makeID,
 		Style = _G.Style,
 		Panel = _G.Panel,
-		panels = _G.panels,
 		config = _G.config,
 		isExisty = _G.isExisty,
 		Observable = _G.Observable,
@@ -156,9 +155,7 @@
 		if (this.query('panel'))
 			this.query('panel').scene.remove(this.object);
 			
-		if (typeof panel === 'string' && panels.hasOwnProperty(panel))
-			this.panel = panels[panel];
-		else if (panel instanceof Panel)
+		if (panel instanceof Panel)
 			this.panel = panel;
 		
 		panel = this.query('panel');

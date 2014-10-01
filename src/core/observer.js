@@ -9,7 +9,7 @@
 	
 	function Observable() {
 		var id = makeID(objects);
-		objects[id] = this;
+		//objects[id] = this;
 		this.id = id;
 		
 		this.handlers = {};
@@ -33,10 +33,11 @@
 	};
 	
 	Observable.prototype.dispatch = function(event) {
-		if (isExisty(this.handlers[event]))
-			this.handlers[event].forEach(function(handler) {
-				handler();
-			});
+		if (isExisty(this.handlers[event])) {
+			var queue = this.handlers[event];
+			for (var i = 0; i < queue.length; i++)
+				queue[i]();
+		}
 		return this;
 	};
 	
