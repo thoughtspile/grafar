@@ -1,0 +1,39 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<title>A rather nice parametric surface</title>
+	<style>
+		#plot_area {
+			width: 100%;
+			height: 100%;
+			background: black;
+			position: fixed;
+		}
+	</style>
+	<link rel="stylesheet" type="text/css" href="stylesheets/grafar_style.css" media="screen" />
+</head>
+
+<body>
+	<figure class="panel" id="plot_area"></figure>
+	
+	<script type="text/javascript" src="loader.js"></script>
+	<script type="text/javascript">
+		runGrafar(function() {
+			var mainPan = new grafar.Panel(document.getElementById('plot_area')).drawAxes(0),
+				graph = new grafar.Graph({panel: mainPan}),
+				context = new grafaryaz.Context(),
+				pi2 = Math.PI * 2;	
+			grafar.bind(graph.dataInterface(), context);
+			
+			graph.object.children[1].visible = false;			
+			grafaryaz.config.samples = 150;
+			
+			context.set('u @= [0, ' + pi2 + '] & v @= [0, ' + pi2 + '] & r == 2 &' + 
+				'x == r * sin(3 * u) / (2 + cos(v)) &' +
+				'y == r * (sin(u) + 2 * sin(2 * u)) / (2 + cos(v + ' + pi2 + ' / 3)) & ' +
+				'z == r / 2 * (cos(u) - 2 * cos(2 * u)) * (2 + cos(v)) * (2 + cos(v + ' + pi2 + '/3)) / 4');
+		}, '');
+	</script>
+</body>
+</html>
