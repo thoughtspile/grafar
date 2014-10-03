@@ -24,6 +24,7 @@ var runGrafar = function(callback, pathOverride) {
 		.script('src/math/numerics.js')
 		
 		.script('src/core/table.js').wait()
+		.script('src/core/database.js').wait()
 		
 		.script('src/generators/gen_interface.js').wait()
 		.script('src/generators/grafaryaz/planner.js').wait()
