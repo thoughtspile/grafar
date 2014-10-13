@@ -45,8 +45,10 @@
 	};
 	
 	Table2.prototype.setLength = function(newLength) {
-		this.extend(newLength);
-		this.length = newLength;
+		if (isExisty(newLength)) {
+			this.extend(newLength);
+			this.length = newLength;
+		}
 		return this;
 	};
 	

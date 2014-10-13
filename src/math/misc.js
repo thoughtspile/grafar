@@ -12,6 +12,13 @@
 				return temp;
 		}
 	}
+	
+	function strToArray (str) {
+		if (typeof str === 'string')
+			return str.replace(/ /g, '').split(',');
+		else 
+			return str;
+	}
 					
 	function isExisty(obj) {
 		return typeof(obj) !== 'undefined' && obj !== null;
@@ -89,6 +96,7 @@
 	_G.stats = stats;
 	_G.isExisty = isExisty;
 	_G.makeID = makeID;
+	_G.asArray = strToArray;
 	_G.incArray = incArray;
 	_G.timesArray = timesArray;
 	_G.repeatArray = repeatArray;
