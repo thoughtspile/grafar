@@ -9,7 +9,7 @@
 	
 	function Observable() {
 		var id = makeID(objects);
-		//objects[id] = this;
+		objects[id] = true;
 		this.id = id;
 		
 		this.handlers = {};
