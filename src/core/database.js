@@ -33,10 +33,10 @@
 			this.schema[using[i]].children.push.apply(names);
 			
 		var def = {
-			what: names, 
-			parents: using, 
-			children: [], 
-			as: as, 
+			what: names,
+			parents: using,
+			children: [],
+			as: as,
 			maxlen: maxlen
 		};
 		// def should be a table of some perverse sort
@@ -50,29 +50,32 @@
 	Database.prototype.select = function(names) {
 		names = asArray(names);
 		
-		// return a table: names \subset cols(table)
-		// 1. find min set of tables: names \subset union(cols(tables))
-		//   1.1. find descriptions: names \subset union(what(descriptions))
-		//   1.2. evaluate descriptions:
-		//     1.2.1. get in = select(using)
-		//     1.2.2. apply description to in
-		// 2. return product(tables)
-		//
-		// select() = new Table2();
-		
-		var temp = new Table2(),
-			descriptors = [];
+		if (names.length === 0)
+			return new Table2();
 			
-		if (names.length > 0) {
-			for (var i = 0; i < names.length; i++) {
+		var tabs = [];
+		for (var i = 0; i < names.length; i++) {
+			var name = names[i],
+				tab = this.tables[names[i]];
+			if (isExisty(tab)) {
+				if (tabs.indexOf(tab) === -1)
+					tabs.push(tab);
+			} else {
 				var def = this.schema[names[i]];
-				if (descriptors.indexOf(def) === -1)
-					descriptors.push(def);
+				tab = this.select(def.parents).setLength(def.maxlen).addCol(def.what, def.as);
+				for (var j = 0; j < def.what.length; j++)
+					this.tables[def.what[j]] = tab;
+				tabs.push(tab);
 			}
-			for (var i = 0; i < descriptors.length; i++) {
-				var def = descriptors[i];
-				temp.times(this.select(def.parents).setLength(def.maxlen).addCol(def.what, def.as));
-			}
+		}
+		
+		var temp;
+		if (tabs.length > 1) {
+			temp = new Table2();
+			for (var i = 0; i < tabs.length; i++)
+				temp.times(tabs[i]);
+		} else {
+			temp = tabs[0]; 
 		}
 		
 		return temp;
