@@ -21,6 +21,7 @@
 	
 	
 	Database.prototype.define = function(query) {
+		console.log('d-call');
 		var names = asArray(query.what || []),
 			using = asArray(query.using || []),
 			as = query.as || function() {},
@@ -39,15 +40,19 @@
 			as: as,
 			maxlen: maxlen
 		};
-		// def should be a table of some perverse sort
+		// maybe def should be a table of some perverse sort
 		
-		for (var i = 0; i < names.length; i++)
+		for (var i = 0; i < names.length; i++) {
+			this.tables[names[i]] = null; // ref tracking;
 			this.schema[names[i]] = def;
-		
+		}
+
+		console.log('d-ret');
 		return this;
 	};
 	
 	Database.prototype.select = function(names) {
+		console.log('s-call', names);
 		names = asArray(names);
 		
 		if (names.length === 0)
@@ -68,6 +73,9 @@
 				tabs.push(tab);
 			}
 		}
+		console.log('gat tabs', tabs);
+		
+		// NEED out-of-place times
 		
 		var temp;
 		if (tabs.length > 1) {
@@ -77,7 +85,8 @@
 		} else {
 			temp = tabs[0]; 
 		}
-		
+
+		console.log('s-ret');
 		return temp;
 	};
 	

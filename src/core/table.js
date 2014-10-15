@@ -65,14 +65,10 @@
 		return this;
 	};
 	
-	Table2.prototype.addCol = function(name, upfunc) {
-		if (Array.isArray(name)) {
-			name.forEach(function(name1) {
-				this.addCol(name1);
-			}.bind(this));
-		} else {
-			if (this.schema().indexOf(name) === -1);
-				this.data[name] = pool.get(Float32Array, this.capacity);
+	Table2.prototype.addCol = function(names, upfunc) {
+		for (var i = 0; i < names.length; i++) {
+			var name = names[i];
+			this.data[name] = this.data[name] || pool.get(Float32Array, this.capacity);
 		}
 			
 		if (isExisty(upfunc))
