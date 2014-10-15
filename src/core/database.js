@@ -21,7 +21,7 @@
 	
 	
 	Database.prototype.define = function(query) {
-		console.log('d-call');
+		//console.log('d-call');
 		var names = asArray(query.what || []),
 			using = asArray(query.using || []),
 			as = query.as || function() {},
@@ -43,16 +43,18 @@
 		// maybe def should be a table of some perverse sort
 		
 		for (var i = 0; i < names.length; i++) {
-			this.tables[names[i]] = null; // ref tracking;
+			var oldtab = this.tables[names[i]];
+			if (isExisty(oldtab))
+				oldtab.dropCol(names[i]);
 			this.schema[names[i]] = def;
 		}
 
-		console.log('d-ret');
+		//console.log('d-ret');
 		return this;
 	};
 	
 	Database.prototype.select = function(names) {
-		console.log('s-call', names);
+		//console.log('s-call', names);
 		names = asArray(names);
 		
 		if (names.length === 0)
@@ -63,6 +65,7 @@
 			var name = names[i],
 				tab = this.tables[names[i]];
 			if (isExisty(tab)) {
+				tab.refresh(name, this.schema[names[i]].as);
 				if (tabs.indexOf(tab) === -1)
 					tabs.push(tab);
 			} else {
@@ -73,20 +76,13 @@
 				tabs.push(tab);
 			}
 		}
-		console.log('gat tabs', tabs);
 		
-		// NEED out-of-place times
-		
-		var temp;
-		if (tabs.length > 1) {
-			temp = new Table2();
-			for (var i = 0; i < tabs.length; i++)
-				temp.times(tabs[i]);
-		} else {
-			temp = tabs[0]; 
+		var temp = tabs[0];
+		for (var i = 1; i < tabs.length; i++) {
+			temp = temp.times(tabs[i]);
 		}
 
-		console.log('s-ret');
+		//console.log('s-ret');
 		return temp;
 	};
 	

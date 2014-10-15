@@ -79,7 +79,7 @@
 	
 	Table2.prototype.dropAll = function() {
 		this.schema().forEach(function(name) {
-			pool.push(this.data[name]);
+			this.dropCol(name);
 		}.bind(this));
 		
 		this.data = {};
@@ -89,6 +89,16 @@
 		
 		return this;
 	};
+	
+	Table2.prototype.dropCol = function(name) {	
+		var col = this.data[name];
+		if (isExisty(col)) {
+			pool.push(this.data[name]);
+			delete this.data[name];
+		}
+		
+		return this;
+	}
 	
 	Table2.prototype.isEmpty = function() {
 		return this.schema().length === 0 && this.length <= 1;
@@ -121,41 +131,39 @@
 		return this;
 	};
 
+	Table2.prototype.refresh = function(name, upfunc) {
+		this.addCol(name, upfunc);
+		return this;
+	}
+
 	Table2.prototype.times = function(table2) {
 		stats.enter('mult');
-		if (!(table2 instanceof Table2))
-			throw new Error('non-table right hand argument');
 		//if (intersection(Object.getOwnPropertyNames(this.active), Object.getOwnPropertyNames(table2.active)).length !== 0)
 		//	throw new Error('Multiplying non-disjoint tables');
 		
-		if (table2.isEmpty()) {
-			return this;
-		} if (this.isEmpty()) {
-			table2.schema().forEach(function(name) {
-				this.data[name] = table2.data[name];
-			}.bind(this));
-			this.capacity = table2.capacity;
-			this.length = table2.length;
-			this.gDesc = table2.gDesc;
-			return this;
-		}
-		
-		var newLength = this.length * table2.length,
-			oldLength1 = this.length,
-			oldLength2 = table2.length;
-		this.setLength(newLength);
-		table2.setLength(newLength);
-		
-		this.schema().forEach(function(name) {
-			this.data[name] = repeatPoints(this.data[name], oldLength1, oldLength2);
-		}.bind(this));
+		var table1 = this,
+			len1 = table1.length,
+			len2 = table2.length,
+			newLen= len1 * len2,
+			res = new Table2();
+			
+		res.setLength(newLen);
+		// repeatArray is cheaper!
+		// + short-circuit for empty table
+		table1.schema().forEach(function(name) {
+			res.addCol(name);
+			res.data[name].set(table1.data[name]);
+			repeatPoints(res.data[name], len1, len2);
+		});
 		table2.schema().forEach(function(name) {
-			this.data[name] = repeatArray(table2.data[name], oldLength2, oldLength1);
-		}.bind(this));
-		this.gDesc = this.gDesc + '*' + table2.gDesc;
+			res.addCol(name);
+			res.data[name].set(table2.data[name]);
+			repeatArray(res.data[name], len1, len2);
+		});
+		res.gDesc = table1.gDesc + '*' + table2.gDesc;
 		
 		stats.exit('mult');
-		return this;
+		return res;
 	};
 	
 	Table2.prototype.rename = function(map) {
