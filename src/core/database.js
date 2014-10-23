@@ -11,10 +11,15 @@
 	function Database(opts) {
 		Observable.call(this);
 		
-		this.tables = {};
-		this.schema = {};
-		this.updates = [];
-		this.requests = [];
+		this.tables = {}; // all tables stored by id
+		this.vars = {}; // all tables stored by ref vars
+		this.needsUpdate = {}; // upflags by var
+		this.depend = {}; // dependancy graph
+		this.containers = {}; // dunno
+		this.schema = {}; // definitions
+		
+		this.updates = []; // queue of pending updtes
+		this.requests = []; // select queue
 	}
 	
 	Database.prototype = new Observable();
@@ -53,6 +58,22 @@
 		return this;
 	};
 	
+	// Planning (against select queue):
+	//   1. Cascade requests.
+	//   2. Extend groups.
+	//   3. Order by inclusion
+	//   4. Resolve table references
+	// Update:
+	//   1. just set needsupdate flags for cols
+	// Export:
+	//   EITHER only copy the components that have changed
+	//   OR use event listener for each col
+	//   OR ok i dunno
+	// Aside:
+	//   * each col exists as a master and its *repeat copies
+	//   * is there a minimal table for req?
+	//   * include all ancestors brfore times
+	
 	Database.prototype.select = function(names) {
 		//console.log('s-call', names);
 		names = asArray(names);
@@ -78,9 +99,8 @@
 		}
 		
 		var temp = tabs[0];
-		for (var i = 1; i < tabs.length; i++) {
+		for (var i = 1; i < tabs.length; i++)
 			temp = temp.times(tabs[i]);
-		}
 
 		//console.log('s-ret');
 		return temp;
