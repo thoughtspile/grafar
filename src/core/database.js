@@ -24,6 +24,13 @@
 	
 	Database.prototype = new Observable();
 	
+	Database.prototype.addDependency = function(source, target) {
+		if (!isExisty(this.depend[source]))
+			this.depend[source] = [];
+		if(this.depend[source].indexOf(target) === -1)
+			this.depend[source].push(target);
+		return this;
+	};
 	
 	Database.prototype.define = function(query) {
 		//console.log('d-call');
@@ -35,8 +42,11 @@
 			redefine = query.redefine || 'merge';
 		// Actually it's using OR maxlen
 		
-		for (var i = 0; i < using.length; i++)
+		for (var i = 0; i < using.length; i++) {
+			for (var j = 0; j < names.length; j++)
+				this.addDependency(using[i], names[j]);
 			this.schema[using[i]].children.push.apply(names);
+		}
 			
 		var def = {
 			what: names,
@@ -52,6 +62,7 @@
 			if (isExisty(oldtab))
 				oldtab.dropCol(names[i]);
 			this.schema[names[i]] = def;
+			this.vars[names[i]] = this.vars[names[i]] || [];
 		}
 
 		//console.log('d-ret');
@@ -74,6 +85,20 @@
 	//   * is there a minimal table for req?
 	//   * include all ancestors brfore times
 	
+	// Planning as of 07.11.14
+	//
+	// I. Global:
+	//   1. Merge duplicate explicits
+	//     1*. Choose a simpler function
+	//   2. Inline explicits into implicits while possible.
+	//   3. Group implicits.
+	// II. Local (request r recieved):
+	//   1. Ensure that all the target variables are known and updated
+	//   2. Make a list of all the tables containing r:
+	//     2.1. Find the best match table T
+	//     2.2. Exclude cols(T) from request
+	//   3. Compute the product 
+	
 	Database.prototype.select = function(names) {
 		//console.log('s-call', names);
 		names = asArray(names);
@@ -81,8 +106,9 @@
 		if (names.length === 0)
 			return new Table2();
 			
-		var tabs = [];
-		for (var i = 0; i < names.length; i++) {
+		var tabs = [],
+			rating = {};
+		for (var i = 0; i < names.length; i++) {			
 			var name = names[i],
 				tab = this.tables[names[i]];
 			if (isExisty(tab)) {
@@ -95,6 +121,27 @@
 				for (var j = 0; j < def.what.length; j++)
 					this.tables[def.what[j]] = tab;
 				tabs.push(tab);
+			}
+		}
+		
+		var totalCoverage = 0;
+		while(totalCoverage < names.length) {
+			var containers = this.vars[name];		
+			for (var i = 0; i < containers.length; i++) {
+				var tabId = containers[i]
+					rating[tabId] = isExisty(rating[tabId])? rating[tabId] + 1: 1;
+			}
+			
+			var tabIds = Object.keys(rating),
+				bestFit = '',
+				bestCoverage = 0;
+			
+			for (var i = 0; i < tabIds.length; i++) {
+				if (rating[tabIds[i]] > bestCoverage) {
+					bestFit = tabIds[i];
+					bestCoverage = rating[tabIds[i]];
+				}
+				totalCoverage += bestCoverage;
 			}
 		}
 		
