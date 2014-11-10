@@ -32,7 +32,7 @@
 			using = asArray(constraint.using || []),
 			as = constraint.as || function() {},
 			maxlen = constraint.maxlen,
-			type = constraint.type,
+			isExplicit = haveCommon(names, using),
 			fn = constraint.fn || function() { return 0; },
 			onConflict = 'overwrite';
 			
@@ -41,7 +41,6 @@
 			}),
 			def = {
 				what: names, // is the matching connectivity component
-				type: type, // |CC| > 1 (not really)
 				as: as,
 				maxlen: maxlen // only for root CCs
 			};
@@ -78,7 +77,7 @@
 			return new Table2();
 			
 		// evaluate all definitions
-		// problem: copies of atomic table remain the same!
+		// problem: r-copies of atomic table remain the same!
 		for (var i = 0; i < names.length; i++) {
 			if (!this.known[names[i]]) { // tabwise ups
 				var def = firstMatch(this.constraints, function(c) {
