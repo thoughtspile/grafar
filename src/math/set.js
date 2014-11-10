@@ -13,13 +13,21 @@
 		return arr1.some(function(e1) {return arr2.indexOf(e1) !== -1;});
 	}
 
-	function intersection(pv, cv) {
+	function intersection(pv, cv, out) {
 		return pv.filter(function(e) {
 			return cv.indexOf(e) !== -1;
 		});
 	}
+	
+	function interPower(arr1, arr2) {
+		var pow = 0;
+		for (var i = 0; i < arr1.length; i++)
+			if (arr2.indexOf(arr1[i]) !== -1)
+				pow++;
+		return pow;
+	}
 
-	function union(pv, cv) {
+	function union(pv, cv, out) {
 		return pv.concat(cv).reduce(unique, []);
 	}
 
@@ -29,15 +37,23 @@
 		return pv;
 	}
 
-	function setMinus(l, r) {
+	function setMinus(l, r, out) {
 		return l.filter(function(el) {return r.indexOf(el) === -1;});
+	}
+	
+	function setpush(arr, el) {
+		if (arr.indexOf(el) === -1)
+			arr.push(el);
+		return arr;
 	}
 	
 	
 	_G.firstMatch = firstMatch;
+	_G.interPower = interPower;
 	_G.haveCommon = haveCommon;
 	_G.intersection = intersection;
 	_G.union = union;
 	_G.unique = unique;
 	_G.setMinus = setMinus;
+	_G.setpush = setpush;
 }(this));

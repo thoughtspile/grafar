@@ -4,7 +4,13 @@
 	var _G = global.grafar,
 		Observable = _G.Observable,
 		intersection = _G.intersection,
+		interPower = _G.interPower,
+		haveCommon = _G.haveCommon,
+		union = _G.union,
+		firstMatch = _G.firstMatch,
+		GraphData = _G.GraphData,
 		setMinus = _G.setMinus,
+		setpush = _G.setpush,
 		isExisty = _G.isExisty,
 		asArray = _G.asArray,
 		Table2 = _G.Table2;
@@ -14,9 +20,10 @@
 		Observable.call(this);
 		
 		this.tables = [];
-		this.constraints = {};
+		this.constraints = [];
 		this.known = {};
-	}	
+		this.graph = new GraphData();
+	}
 	
 	Database.prototype = new Observable();
 	
@@ -24,92 +31,99 @@
 		var names = asArray(constraint.what || []),
 			using = asArray(constraint.using || []),
 			as = constraint.as || function() {},
-			maxlen = constraint.maxlen;
+			maxlen = constraint.maxlen,
+			type = constraint.type,
+			fn = constraint.fn || function() { return 0; },
+			onConflict = 'overwrite';
 			
-		var def = {
-			what: names,
-			parents: using,
-			children: [],
-			as: as,
-			maxlen: maxlen
-		};
+		var conflicts = this.constraints.filter(function(c) {
+				return haveCommon(c.what, names);
+			}),
+			def = {
+				what: names, // is the matching connectivity component
+				type: type, // |CC| > 1 (not really)
+				as: as,
+				maxlen: maxlen // only for root CCs
+			};
+		
+		if (conflicts.length !== 0) {
+			if (onConflict === 'overwrite')
+				this.constraints = setMinus(this.constraints, conflicts);
+			// Merge dupe explicit: x = f(v) <- x = g(v): add f(v) = g(v)
+			// Adding i to e: x = f(v) <- f(x, v) = g(u): Will cascade
+			// Adding i to i: F(v) = 0 <- G(v) = 0: OK for ConComp
+		}
+		this.constraints.push(def);
 		
 		for (var i = 0; i < names.length; i++) {
-			this.constraints[names[i]] = def;
-			this.known[names[i]] = false;
+			var name = names[i];
+			this.known[name] = false; // tabwise
+
+			this.graph.addNode(name);
+			for (var j = 0; j < using.length; j++)
+				this.graph.addEdge(using[j], name);
 		}
+		
+		var cascadeChanges = this.graph.down(names);
+		for (var i = 0; i < cascadeChanges.length; i++)
+			this.known[cascadeChanges[i]] = false;
 
 		return this;
 	};
 	
-	Database.prototype.select_ = function(names) {
+	Database.prototype.select = function(names) {
 		names = asArray(names);
 		
 		if (names.length === 0)
 			return new Table2();
 			
+		// evaluate all definitions
+		// problem: copies of atomic table remain the same!
 		for (var i = 0; i < names.length; i++) {
-			if (!this.known[names[i]]) {
-				var def = this.constraints[names[i]],
-					tab = this.select_(def.parents).setLength(def.maxlen).addCol(def.what, def.as);
-				if (def.parents.length === 0)
-					this.tables.push(tab);
+			if (!this.known[names[i]]) { // tabwise ups
+				var def = firstMatch(this.constraints, function(c) {
+						return c.what.indexOf(names[i]) !== -1;
+					}),
+					parents = this.graph.to[names[i]], // is name enough?
+					tab = this.select(parents).setLength(def.maxlen).addCol(def.what, def.as);
+				
+				setpush(this.tables, tab);
 				for (var j = 0; j < def.what.length; j++)
 					this.known[def.what[j]] = true;
 			}
 		}
 		
+		// select best tables
 		var tabs = [];
-		while (names.length !== 0) {
+		while (names.length > 0) {
 			var bestRate = 0, 
-				bestI = null;
+				tab = null;
 			for (var i = 0; i < this.tables.length && bestRate < names.length; i++) {
-				var rate = intersection(this.tables[i].schema(), names).length;
+				var rate = interPower(this.tables[i].schema(), names);
 				if (rate > bestRate) {
 					bestRate = rate;
-					bestI = i;
+					tab = this.tables[i];
 				}
 			}
-			
-			var tab = this.tables[bestI];
 			tabs.push(tab);
 			names = setMinus(names, tab.schema());
 		}
 		
+		// multiply
 		var temp = tabs[0];
-		for (var i = 1; i < tabs.length; i++)
+		for (var i = 1; i < tabs.length; i++) {
 			temp = temp.times(tabs[i]);
-		if (tabs.length > 1)
 			this.tables.push(temp);
-			
+		}
+		
 		return temp;
 	};
 		
-	// Planning as of 07.11.14
-	//
-	// I. Global:
-	//   1. Merge duplicate explicits
-	//     1*. Choose a simpler function
-	//   2. Inline explicits into implicits while possible.
-	//   3. Group implicits.
-	// II. Local (request r recieved):
-	//   1. Ensure that all the target variables are known and updated
-	//   2. Make a list of all the tables containing r:
-	//     2.1. Find the best match table T
-	//     2.2. Exclude cols(T) from request
-	//   3. Compute the product 
+	Database.prototype.prepare = function() {
+		// Inline explicits into implicits where possible.
+		// Group CCs.
+	};
 	
-	// Need:
-	//   list of all tables
-	//   list of all constraints
-	//   max size for each definition
-	//   dependancy graph
-	//   implicit / explicit flag
-	
-	// Problems as of 08.11.14:
-	//   All the col instances should have independent needsupdate
-	//   Update needs cascade down
-	//   No static resoliving
-		
+			
 	_G.Database = Database;
 }(this));

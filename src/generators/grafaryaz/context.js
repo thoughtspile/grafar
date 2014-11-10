@@ -16,7 +16,7 @@
 	
 	Cont.prototype = new Generator();
 	
-	Cont.prototype.set = function(str, table) {	
+	Cont.prototype.set = function(str, table) {
 		table = table || this.table;
 		
 		if (isExisty(table)) {
