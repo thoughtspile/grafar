@@ -32,7 +32,7 @@
 			using = asArray(constraint.using || []),
 			as = constraint.as || function() {},
 			maxlen = constraint.maxlen,
-			isExplicit = haveCommon(names, using),
+			isExplicit = !haveCommon(names, using),
 			fn = constraint.fn || function() { return 0; },
 			onConflict = 'overwrite';
 			
@@ -42,6 +42,7 @@
 			def = {
 				what: names, // is the matching connectivity component
 				as: as,
+				using: using,
 				maxlen: maxlen // only for root CCs
 			};
 		
@@ -66,6 +67,7 @@
 		var cascadeChanges = this.graph.down(names);
 		for (var i = 0; i < cascadeChanges.length; i++)
 			this.known[cascadeChanges[i]] = false;
+		this.setUpdate(names);
 
 		return this;
 	};
@@ -84,7 +86,7 @@
 						return c.what.indexOf(names[i]) !== -1;
 					}),
 					parents = this.graph.to[names[i]], // is name enough?
-					tab = this.select(parents).setLength(def.maxlen).addCol(def.what, def.as);
+					tab = this.select(parents).resize(def.maxlen).define(def.what, def.using, def.as);
 				
 				setpush(this.tables, tab);
 				for (var j = 0; j < def.what.length; j++)
@@ -116,6 +118,13 @@
 		}
 		
 		return temp;
+	};
+	
+	Database.prototype.setUpdate = function(names) {
+		var affected = this.graph.down(names);
+		for (var i = 0; i < this.tables.length; i++)
+			for (var j = 0; j < affected.length; j++)
+				this.tables[i].needsupdate[affected[j]] = true;		
 	};
 		
 	Database.prototype.prepare = function() {

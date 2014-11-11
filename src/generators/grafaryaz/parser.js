@@ -390,14 +390,6 @@
 		return temp;
 	};
 
-	Node.prototype.grad = function() {
-		return new Node();
-	};
-
-	Node.prototype.toString = function() {
-		return '(' + this.requires.join(', ') + ') -> (' + this.supplies.join(',') + ') : ' + this.body + ' ' + this.mode;
-	};
-
 	Node.prototype.f = function() {
 		var body = MathSystem.formatFunction(this.body);
 		if (!isExisty(this._f)) {

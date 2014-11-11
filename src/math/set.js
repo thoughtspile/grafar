@@ -47,6 +47,13 @@
 		return arr;
 	}
 	
+	function setpop(arr, el) {
+		var i = arr.indexOf(el);
+		if (el !== -1)
+			arr.splice(i, 1);
+		return arr;
+	}
+	
 	
 	_G.firstMatch = firstMatch;
 	_G.interPower = interPower;
@@ -56,4 +63,5 @@
 	_G.unique = unique;
 	_G.setMinus = setMinus;
 	_G.setpush = setpush;
+	_G.setpop = setpop;
 }(this));

@@ -4,47 +4,43 @@
 	var _G = global.grafar,
 		pool = _G.pool,
 		isExisty = _G.isExisty,
-		stats = _G.stats,
 		union = _G.union,
+		setpush = _G.setpush,
+		setpop = _G.setpop,
+		haveCommon = _G.haveCommon,
 		repeatArray = _G.repeatArray,
 		repeatPoints = _G.repeatPoints,
 		incArray = _G.incArray,
 		timesArray = _G.timesArray,
 		Observable = _G.Observable;
-		
-	stats.add('rename').add('clone').add('map').add('mult').add('export').add('index');	
 	
 	
 	function Table2(opts) {
 		Observable.call(this);
 		opts = opts || {};
-	
-		this.data = {};		
+
+		this._schema = [];
+		this.data = {};
+		this.needsupdate = {};
+		this.using = {};
+		this.generators = {};
+		this.groups = {};
+		
 		this.length = 1;
 		this.capacity = opts.capacity || 1;
-		this.requests = [];
 		
 		this.gDesc = '';
 	}
 	
 	Table2.prototype = new Observable();
 	
-	// async
-	Table2.prototype.postRequest = function(names, onComplete) {
-		this.requests = union(this.requests, names.filter(isExisty));
-		return this;
-	};
-	
-	Table2.prototype.postUpdate = function(update, onComplete) {
-		return this;
-	};
 	
 	// misc
 	Table2.prototype.schema = function() {
-		return Object.getOwnPropertyNames(this.data);
+		return this._schema;
 	};
 	
-	Table2.prototype.setLength = function(newLength) {
+	Table2.prototype.resize = function(newLength) {
 		if (isExisty(newLength)) {
 			this.extend(newLength);
 			this.length = newLength;
@@ -53,6 +49,7 @@
 	};
 	
 	Table2.prototype.extend = function(newCapacity) {
+		// length is not set here
 		this.capacity = Math.max(this.capacity, newCapacity);
 		this.schema().forEach(function(name) {
 			if (this.data[name].length < this.capacity) {
@@ -65,24 +62,30 @@
 		return this;
 	};
 	
-	Table2.prototype.addCol = function(names, upfunc) {
+	Table2.prototype.define = function(names, using, upfunc) {
+		upfunc = upfunc || function() {};
+		names = names.slice();
 		for (var i = 0; i < names.length; i++) {
 			var name = names[i];
 			this.data[name] = this.data[name] || pool.get(Float32Array, this.capacity);
-		}
+			setpush(this.schema(), name);
 			
-		if (isExisty(upfunc))
-			this.update(upfunc);
+			this.needsupdate[name] = true;
+			this.groups[name] = names;
+			this.using[name] = using;
+			this.generators[name] = upfunc; // how to trigger multiple?
+		}
+		
+		// oh why? =(
+		//this.refresh(names);
 			
 		return this;
 	};
 	
-	Table2.prototype.dropAll = function() {
-		this.schema().forEach(function(name) {
-			this.dropCol(name);
-		}.bind(this));
-		
-		this.data = {};
+	Table2.prototype.reset = function() {
+		var selfcols = this.schema();
+		for (var i = 0; i < selfcols.length; i++)
+			this.dropCol(name);	
 		this.length = 1;
 		this.capacity = 1;
 		this.gDesc = '';
@@ -90,121 +93,117 @@
 		return this;
 	};
 	
-	Table2.prototype.dropCol = function(name) {	
+	Table2.prototype.dropCol = function(name) {
 		var col = this.data[name];
 		if (isExisty(col)) {
-			pool.push(this.data[name]);
+			pool.push(col);
 			delete this.data[name];
+			setpop(this.schema(), name)
 		}
 		
 		return this;
 	}
 	
 	Table2.prototype.isEmpty = function() {
-		return this.schema().length === 0 && this.length <= 1;
+		return this.schema().length === 0 || this.length === 1;
 	};
 		
 	Table2.prototype.clone = function() {
-		stats.enter('clone')
-		var temp = new Table2({capacity: this.capacity});
-		temp.setLength(this.length);
-		this.schema().forEach(function(name) {
-			temp.addCol(name);
-			temp.data[name].set(this.data[name].subarray(0, this.length));
-		}.bind(this));
-		stats.exit('clone');
+		var temp = new Table2({capacity: this.capacity}).resize(this.length),
+			selfcols = this.schema(),
+			selfdata = this.data;
+		
+		for (var i = 0; i < selfcols.length; i++) {
+			var name = selfcols[i];
+			temp.addCol([name], function(data, l) {
+				data[name].set(selfdata[name].subarray(0, l));
+			});
+		}
+		// and some listeners to sync upflags
+		
 		return temp;
 	};
 	
+	
 	// operations
 	Table2.prototype.update = function(f) {
-		stats.enter('map');
-		
-		var extras = {
-			continuous: false,
-			ordered: false
-		};
+		// extras class maybe
+		var extras = { continuous: false, ordered: false };
 		f(this.data, this.length, extras);
 		this.gDesc = this.gDesc || this.length + (extras.continuous? 'c': 'd');
-		
-		stats.exit('map');
 		return this;
 	};
 
-	Table2.prototype.refresh = function(name, upfunc) {
-		this.addCol(name, upfunc);
+	Table2.prototype.refresh = function(names) {
+		for (var i = 0; i < names.length; i++) {
+			var name = names[i];
+			if (this.needsupdate[name]) {
+				this.refresh(this.using[name]);
+				this.update(this.generators[name]);
+				var group = this.groups[name];
+				for (var j = 0; j < group.length; j++)
+					this.needsupdate[group[j]] = false;
+			}
+		}
 		return this;
 	}
 
 	Table2.prototype.times = function(table2) {
-		stats.enter('mult');
-		//if (intersection(Object.getOwnPropertyNames(this.active), Object.getOwnPropertyNames(table2.active)).length !== 0)
-		//	throw new Error('Multiplying non-disjoint tables');
+		if (haveCommon(this.schema(), table2.schema()))
+			throw new Error('Multiplying non-disjoint tables');
 		
 		var table1 = this,
 			len1 = table1.length,
 			len2 = table2.length,
-			newLen= len1 * len2,
+			newLen = len1 * len2,
 			res = new Table2();
 			
-		res.setLength(newLen);
+		res.resize(newLen);
 		// repeatArray is cheaper!
 		// + short-circuit for empty table
 		table1.schema().forEach(function(name) {
-			res.addCol(name);
-			res.data[name].set(table1.data[name]);
-			repeatPoints(res.data[name], len1, len2);
+			res.define([name], [], function(data) {
+				table1.refresh([name]);
+				data[name].set(table1.data[name]);
+				repeatPoints(data[name], len1, len2);
+			});
 		});
 		table2.schema().forEach(function(name) {
-			res.addCol(name);
-			res.data[name].set(table2.data[name]);
-			repeatArray(res.data[name], len1, len2);
+			res.define([name], [], function(data, l) {
+				table2.refresh([name]);
+				data[name].set(table2.data[name]);
+				repeatArray(data[name], len1, len2);
+			});
 		});
 		res.gDesc = table1.gDesc + '*' + table2.gDesc;
 		
-		stats.exit('mult');
 		return res;
 	};
-	
-	Table2.prototype.rename = function(map) {
-		stats.enter('rename');
-		this.schema().forEach(function(name) {
-			map[name] = map.hasOwnProperty(name)? map[name]: name;
-		});
-		this.data = Object.getOwnPropertyNames(map)
-			.reduce(function(pv, cv) {
-				pv[map[cv]] = this.data[cv];
-				return pv;
-			}.bind(this), {});
-		stats.exit('rename');
-		return this;
-	};
-	
-	Table2.prototype.select = function(order, target) {
-		stats.enter('export');
+		
+	Table2.prototype.export = function(order, target) {
+		this.refresh(order);
+		
 		var itemsize = order.length,
-			n = this.length,
-			outsize = n * itemsize;
-			
-		if (target.length < outsize)
-			throw new Error('Insufficient buffer size for export');
+			n = Math.min(this.length, target.length / itemsize);
+		
+		if (itemsize === 1)
+			target.set(this.data[order[0]].subarray(0, n));
 			
 		for (var j = 0; j < itemsize; j++) {
-			var col = this.data[order[j]],
-				i = 0,
-				k = j;
-			if (isExisty(col)) {
-				for ( ; i < n; i++, k += itemsize)
+			if (order[j] !== null) {
+				var col = this.data[order[j]];
+				for (var i = 0, k = j; i < n; i++, k += itemsize)
 					target[k] = col[i];
-			} else {
-				for ( ; i < n; i++, k += itemsize)
-					target[k] = 0;
 			}
 		}
 		
-		stats.exit('export');
 		return this;
 	};
+	
+	
+	
+	
+	
 	
 	// indexing
 	Table2.prototype.minGraphDescriptor = function() {
@@ -271,8 +270,7 @@
 	};
 	
 	Table2.indexCache = {};
-	
-		
+			
 	// index buffer utils (to be redone)
 	
 	function pathGraph(vert) {
