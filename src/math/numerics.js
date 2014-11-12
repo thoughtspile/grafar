@@ -11,6 +11,17 @@
 	
 	stats.add('probe').add('trace');
 	
+	function zeros(arr, l) {
+		for (var i = 0; i < l; i++)
+			arr[i] = 0;
+		return arr;
+	};
+	
+	function randomize(arr, l, mean, spread) {
+		for (var i = 0; i < l; i++)
+			arr[i] = mean + spread / 2 * (Math.random() + Math.random() - 1);
+	}
+	
 	function pow (x, p) {
 		var temp = Math.pow(x, p);
 		if (!isNaN(temp))
@@ -38,20 +49,19 @@
 		var dof = names.length,
 			tol = config.tol,
 			gradf = grad(f, dof),
-			probeSize = 100;
+			probeSize = 100,
+			mean = [],
+			spread = [],
+			pt = [],
+			realSize = 0,
+			isEmpty = false,
+			needsReshuffle = true;
+		
+		function estimator(flatData, l) {
+			var i = 0, j = 0;
 			
-		return function(data, l, extras) {
-			var flatData = names.map(function(name) {
-					return data[name];
-				}),
-				mean = [],
-				spread = [],
-				i = 0, 
-				j = 0,
-				pt = [],
-				realSize = 0;
+			realSize = 0;
 			
-			stats.enter('probe');
 			for (i = 0; i < probeSize; i++) {
 				pt = [];
 				for (j = 0; j < dof; j++)
@@ -66,8 +76,8 @@
 			
 			for (j = 0; j < dof; j++) {
 				var col = flatData[j],
-					jmin = Number.POSITIVE_INFINITY,
-					jmax = Number.NEGATIVE_INFINITY,
+					jmin = 1000,
+					jmax = -1000,
 					jsum = 0;
 				for (i = 0; i < realSize; i++) {
 					var val = col[i];
@@ -78,25 +88,63 @@
 				mean[j] = jsum / realSize;
 				spread[j] = 1.5 * (jmax - jmin);
 			}
-			stats.exit('probe');
+		}
+		
+		function constructor(data, l, extras) {
+			var flatData = names.map(function(name) {
+					return data[name];
+				}),
+				i = 0, 
+				j = 0;
+				
+			var speed = {};
+			var s = performance.now();
+			estimator(flatData, l);
+			speed['est'] = performance.now() - s;
 			
-			pt = [];
-			stats.enter('trace');
-			for (i = realSize; i < l; i++) {
-				for (j = 0; j < dof; j++)
-					pt[j] = mean[j] + spread[j] / 2 * (Math.random() + Math.random() - 1);
-				newton(pt, f, gradf, false, 10);
-				if (f(pt) < tol)
-					for (var j = 0; j < dof; j++)
-						flatData[j][i] = pt[j];
-				else
-					for (var j = 0; j < dof; j++)
-						flatData[j][i] = 0;
+			var s = performance.now();
+			if (realSize === 0 && !isEmpty) {
+				console.log('empty');
+				for (var j = 0; j < dof; j++)
+					zeros(flatData[j], l);
+				needsReshuffle = true;
+				isEmpty = true;
+				return;
 			}
-			stats.exit('trace');
 			
+			if (realSize !== 0 && needsReshuffle) {
+				console.log('reshuffle');
+				for (j = 0; j < dof; j++)
+					randomize(flatData[j], l, mean[j], spread[j]);
+				needsReshuffle = false;
+				isEmpty = false;
+			}
+			speed['check'] = performance.now() - s;
+			
+			var s = performance.now();
+			if (!isEmpty) {
+				for (i = 0; i < l; i++) {
+					for (j = 0; j < dof; j++)
+						pt[j] = flatData[j][i];
+					newton(pt, f, gradf, false, 10, 3, function(pt) {
+						for (var j = 0; j < dof; j++)
+							pt[j] = mean[j] + spread[j] / 2 * (Math.random() + Math.random() - 1);
+					});
+					if (f(pt) < tol)
+						for (var j = 0; j < dof; j++)
+							flatData[j][i] = pt[j];
+					else
+						for (var j = 0; j < dof; j++)
+							flatData[j][i] = 0;
+				}
+			}
+			speed['compute'] = performance.now() - s;
+				
 			extras.continuous = false;
+			console.log(speed);
 		};
+		
+		return constructor;
 	}
 
 	function grad(fa, nargs) {
@@ -110,11 +158,12 @@
 		};
 	}
 
-	function newton(start, f, gradf, acceptNeg, maxIter) {
+	function newton(start, f, gradf, acceptNeg, maxIter, attempts, reset) {
 		var pt = start,
 			tol = config.tol,
 			offset = [],
 			nabla = [],
+			attempt = 0,
 			i = 0;
 		
 		while (true) {
@@ -126,8 +175,14 @@
 			if (norm(offset) < tol)
 				return pt;
 			if (i === maxIter || pt.indexOf(NaN) !== -1) {
-				pt[0] = NaN;
-				return pt;
+				if (attempt < attempts) {
+					reset(pt);
+					i = 0;
+					attempt++;
+				} else {
+					pt[0] = NaN;
+					return pt;
+				}
 			}
 			arraySum(pt, offset, pt);
 			i++;

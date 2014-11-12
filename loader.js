@@ -22,6 +22,7 @@ var runGrafar = function(callback, pathOverride) {
 		.script('src/math/set.js')
 		.script('src/math/vector.js').wait()
 		.script('src/math/numerics.js')
+		.script('src/math/graphdata.js')
 		
 		.script('src/core/table.js').wait()
 		.script('src/core/database.js').wait()
@@ -29,6 +30,7 @@ var runGrafar = function(callback, pathOverride) {
 		.script('src/generators/gen_interface.js').wait()
 		.script('src/generators/grafaryaz/planner.js').wait()
 		.script('src/generators/grafaryaz/parser.js').wait()
+		.script('src/generators/grafaryaz/parser_.js').wait()
 		.script('src/generators/grafaryaz/context.js')
 	
 		.script('src/core/animation.js')

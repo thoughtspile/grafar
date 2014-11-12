@@ -37,6 +37,7 @@
 		var len = panels.length;
 		for (var i = 0; i < len; i++)
 			panels[i].update();
+		_G.frameId++;
 		global.requestAnimationFrame(update);
 	};
 	
@@ -59,6 +60,7 @@
 	_G.panels = panels;
 	_G.update = update;
 	_G.setup = setup;
+	_G.frameId = 0;
 	
 	update();
 }(this));

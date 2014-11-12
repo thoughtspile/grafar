@@ -65,7 +65,7 @@
 
 ##Tables
   * [x] Adopt a table-centered process
-  * [ ] Increase the naming consistency with DB
+  * [x] Increase the naming consistency with DB
     * [x] map -> update
   * [ ] new -> univers.select
   * [ ] select -> select + export

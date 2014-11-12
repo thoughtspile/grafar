@@ -121,7 +121,7 @@
 	};
 	
 	Database.prototype.setUpdate = function(names) {
-		var affected = this.graph.down(names);
+		var affected = union(names, this.graph.down(names));
 		for (var i = 0; i < this.tables.length; i++)
 			for (var j = 0; j < affected.length; j++)
 				this.tables[i].needsupdate[affected[j]] = true;		
@@ -132,6 +132,10 @@
 		// Group CCs.
 	};
 	
+	
+	Database.prototype.postSelect = function() {
+		
+	};
 			
 	_G.Database = Database;
 }(this));
