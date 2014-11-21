@@ -12,18 +12,18 @@
 				return temp;
 		}
 	}
-	
-	function strToArray (str) {
-		if (typeof str === 'string')
-			return str.replace(/ /g, '').split(',');
-		else 
-			return str;
-	}
 					
 	function isExisty(obj) {
 		return typeof(obj) !== 'undefined' && obj !== null;
 	}
 		
+	function strToArray (str) {
+		if (typeof str === 'string')
+			return str.replace(/ /g, '').split(',');
+		else 
+			return str.filter(isExisty);
+	}
+	
 	function repeatArray(arr, len, times) {
 		var buff = arr.subarray(0, len),
 			newlen = times * len;

@@ -70,16 +70,9 @@
 	}
 		
 	function MathSystem(str, targetRef) {
-		stats.enter('parse');
-		
 		var nodes = MathSystem.strToAtomicNodes(str);
-		stats.exit('parse').enter('merge');
 		nodes = MathSystem.collapseNodes(nodes);
-		stats.exit('merge').enter('plan');
-		
 		this.plan = new Plan(nodes, targetRef);
-		
-		stats.exit('plan');
 	}
 
 	MathSystem.strToAtomicNodes = function(str) {
@@ -474,9 +467,36 @@
 		return str;
 	};
 	
+
+	function ductParse(str, params, section) {
+		var fixed = setMinus(Object.keys(params).filter(function(r) {return !Array.isArray(params[r])}), ['x', 'y', 'z']),
+			isSection = isExisty(section);
+		for (var i = 0; i < fixed.length; i++)
+			str = inlineSubstitute(str, fixed[i], params[fixed[i]]);
+		str = str.replace(/<[^=]/g, '<=').replace(/>[^=]/g, '>=');
+		var constraints = str.split('&');
+		for (var i = 0; i < constraints.length; i++) {
+			var sides = constraints[i].split(/(<=|>=|==)/g);
+			if (sides[1] === '==')
+				constraints[i] = 'abs(' + sides[0] + '-(' + sides[2] + '))';
+			else if (sides[1] === '>=')
+				constraints[i] = sides[2] + '-' + sides[0];
+			else if (sides[1] === '<=')
+				constraints[i] = sides[0] + '-' + sides[2];
+			constraints[i] = MathSystem.formatFunction(constraints[i]);
+		}
+		var body = constraints.length > 1? 'Math.max(' + constraints.join(',') + ')': constraints[0],
+			vars = union(MathSystem.extractVariables(body), ['x', 'y', 'z']);
+		for (var i = 0; i < vars.length; i++)
+			body = inlineSubstitute(body, vars[i], 'pt[' + i + ']');
+		var coref = new Function('pt', 'return ' + body);
+		var f = traceZeroSet(coref, vars);
+		return f;
+	}
 	
 	// exports
 	
 	_G.MathSystem = MathSystem;
+	_G.ductParse = ductParse;
 	_G.Node = Node;
 }(this));

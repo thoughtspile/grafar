@@ -162,7 +162,6 @@
 		if (isExisty(panel)) {
 			panel.scene.add(this.object);		
 			// woah!
-			console.log('woah!');
 			this.dataInterface().buffers[0].names = panel._axes;
 		}
 		

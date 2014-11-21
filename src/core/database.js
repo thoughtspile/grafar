@@ -87,7 +87,9 @@
 					}),
 					parents = this.graph.to[names[i]], // is name enough?
 					tab = this.select(parents).resize(def.maxlen).define(def.what, def.using, def.as);
-				
+				this.tables = [];
+				// OLD TABLE REMAINS    !!!!!!!!!!!!!!!!!!!!!!
+				//console.log('redefine', def.as.id);
 				setpush(this.tables, tab);
 				for (var j = 0; j < def.what.length; j++)
 					this.known[def.what[j]] = true;

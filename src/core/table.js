@@ -135,7 +135,6 @@
 	};
 
 	Table2.prototype.refresh = function(names) {
-		//console.log('ref', names, this.needsupdate);
 		var frameId =  _G.frameId;
 		for (var i = 0; i < names.length; i++) {
 			var name = names[i];
@@ -202,7 +201,6 @@
 					target[k] = col[i];
 			}
 		}
-		//console.log(performance.now() - s);
 		
 		return this;
 	};

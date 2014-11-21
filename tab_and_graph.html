@@ -2,33 +2,27 @@
 <html>
 
 <head>
+	<link rel="stylesheet" type="text/css" href="grafar_style.css" media="screen" />
 </head>
 
 <body>
 	<script src = 'loader.js'></script>
 	<script>
 		runGrafar(function() {			
-			var n = 600,
-				frameCount = 10,
-				db = new grafar.Database();				
-
-			var pan = new grafar.Panel(document.body),
-				graph = new grafar.Graph({panel: pan}),
-				di = graph.dataInterface();
-			di.buffers[0].length = 3 * n * n;
-
-			var s = performance.now(), l = 0;
-			window.requestAnimationFrame(function frame() {
-				l = (performance.now() - s) / 1000;
+			var duration = 100,
+				pan = new grafar.Panel(document.body),
+				obj = new grafar.Object().pin(pan),
+				s = performance.now(), 
+				l = 0;
 				
-				db.constrain({what: 'x, y, z', maxlen: 8000, as: grafar.traceZeroSet(function(v) {
-					return v[0] * v[0] + v[1] * v[1] + v[2] * v[2] - 3 * Math.sin(l);
+			window.requestAnimationFrame(function frame() {
+				l = (performance.now() - s) / 2000;
+				
+				obj.constrain({what: 'x, y, z', maxlen: 12000, as: grafar.traceZeroSet(function(v) {
+					return v[0] * v[0] + v[1] * v[1] + v[2] * v[2] * Math.sin(l) - 2;
 				}, ['x', 'y', 'z'])});
 				
-				db.select(['x', 'y', 'z']).export(['x', 'z', 'y'], di.buffers[0].array);					
-				di.buffers[0].update();
-				
-				if (l < frameCount)
+				if (l < duration)
 					window.requestAnimationFrame(frame);
 			});
 		}, '')
