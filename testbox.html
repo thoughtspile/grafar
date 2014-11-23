@@ -1,0 +1,58 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<title>testbox</title>
+	
+	<link rel="stylesheet" type="text/css" href="testbox_style.css" media="screen" />
+	
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+</head>
+
+<body>
+	<div id = "plot_area"><!--
+		--><div id = "plot3d"></div><!--
+		--><div id = "plot2d"></div>
+	</div><!--
+	--><div id = "ui">
+		<h1 id = "logo">grafar jr.</h1>
+		
+		<div id = "options"></div>
+		<div id = "info"></div>
+	</div>
+	
+	
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+	<script type="text/x-mathjax-config">
+		MathJax.Hub.Config({
+			tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+			"HTML-CSS": { linebreaks: { automatic: true, width: "75% container" } }
+		});
+    </script>
+	
+	<script type="text/javascript" src="loader.js"></script>
+	<script type="text/javascript">
+		runGrafar(function() {
+			var pan3d = new grafar.Panel(document.getElementById('plot3d')),
+				o = new grafar.Object().pin(pan3d);
+			o.constrain({what: 'p', maxlen: 300, as: grafar.seq(0, 1, 'p')})
+				.constrain({what: 'q', maxlen: 300, as: grafar.seq(0, 1, 'q')})
+				.constrain({what: 'x', using: 'p, q', as: function(data, l) {
+					for (var i = 0; i < l; i++)
+						data.x[i] = data.p[i];
+				}})
+				.constrain({what: 'y', using: 'p, q', as: function(data, l) {
+					for (var i = 0; i < l; i++)
+						data.y[i] = data.p[i] * data.q[i];
+				}})
+				.constrain({what: 'z', maxlen: 300, as: function(data, l) {
+					for (var i = 0; i < l; i++)
+						data.z[i] = 0;
+				}});
+			console.log(o);
+		}, '');
+	</script>
+
+	</body>
+</html>
