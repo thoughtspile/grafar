@@ -72,7 +72,7 @@
 		for (var i = 0; i < this.glinstances.length; i++) {
 			var instance = this.glinstances[i],
 				names = instance.panel._axes;
-			console.log(names, this.db);
+			console.log('refresh', names, this.db);
 			var tab = this.db.select(names);
 			instance.resize(tab.length * names.length);
 			tab.export(names, instance.target.array);

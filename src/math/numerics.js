@@ -34,6 +34,14 @@
 		return NaN;
 	}
 	
+	function constant(val, name) {
+		return function(data, l, extras) {
+			for (var i = 0; i < l ; i++)
+				data[name][i] = val;
+			extras.continuous = true;
+		};
+	}
+	
 	function seq(a, b, name, closed) {
 		a = Number(a);
 		b = Number(b);
@@ -181,6 +189,7 @@
 	
 	// exports
 	
+	_G.constant = constant;
 	_G.seq = seq;
 	_G.traceZeroSet = traceZeroSet;
 	_G.pow = pow;

@@ -36,28 +36,57 @@
 		runGrafar(function() {
 			var pan3d = new grafar.Panel(document.getElementById('plot3d')),
 				bld1 = new grafar.Object().pin(pan3d),
+				bld2 = new grafar.Object().pin(pan3d),
 				ground = new grafar.Object().pin(pan3d);
 				
-			bld1.constrain({what: 'p', maxlen: 300, as: grafar.seq(0, 2 * Math.PI, 'p', true)})
+			bld1.constrain({what: 'p', maxlen: 200, as: grafar.seq(0, 2 * Math.PI, 'p', true)})
 				.constrain({what: 'z', maxlen: 60, as: grafar.seq(0, Math.PI / 2, 'z')})
 				.constrain({what: 'x', using: 'p, z', as: function(data, l) {
 					for (var i = 0; i < l; i++)
-						data.x[i] = Math.sin(data.p[i]) + Math.sin(data.z[i]) / 3;
+						data.x[i] = Math.sin(data.p[i]) + Math.sin(data.z[i]) / 3 + 4;
 				}})
 				.constrain({what: 'y', using: 'p, z', as: function(data, l) {
 					for (var i = 0; i < l; i++)
-						data.y[i] = Math.cos(data.p[i]) + Math.cos(data.z[i]) / 4;
+						data.y[i] = Math.cos(data.p[i]) + Math.cos(data.z[i]) / 4 - 3;
 				}})
 				.refresh();
 				
-			ground.constrain({what: 'x', maxlen: 100, as: grafar.seq(-2, 2, 'x')})
-				.constrain({what: 'y', maxlen: 100, as: grafar.seq(-2, 2, 'y')})
-				.constrain({what: 'z', maxlen: 1, as: function(data, l) {
-					for (var i = 0; i < l; i++)
-						data.z[i] = 0;
+			console.log('pyram');
+			bld2.constrain({what: 'p', maxlen: 100, as: grafar.seq(-1, 1, 'p', true)})
+				.constrain({what: 'z', maxlen: 60, as: grafar.seq(0, 1, 'z')})
+				.constrain({what: 'side', maxlen: 4, as: grafar.seq(0, 3, 'side')})
+				.constrain({what: 'x', using: 'p, z, side', as: function(data, l) {
+					console.log('x in');
+					var side = data.side;
+					for (var i = 0; i < l; i++) {
+						if (side[i] === 0 || side[i] === 2)
+							data.x[i] = (1 - data.z[i]) * data.p[i];
+						else if (side[i] === 1)
+							data.x[i] = (1 - data.z[i]);
+						else if (side[i] === 3)
+							data.x[i] = -(1 - data.z[i]);
+					}
+				}})
+				.constrain({what: 'y', using: 'p, z, side', as: function(data, l) {
+					console.log('y in');
+					var side = data.side;
+					for (var i = 0; i < l; i++) {
+						if (side[i] === 1 || side[i] === 3)
+							data.y[i] = (1 - data.z[i]) * data.p[i];
+						else if (side[i] === 0)
+							data.y[i] = (1 - data.z[i]);
+						else if (side[i] === 2)
+							data.y[i] = -(1 - data.z[i]);
+					}
 				}})
 				.refresh();
-			console.log(o);
+				
+			ground.constrain({what: 'x', maxlen: 300, as: grafar.seq(-5, 5, 'x')})
+				.constrain({what: 'y', maxlen: 300, as: grafar.seq(-5, 5, 'y')})
+				.constrain({what: 'z', maxlen: 1, as: grafar.constant(0, 'z')})
+				.refresh();
+				
+			console.log('finish', o);
 		}, '');
 	</script>
 

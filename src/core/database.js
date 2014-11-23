@@ -50,8 +50,11 @@
 		//console.log('c', def);
 		
 		if (conflicts.length !== 0) {
-			if (onConflict === 'overwrite')
+			if (onConflict === 'overwrite') {
 				this.constraints = setMinus(this.constraints, conflicts);
+				// only psubs
+				def.baseTable = conflicts[0].baseTable;
+			}
 			// Merge dupe explicit: x = f(v) <- x = g(v): add f(v) = g(v)
 			// Adding i to e: x = f(v) <- f(x, v) = g(u): Will cascade
 			// Adding i to i: F(v) = 0 <- G(v) = 0: OK for ConComp

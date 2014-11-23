@@ -91,13 +91,13 @@
 				
 				activeHelpers = problem.eqns.length;
 				for (var i = 0; i < activeHelpers; i++) {
-					helpers3d[i].constrain({what: 'x, y, z', maxlen: 12000, as: grafar.ductParse(problem.eqns[i], problem.cube)});
+					helpers3d[i].constrain({what: 'x, y, z', maxlen: 12000, as: grafar.ductParse(problem.eqns[i], problem.cube)}).refresh();
 				};
 				for ( ; i < maxHelpers; i++) {
 					helpers3d[i].hide(true);
 					helpers2d[i].hide(true);
 				};
-				area.constrain({what: 'x, y, z', maxlen: 15000, as: grafar.ductParse(problem.eqns.join('&'), problem.cube)});
+				area.constrain({what: 'x, y, z', maxlen: 15000, as: grafar.ductParse(problem.eqns.join('&'), problem.cube)}).refresh();
 				
 				plotArea();
 				updateSection();
@@ -117,10 +117,10 @@
 					sector = '&' + targetvar + '==' + height;
 					
 				pan2d.setAxes(grafar.setpop(['x', 'y', 'z'], targetvar));
-				section.constrain({what: 'x, y, z', maxlen: 5000, as: grafar.ductParse(problem.eqns.join('&') + sector, problem.cube)});
-				section2.constrain({what: 'x, y, z', maxlen: 5000, as: grafar.ductParse(problem.eqns.join('&') + sector, problem.cube)});
+				section.constrain({what: 'x, y, z', maxlen: 5000, as: grafar.ductParse(problem.eqns.join('&') + sector, problem.cube)}).refresh();
+				section2.constrain({what: 'x, y, z', maxlen: 5000, as: grafar.ductParse(problem.eqns.join('&') + sector, problem.cube)}).refresh();
 				for (var i = 0; i < activeHelpers; i++)
-					helpers2d[i].constrain({what: 'x, y, z', maxlen: 5000, as: grafar.ductParse(problem.eqns[i] + sector, problem.cube)});
+					helpers2d[i].constrain({what: 'x, y, z', maxlen: 5000, as: grafar.ductParse(problem.eqns[i] + sector, problem.cube)}).refresh();
 			}
 		}, '');
 	</script>

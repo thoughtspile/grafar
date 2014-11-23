@@ -20,7 +20,7 @@
 				
 				obj.constrain({what: 'x, y, z', maxlen: 12000, as: grafar.traceZeroSet(function(v) {
 					return v[0] * v[0] + v[1] * v[1] + v[2] * v[2] * Math.sin(l) - 2;
-				}, ['x', 'y', 'z'])});
+				}, ['x', 'y', 'z'])}).refresh();
 				
 				if (l < duration)
 					window.requestAnimationFrame(frame);
