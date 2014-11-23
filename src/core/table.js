@@ -175,7 +175,7 @@
 			res.define([name], [], function(data, l) {
 				table2.refresh([name]);
 				data[name].set(table2.data[name]);
-				repeatArray(data[name], len1, len2);
+				repeatArray(data[name], len2, len1);
 			});
 		});
 		res.gDesc = table1.gDesc + '*' + table2.gDesc;

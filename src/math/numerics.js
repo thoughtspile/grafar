@@ -34,11 +34,12 @@
 		return NaN;
 	}
 	
-	function seq(a, b, name) {
+	function seq(a, b, name, closed) {
 		a = Number(a);
 		b = Number(b);
+		var closeFix = (closed === true? 0: 1);
 		return function(data, l, extras) {
-			var step = (b - a) / (l - 1);
+			var step = (b - a) / (l - closeFix);
 			for (var i = 0; i < l ; i++)
 				data[name][i] = a + i * step;
 			extras.continuous = true;

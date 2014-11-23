@@ -35,21 +35,28 @@
 	<script type="text/javascript">
 		runGrafar(function() {
 			var pan3d = new grafar.Panel(document.getElementById('plot3d')),
-				o = new grafar.Object().pin(pan3d);
-			o.constrain({what: 'p', maxlen: 300, as: grafar.seq(0, 1, 'p')})
-				.constrain({what: 'q', maxlen: 300, as: grafar.seq(0, 1, 'q')})
-				.constrain({what: 'x', using: 'p, q', as: function(data, l) {
+				bld1 = new grafar.Object().pin(pan3d),
+				ground = new grafar.Object().pin(pan3d);
+				
+			bld1.constrain({what: 'p', maxlen: 300, as: grafar.seq(0, 2 * Math.PI, 'p', true)})
+				.constrain({what: 'z', maxlen: 60, as: grafar.seq(0, Math.PI / 2, 'z')})
+				.constrain({what: 'x', using: 'p, z', as: function(data, l) {
 					for (var i = 0; i < l; i++)
-						data.x[i] = data.p[i];
+						data.x[i] = Math.sin(data.p[i]) + Math.sin(data.z[i]) / 3;
 				}})
-				.constrain({what: 'y', using: 'p, q', as: function(data, l) {
+				.constrain({what: 'y', using: 'p, z', as: function(data, l) {
 					for (var i = 0; i < l; i++)
-						data.y[i] = data.p[i] * data.q[i];
+						data.y[i] = Math.cos(data.p[i]) + Math.cos(data.z[i]) / 4;
 				}})
-				.constrain({what: 'z', maxlen: 300, as: function(data, l) {
+				.refresh();
+				
+			ground.constrain({what: 'x', maxlen: 100, as: grafar.seq(-2, 2, 'x')})
+				.constrain({what: 'y', maxlen: 100, as: grafar.seq(-2, 2, 'y')})
+				.constrain({what: 'z', maxlen: 1, as: function(data, l) {
 					for (var i = 0; i < l; i++)
 						data.z[i] = 0;
-				}});
+				}})
+				.refresh();
 			console.log(o);
 		}, '');
 	</script>

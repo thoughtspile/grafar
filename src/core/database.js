@@ -28,6 +28,7 @@
 	Database.prototype = new Observable();
 	
 	Database.prototype.constrain = function(constraint) {
+		//console.log('c in');
 		var names = asArray(constraint.what || []),
 			using = asArray(constraint.using || []),
 			as = constraint.as || function() {},
@@ -42,9 +43,11 @@
 			def = {
 				what: names, // is the matching connectivity component
 				as: as,
+				baseTable: null,
 				using: using,
 				maxlen: maxlen // only for root CCs
 			};
+		//console.log('c', def);
 		
 		if (conflicts.length !== 0) {
 			if (onConflict === 'overwrite')
@@ -64,11 +67,13 @@
 				this.graph.addEdge(using[j], name);
 		}
 		
+		//console.log('cascade');
 		var cascadeChanges = this.graph.down(names);
 		for (var i = 0; i < cascadeChanges.length; i++)
 			this.known[cascadeChanges[i]] = false;
 		this.setUpdate(names);
 
+		//console.log('c out');
 		return this;
 	};
 	
@@ -84,13 +89,18 @@
 			if (!this.known[names[i]]) { // tabwise ups
 				var def = firstMatch(this.constraints, function(c) {
 						return c.what.indexOf(names[i]) !== -1;
-					}),
-					parents = this.graph.to[names[i]], // is name enough?
-					tab = this.select(parents).resize(def.maxlen).define(def.what, def.using, def.as);
-				this.tables = [];
-				// OLD TABLE REMAINS    !!!!!!!!!!!!!!!!!!!!!!
-				//console.log('redefine', def.as.id);
-				setpush(this.tables, tab);
+					});
+				if (!isExisty(def.baseTable)) {
+					var parents = this.graph.to[names[i]], // is name enough?
+						tab = this.select(parents).resize(def.maxlen).define(def.what, def.using, def.as);
+					// OLD TABLE REMAINS    !!!!!!!!!!!!!!!!!!!!!!
+					//console.log('redefine', def.as.id);
+					//this.tables = []; // THIS IS LIKE EVEN WORSE   !!!!!!!!!!!!!!!!!!!!!
+					setpush(this.tables, tab);
+					def.baseTable = tab;
+				} else {
+					def.baseTable.define(def.what, def.using, def.as);
+				}
 				for (var j = 0; j < def.what.length; j++)
 					this.known[def.what[j]] = true;
 			}
