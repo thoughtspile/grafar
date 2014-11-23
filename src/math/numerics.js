@@ -47,9 +47,23 @@
 		b = Number(b);
 		var closeFix = (closed === true? 0: 1);
 		return function(data, l, extras) {
+			console.log('seq ' + name);
 			var step = (b - a) / (l - closeFix);
-			for (var i = 0; i < l ; i++)
+			for (var i = 0; i < l; i++)
 				data[name][i] = a + i * step;
+			extras.continuous = true;
+		};
+	}
+	
+	function logseq(a, b, name) {
+		a = Number(a);
+		b = Number(b);
+		var closeFix = (closed === true? 0: 1);
+		return function(data, l, extras) {
+			console.log('logseq ' + name);
+			var step = (b - a) / Math.log(l);
+			for (var i = 1; i < l + 1; i++)
+				data[name][i] = a + Math.log(i) * step;
 			extras.continuous = true;
 		};
 	}
@@ -191,6 +205,7 @@
 	
 	_G.constant = constant;
 	_G.seq = seq;
+	_G.logseq = logseq;
 	_G.traceZeroSet = traceZeroSet;
 	_G.pow = pow;
 }(this));

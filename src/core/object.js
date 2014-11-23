@@ -74,6 +74,7 @@
 				names = instance.panel._axes;
 			console.log('refresh', names, this.db);
 			var tab = this.db.select(names);
+			console.log('sel', tab);
 			instance.resize(tab.length * names.length);
 			tab.export(names, instance.target.array);
 			instance.target.needsUpdate = true;
