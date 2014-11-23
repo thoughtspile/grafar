@@ -1,0 +1,33 @@
+<!--context.set('x @= [-20, 20] & y @= [-20, 20] & z == sin(x) * cos(y * x + $e)'.replace(/\$e/g, t));-->
+<html>
+
+<head>
+	<link rel="stylesheet" type="text/css" href="grafar_style.css" media="screen" />
+</head>
+
+<body>
+	<script src = 'loader.js'></script>
+	<script>
+		runGrafar(function() {			
+			var duration = 100,
+				pan = new grafar.Panel(document.body),
+				obj = new grafar.Object().pin(pan),
+				s = performance.now(), 
+				l = 0;
+				
+			window.requestAnimationFrame(function frame() {
+				l = (performance.now() - s) / 2000;
+				
+				obj.constrain({what: 'x, y, z', maxlen: 12000, as: grafar.traceZeroSet(function(v) {
+					return v[0] * v[0] + v[1] * v[1] + v[2] * v[2] * Math.sin(l) - 2;
+				}, ['x', 'y', 'z'])}).refresh();
+				
+				if (l < duration)
+					window.requestAnimationFrame(frame);
+			});
+		}, '')
+	</script>
+</body>
+
+
+</html>

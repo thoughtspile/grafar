@@ -1,22 +1,23 @@
 'use strict';
 
 (function(global) {
-	// import
-	
-	var _GY = global.grafaryaz || (global.grafaryaz = {}),
-		seq = _GY.seq,
-		parserConfig = _GY.config,
-		traceZeroSet = _GY.traceZeroSet,
-		haveCommon = _GY.haveCommon,
-		isExisty = _GY.isExisty,
-		firstMatch = _GY.firstMatch,
-		intersection = _GY.intersection,
-		union = _GY.union,
-		unique = _GY.unique,
-		setMinus = _GY.setMinus,
-		Plan = _GY.Plan;
-
+	var _G = global.grafar,
+		parserConfig = _G.config.grafaryaz,
+		stats = _G.stats,
 		
+		seq = _G.seq,
+		traceZeroSet = _G.traceZeroSet,
+		
+		haveCommon = _G.haveCommon,
+		isExisty = _G.isExisty,
+		firstMatch = _G.firstMatch,
+		union = _G.union,
+		unique = _G.unique,
+		setMinus = _G.setMinus,
+		
+		Plan = _G.Plan;
+
+	stats.add('parse').add('merge').add('plan');
 	// locals
 	
 	var prefixes = {
@@ -24,7 +25,7 @@
 		cos: 'Math.cos',
 		sqrt: 'Math.sqrt',
 		tan: 'Math.tan',
-		pow: 'grafaryaz.pow',
+		pow: 'grafar.pow',
 		min: 'Math.min',
 		max: 'Math.max',
 		exp: 'Math.exp',
@@ -69,16 +70,9 @@
 	}
 		
 	function MathSystem(str, targetRef) {
-		var s = Date.now();
-		
 		var nodes = MathSystem.strToAtomicNodes(str);
-		console.log('atomic node soup', snapNodeState(nodes), 'in', Date.now() - s);
 		nodes = MathSystem.collapseNodes(nodes);
-		console.log('molecular node soup', snapNodeState(nodes), 'in', Date.now() - s);
-		
 		this.plan = new Plan(nodes, targetRef);
-		
-		console.log(Date.now() - s, 'ms per parse');
 	}
 
 	MathSystem.strToAtomicNodes = function(str) {
@@ -243,11 +237,6 @@
 			return prefixes.hasOwnProperty(match)? prefixes[match]: match;
 		});	
 		return str;		
-	};
-
-	
-	MathSystem.prototype.sample = function() {
-		return this.plan.execute();
 	};
 
 
@@ -478,10 +467,36 @@
 		return str;
 	};
 	
+
+	function ductParse(str, params, section) {
+		var fixed = setMinus(Object.keys(params).filter(function(r) {return !Array.isArray(params[r])}), ['x', 'y', 'z']),
+			isSection = isExisty(section);
+		for (var i = 0; i < fixed.length; i++)
+			str = inlineSubstitute(str, fixed[i], params[fixed[i]]);
+		str = str.replace(/<[^=]/g, '<=').replace(/>[^=]/g, '>=');
+		var constraints = str.split('&');
+		for (var i = 0; i < constraints.length; i++) {
+			var sides = constraints[i].split(/(<=|>=|==)/g);
+			if (sides[1] === '==')
+				constraints[i] = 'abs(' + sides[0] + '-(' + sides[2] + '))';
+			else if (sides[1] === '>=')
+				constraints[i] = sides[2] + '-' + sides[0];
+			else if (sides[1] === '<=')
+				constraints[i] = sides[0] + '-' + sides[2];
+			constraints[i] = MathSystem.formatFunction(constraints[i]);
+		}
+		var body = constraints.length > 1? 'Math.max(' + constraints.join(',') + ')': constraints[0],
+			vars = union(MathSystem.extractVariables(body), ['x', 'y', 'z']);
+		for (var i = 0; i < vars.length; i++)
+			body = inlineSubstitute(body, vars[i], 'pt[' + i + ']');
+		var coref = new Function('pt', 'return ' + body);
+		var f = traceZeroSet(coref, vars);
+		return f;
+	}
 	
 	// exports
 	
-	_GY.MathSystem = MathSystem;
-	_GY.config = parserConfig;
-	_GY.Node = Node;
+	_G.MathSystem = MathSystem;
+	_G.ductParse = ductParse;
+	_G.Node = Node;
 }(this));

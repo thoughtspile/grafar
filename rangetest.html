@@ -1,0 +1,26 @@
+<html>
+
+<head>
+</head>
+
+<body>
+	<script src = 'loader.js'></script>
+	<script>
+		runGrafar(function() {
+			var rangef = function(x) {
+					return Math.abs(x[0]) - 1;
+				}, 
+				rangeMaker = grafar.traceZeroSet(rangef, ['x']),
+				target = {x: []},
+				len = 100;
+			
+			console.time('rqngeb');
+			rangeMaker(target, len, {});
+			console.log(target);
+			console.timeEnd('rqngeb');
+		}, '');
+	</script>
+</body>
+
+
+</html>

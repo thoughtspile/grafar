@@ -1,11 +1,11 @@
 'use strict';
 
 (function(global) {
-	var _GY = global.grafaryaz || (global.grafaryaz = {}),
-		config = _GY.config,
-		Table2 = _GY.Table2,
-		union = _GY.union,
-		setMinus = _GY.setMinus;
+	var _G = global.grafar,
+		config = _G.config.grafaryaz,
+		Table2 = _G.Table2,
+		union = _G.union,
+		setMinus = _G.setMinus;
 
 	function joinInput(nodes) {
 		return nodes.map(function(f) {
@@ -60,39 +60,33 @@
 		});
 	}
 
-	Plan.prototype.execute = function() {
-		var temp = this.steps.reduce(function(table, step) {
-			return step.proceed(table);
-		}, new Table2());
-		return temp;
+	Plan.prototype.sequence = function() {
+		return this.steps.reduce(function(pv, step) {
+			step.maps.forEach(function(map) {
+				pv.push(function(tab) {
+					tab.addCol(map.supplies, map.f());
+				});
+			});
+			step.ranges.forEach(function(extender) {
+				var len = (extender.mode === 'in'? config.samples: Math.pow(config.samplesPerDOF, extender.variables.length));
+				pv.push(function(tab) {
+					tab.times(new Table2({capacity: len}) // argh
+						.setLength(len)
+						.addCol(extender.supplies, extender.f())
+					);
+				});
+			});
+			return pv;
+		}, []);
 	};
-
+	
 	Plan.Step = function(maps, extenders) {
 		this.ranges = extenders;
 		this.maps = maps;
 	};
-
-	Plan.Step.prototype.proceed = function(state) {
-		this.maps.forEach(function(map) {
-			map.supplies.forEach(function(name) {
-				state.addCol(name);
-			});
-			state.map(map.f());
-		});
-		this.ranges.forEach(function(extender) {
-			var len = (extender.mode === 'in'? config.samples: Math.pow(config.samplesPerDOF, extender.variables.length)),
-				temp = new Table2({capacity: len}).setLength(len);
-			extender.supplies.forEach(function(name) {
-				temp.addCol(name);
-			});
-			temp.map(extender.f());
-			state.times(temp);
-		});
-		
-		return state;
-	};
+	
 	
 	// global
 	
-	_GY.Plan = Plan;
+	_G.Plan = Plan;
 }(this));

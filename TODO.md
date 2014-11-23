@@ -1,5 +1,5 @@
-##1. General
-  * [ ] Propose restructure.
+##General
+  * [x] Propose restructure.
   * [ ] Alternate generators.
     * [ ] csv
 	* [ ] JSON
@@ -7,12 +7,8 @@
   * [ ] Need moar demos.
   * [ ] Annotate source.
   * [ ] Write decent documentation.
-    * [ ] Update existing
+    * [ ] Update existing (4.09)
 	* [ ] Put into wiki
-  * [ ] Performance cleanup.
-    * [ ] drawTextLabel: store canvas
-	* [ ] validate any allocations
-	* [ ] expose ArrayPool and use it in indexArrays and WebGL buffer alloc
   * [ ] Compile in several flavours.
     * [ ] with Three
 	* [ ] minimal Three
@@ -20,16 +16,34 @@
 	* [ ] parser only (+ table?)
 	* [ ] table only
 	* [ ] renderer + table
-  * [ ] Common event loop with load balancing and stats.
   * [ ] Allow runtime configuring.
-    * [ ] Check config fields
-	* [ ] merge configs from G & GY
+    * [x] Check config fields (4.09)
+	* [ ] Should some fields be added to the config?
+	* [ ] merge configs from G & GY (would this work with part-compiles?)
   * [ ] Polyfills.
-    * [ ] Typed Arrays
+    * [x] Typed Arrays
 	* [ ] ES5 array methods
   * [ ] launcher.js default path.
   
-##2. Grafaryaz parser
+## Restructure
+  * [x] Dispatcher
+  * [x] Graph-Table binding
+  * [ ] Generator-Table binding
+  * [ ] 
+  
+##Performance
+  * [ ] Common event loop with load balancing and stats.
+    * [x] Add grafar.stats object
+	* [ ] Fill that object with useful properties
+	* [x] Report creating
+	* [ ] Common event loop
+	* [ ] Load balancing based on execution times
+  * [ ] Performance cleanup.
+    * [ ] drawTextLabel: store canvas || hint: canvas is stored by reference in texture (4.09)
+	* [ ] validate any allocations
+	* [x] expose ArrayPool and use it in indexArrays and WebGL buffer allocation.
+  
+##Grafaryaz parser
   * [ ] Allow infinite domains based on FOV.
     * [ ] accessors for camera position
 	* [ ] passing parameters to GY (or other syncing)
@@ -49,7 +63,15 @@
   * [ ] Border / fill mode.
   * [ ] clean the mess in base parser.
 
-##3. Tables
+##Tables
+  * [x] Adopt a table-centered process
+  * [x] Increase the naming consistency with DB
+    * [x] map -> update
+  * [ ] new -> univers.select
+  * [ ] select -> select + export
+    * [ ] Implement filtering in select.
+    * [ ] views (select output) with blank drop
+	* [ ] asInterleaved
   * [ ] Fix g-descriptors.
     * [x] In-table logic (1.09)
 	* [x] Move to Typed Arrays (2.09)
@@ -63,17 +85,14 @@
 	* [x] WTF happened to another half of edges? (2.09)
 	* [x] Check table memoization (2.09)
   * [ ] Split proxies into projection and undefined column.
-  * [ ] Add extras to map.
+    * [ ] Create the universal table
+  * [ ] Add extras to update.
     * [x] continuous
 	* [ ] actual size (ivalidTail or what?)
 	* [ ] ordered
-  * [ ] Implement filtering in select.
-  * [ ] Split select into *real* select and asSometing.
-    * [ ] views (select should return one).
-	* [ ] asArrayBuffer.
-  * [ ] Move Table to a separate accessible class.
+  * [x] Move Table to a separate accessible class.
 
-##4. Grafar rendering
+##Grafar rendering
   * [ ] Add triangle plot.
   * [ ] Add arrows.
   * [ ] Add custom attributes
@@ -90,18 +109,20 @@
   * [ ] Dig axis labelling position
   * [ ] Implement axis ticks
   * [ ] Fix canvas rendering
+  * [ ] FOV objects
   
-##5. Grafar Graphs.
+##Grafar Graphs.
   * [ ] Tree -> class + id to allow for overlapping classes.
-  * [ ] Where do coordinate permutations go?
+  * [ ] Where do coordinate permutations fit in?
 
-##6. Style
+##Style
   * [ ] Dig into colour schemes (nicer feel).
   * [ ] Add hierarchical hue distance.
   * [ ] Single-hue colour schemes for ordinal data.
   * [ ] Particle size should depend on scale
+  * [ ] custom converter (hex <-> lab)
   
-##7. Grafaryaz planner
+##Grafaryaz planner
   * [ ] Bug: if a value is mapped onto and required on several steps, the map is performed more than once.
   * [ ] Dig into parallelization options.
   * [ ] Better / faster step structure

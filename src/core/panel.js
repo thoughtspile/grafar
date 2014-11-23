@@ -1,13 +1,17 @@
 'use strict';
 
 (function(global) {
-	var _G = global.grafar || (global.grafar = {});
-	
-	var config = _G.config,
+	var _G = global.grafar,
+		Detector = global.Detector,
+		pool = _G.pool,
+		THREE = global.THREE,
+		Stats = global.Stats,
+		config = _G.config,
 		makeID = _G.makeID,
+		Observable = _G.Observable,
 		isExisty = _G.isExisty;
 	
-	var panels = {},
+	var panels = _G.panels,
 		renderMode = Detector.webgl? 'webgl': Detector.canvas? 'canvas': 'none',
 		Renderer = {
 			webgl: THREE.WebGLRenderer.bind(null, {antialias: config.antialias}),
@@ -16,17 +20,18 @@
 		}[renderMode];
 			
 	function Panel(container, opts) {
-		opts = opts || {};
-		this.id = opts.id || makeID(panels);		
-		panels[this.id] = this;
+		Observable.call(this);
+	
+		opts = opts || {};		
+		panels.push(this);
 		
-		var container = container || config.container,
-		    containerStyle = window.getComputedStyle(container),
+		container = container || config.container;
+		var containerStyle = window.getComputedStyle(container),
 			bgcolor = containerStyle.backgroundColor,
 		    width = Math.max(parseInt(containerStyle.width), config.minPanelWidth),
 		    height = Math.max(parseInt(containerStyle.height), config.minPanelHeight);
 
-		this.camera = new THREE.PerspectiveCamera(45, width / height, .1, 500);
+		this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 500);
 		this.camera.position.set(-4, 4, 5);
 		
 		this.scene = new THREE.Scene();
@@ -35,11 +40,12 @@
 		this.renderer.antialias = config.antialias;
 		this.renderer.setSize(width, height);
 		this.renderer.setClearColor(bgcolor, 1);
-		container.appendChild(this.renderer.domElement);
 		
 		this.controls = new THREE.OrbitControls(this.camera, container);
 		
 		this.setAxes(config.axes);
+		
+		this.setContainer(container);
 		
 		if (config.debug) {
 			this.stats = new Stats();
@@ -49,12 +55,16 @@
 		} else {
 			this.stats = {update: function() {}};
 		}
-
-		this.animate();
+	}
+	
+	Panel.prototype = new Observable();
+	
+	Panel.prototype.setContainer = function(container) {
+		container.appendChild(this.renderer.domElement);
+		return this;
 	};
-		
-	Panel.prototype.animate = function() {
-		global.requestAnimationFrame(this.animate.bind(this));
+	
+	Panel.prototype.update = function() {
 		this.controls.update();
 		this.renderer.render(this.scene, this.camera);
 		this.stats.update();
@@ -65,7 +75,7 @@
 			this.axisObject = new THREE.Object3D();
 						
 			var axisGeometry = new THREE.BufferGeometry();
-			axisGeometry.addAttribute('position', new THREE.BufferAttribute(new Float32Array(18), 3));
+			axisGeometry.addAttribute('position', new THREE.BufferAttribute(pool.get(Float32Array, 18), 3));
 			this.axisObject.add(new THREE.Line(
 				axisGeometry, 
 				new THREE.LineBasicMaterial({color: 0x888888}), 
@@ -91,7 +101,10 @@
 	};
 		
 	Panel.prototype.setAxes = function(axisNames) {
-		axisNames = axisNames.filter(function(n) {return typeof(n) === 'string'}).slice(0, 3);
+		axisNames = axisNames.filter(function(n) {
+				return typeof(n) === 'string';
+			})
+			.slice(0, 3);
 		
 		this._axes = [axisNames[1], axisNames[2], axisNames[0]];
 		if (axisNames.length === 3) {
@@ -127,41 +140,44 @@
 	}
 	
 	function drawTextLabel(mat, str) {
-		var memo = drawTextLabel.memo || (drawTextLabel.memo = {});
-		if (!memo.hasOwnProperty(str)) {			
-			var fontSizePx = 48,
-				baselineOffsetPx = .15 * fontSizePx;
-			var canvas = document.createElement('canvas'),
-				context = canvas.getContext('2d');
-			
-			context.font = 'Lighter ' + fontSizePx + 'px Helvetica';
-			
-			var computedSize = Math.ceil(Math.max(2 * (fontSizePx + baselineOffsetPx), context.measureText(str).width));
-			canvas.width = computedSize;
-			canvas.height = computedSize;
-			
-			context = canvas.getContext('2d');
-			context.font = 'Lighter ' + fontSizePx + 'px Helvetica';
-			context.fillStyle = '#444444';
-			context.textAlign = 'center';
-			context.fillText(str, Math.floor(computedSize / 2), Math.ceil(computedSize / 2) - baselineOffsetPx);
-			 
-			memo[str] = {
-				size: config.labelSize / fontSizePx * computedSize,
-				map: new THREE.Texture(canvas)
-			};;
-		}
-		 
-		var memoEntry = memo[str]; 
-		mat.size = memoEntry.size;
-		mat.map = memoEntry.map.clone();
-		mat.map.needsUpdate = true;
-		mat.transparent = true;
+		var memo = {},
+			fontSizePx = 21,
+			baselineOffsetPx = 0.15 * fontSizePx;
 		
-		return mat;
+		drawTextLabel = function(mat, str) {
+			if (!memo.hasOwnProperty(str)) {
+				var canvas = document.createElement('canvas'),
+					context = canvas.getContext('2d');
+				
+				context.font = 'Lighter ' + fontSizePx + 'px Helvetica';
+				
+				var computedSize = Math.ceil(Math.max(2 * (fontSizePx + baselineOffsetPx), context.measureText(str).width));
+				canvas.width = computedSize;
+				canvas.height = computedSize;
+				
+				context.font = 'Lighter ' + fontSizePx + 'px Helvetica';
+				context.fillStyle = '#444444';
+				context.textAlign = 'center';
+				context.fillText(str, Math.floor(computedSize / 2), Math.ceil(computedSize / 2) - baselineOffsetPx);
+				 
+				memo[str] = {
+					size: computedSize, /*config.labelSize / fontSizePx * */
+					map: new THREE.Texture(canvas)
+				};
+			}
+			 
+			var memoEntry = memo[str]; 
+			mat.size = memoEntry.size;
+			mat.transparent = true;
+			mat.sizeAttenuation = false;
+			mat.map = memoEntry.map.clone();
+			mat.map.needsUpdate = true;
+			
+			return mat;
+		};
+		return drawTextLabel(mat, str);
 	}
 	
 	
 	_G.Panel = Panel;
-	_G.panels = panels;
-}(this))
+}(this));
