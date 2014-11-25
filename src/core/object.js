@@ -42,6 +42,7 @@
 		this.glinstances.push({
 				panel: panel,
 				target: geometry.getAttribute('position'),
+				index: geometry.getAttribute('index'),
 				object: object,
 				resize: function(size) {
 					var oldArr = this.target.array,
@@ -51,6 +52,16 @@
 						temp.set(oldArr.subarray(0, Math.min(oldSize, size)));
 						pool.push(this.target.array);
 						this.target.array = temp;
+					}
+				},
+				resizeIndex: function(size) {
+					var oldArr = this.index.array,
+						oldSize = oldArr.length;
+					if (size !== oldSize) {
+						var temp = pool.get(oldArr.constructor, size);
+						temp.set(oldArr.subarray(0, Math.min(oldSize, size)));
+						pool.push(this.index.array);
+						this.index.array = temp;
 					}
 				}
 			}
@@ -72,12 +83,14 @@
 		for (var i = 0; i < this.glinstances.length; i++) {
 			var instance = this.glinstances[i],
 				names = instance.panel._axes;
-			console.log('refresh', names, this.db);
+				
 			var tab = this.db.select(names);
-			console.log('sel', tab);
 			instance.resize(tab.length * names.length);
 			tab.export(names, instance.target.array);
 			instance.target.needsUpdate = true;
+			
+			instance.resizeIndex(tab.indexBufferSize());
+			tab.computeIndexBuffer(instance.index);
 		}
 		return this;
 	}

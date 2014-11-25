@@ -42,16 +42,25 @@
 		};
 	}
 	
-	function seq(a, b, name, closed) {
+	function ints(m, name) {
+		m = Number(m);
+		return function(data, l, extras) {
+			for (var i = 0; i < l; i++)
+				data[name][i] = m + i;
+			extras.continuous = false;
+		};
+	}
+	
+	function seq(a, b, name, closed, discrete) {
 		a = Number(a);
 		b = Number(b);
+		discrete = discrete || false;
 		var closeFix = (closed === true? 0: 1);
 		return function(data, l, extras) {
-			console.log('seq ' + name);
 			var step = (b - a) / (l - closeFix);
 			for (var i = 0; i < l; i++)
 				data[name][i] = a + i * step;
-			extras.continuous = true;
+			extras.continuous = !discrete;
 		};
 	}
 	
@@ -204,6 +213,7 @@
 	// exports
 	
 	_G.constant = constant;
+	_G.ints = ints;
 	_G.seq = seq;
 	_G.logseq = logseq;
 	_G.traceZeroSet = traceZeroSet;
