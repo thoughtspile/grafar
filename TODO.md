@@ -10,12 +10,6 @@
     * [ ] Update existing (4.09)
 	* [ ] Put into wiki
   * [ ] Compile in several flavours.
-    * [ ] with Three
-	* [ ] minimal Three
-	* [ ] no Three
-	* [ ] parser only (+ table?)
-	* [ ] table only
-	* [ ] renderer + table
   * [ ] Allow runtime configuring.
     * [x] Check config fields (4.09)
 	* [ ] Should some fields be added to the config?
@@ -24,12 +18,6 @@
     * [x] Typed Arrays
 	* [ ] ES5 array methods
   * [ ] launcher.js default path.
-  
-## Restructure
-  * [x] Dispatcher
-  * [x] Graph-Table binding
-  * [ ] Generator-Table binding
-  * [ ] 
   
 ##Performance
   * [ ] Common event loop with load balancing and stats.
@@ -67,11 +55,10 @@
   * [x] Adopt a table-centered process
   * [x] Increase the naming consistency with DB
     * [x] map -> update
-  * [ ] new -> univers.select
-  * [ ] select -> select + export
+  * [x] select -> select + export
     * [ ] Implement filtering in select.
     * [ ] views (select output) with blank drop
-	* [ ] asInterleaved
+	* [x] asInterleaved
   * [ ] Fix g-descriptors.
     * [x] In-table logic (1.09)
 	* [x] Move to Typed Arrays (2.09)
@@ -98,6 +85,7 @@
   * [ ] Add custom attributes
 	* [ ] size
 	* [ ] length
+	* [ ] color
 	* [ ] what else?
   * [ ] Axis stretching to fit (related to FOV).
   * [ ] Bug: axis resizing.
@@ -128,3 +116,14 @@
   * [ ] Better / faster step structure
     * [ ] Test performance of R^n->R^m maps vs R^n->R^1.
     * [ ] condense or sparse steps.
+  * [ ] Set-maps (many-to-many)
+	
+##Bugs
+  * [ ] {a, b, c}, y(a,b), x(a,b,c): x and y tabs can't be properly aligned
+  
+## Misc
+  * [ ] subsystems
+  * [ ] named / indexed cols
+  * [ ] interface nodes
+  * [ ] auto-vectorisation
+  * [ ] closed shape adjacency

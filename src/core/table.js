@@ -31,13 +31,17 @@
 		this.length = 1;
 		this.capacity = opts.capacity || 1;
 		
-		this.gDesc = '';
+		this._gDesc = '';
 	}
 	
 	Table2.prototype = new Observable();
 	
 	
 	// misc
+	Table2.prototype.gDesc = function() {
+		return this._gDesc;
+	};
+	
 	Table2.prototype.schema = function() {
 		return this._schema;
 	};
@@ -88,7 +92,7 @@
 			this.dropCol(name);	
 		this.length = 1;
 		this.capacity = 1;
-		this.gDesc = '';
+		this._gDesc = '';
 		
 		return this;
 	};
@@ -130,7 +134,7 @@
 		// extras class maybe
 		var extras = { continuous: false, ordered: false };
 		f(this.data, this.length, extras);
-		this.gDesc = this.gDesc || this.length + (extras.continuous? 'c': 'd');
+		this._gDesc = this._gDesc || this.length + (extras.continuous? 'c': 'd');
 		return this;
 	};
 
@@ -178,7 +182,9 @@
 				repeatArray(data[name], len2, len1);
 			});
 		});
-		res.gDesc = table1.gDesc + '*' + table2.gDesc;
+		res.gDesc = function() {
+			return table1.gDesc() + '*' + table2.gDesc();
+		};
 		
 		return res;
 	};
@@ -213,7 +219,7 @@
 	// indexing
 	Table2.prototype.minGraphDescriptor = function() {
 		// maybe this logic should occur at gDesc modification
-		return this.gDesc.split('*')
+		return this.gDesc().split('*')
 			.map(function(desc) {
 				return {
 					qty: parseInt(desc),
