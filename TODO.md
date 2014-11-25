@@ -120,4 +120,10 @@
 	
 ##Bugs
   * [ ] {a, b, c}, y(a,b), x(a,b,c): x and y tabs can't be properly aligned
-  * [ ] 
+  
+## Misc
+  * [ ] subsystems
+  * [ ] named / indexed cols
+  * [ ] interface nodes
+  * [ ] auto-vectorisation
+  * [ ] closed shape adjacency

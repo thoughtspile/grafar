@@ -89,8 +89,14 @@
 			tab.export(names, instance.target.array);
 			instance.target.needsUpdate = true;
 			
-			instance.resizeIndex(tab.indexBufferSize());
-			tab.computeIndexBuffer(instance.index);
+			var edgeCount = tab.indexBufferSize(),
+				hasEdges = (edgeCount !== 0);
+			instance.object.children[0].visible = !hasEdges;
+			instance.object.children[1].visible = hasEdges;
+			if (hasEdges) {
+				instance.resizeIndex(edgeCount);
+				tab.computeIndexBuffer(instance.index);
+			}
 		}
 		return this;
 	}
