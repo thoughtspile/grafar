@@ -10,9 +10,7 @@
 </head>
 
 <body>
-	<div id = "plot_area"><!--
-		--><div id = "plot3d">
-	</div>
+	<div id = "render">
 	
 	
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
@@ -27,7 +25,7 @@
 	<script type="text/javascript" src="../loader.js"></script>
 	<script type="text/javascript">
 		runGrafar(function() {
-			var pan3d = new grafar.Panel(document.getElementById('plot3d')),
+			var pan3d = new grafar.Panel(document.getElementById('render')),
 				bld1 = new grafar.Object().pin(pan3d),
 				pi = Math.PI,
 				segAng = 3 * pi / 2,
