@@ -4,7 +4,7 @@
 <head>
 	<title>Тройные интегралы</title>
 	
-	<link rel="stylesheet" type="text/css" href="grafar_style.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="../stylesheets/grafar_style.css" media="screen" />
 	
 	<script type="text/x-mathjax-config">
 		MathJax.Hub.Config({
@@ -31,7 +31,7 @@
 	</div>
 	
 	<script type="text/javascript" src="problemlist.js"></script>
-	<script type="text/javascript" src="loader.js"></script>
+	<script type="text/javascript" src="../loader.js"></script>
 	<script type="text/javascript">
 		runGrafar(function() {
 			var infoDiv = document.getElementById('info');
@@ -122,7 +122,7 @@
 				for (var i = 0; i < activeHelpers; i++)
 					helpers2d[i].constrain({what: 'x, y, z', maxlen: 5000, as: grafar.ductParse(problem.eqns[i] + sector, problem.cube)}).refresh();
 			}
-		}, '');
+		}, '../');
 	</script>
 
 	</body>

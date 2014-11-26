@@ -4,7 +4,7 @@
 <head>
 	<title>testbox</title>
 	
-	<link rel="stylesheet" type="text/css" href="testbox_style.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="stylesheets/testbox_style.css" media="screen" />
 	
     <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 </head>
@@ -24,7 +24,7 @@
 		});
     </script>
 	
-	<script type="text/javascript" src="loader.js"></script>
+	<script type="text/javascript" src="../loader.js"></script>
 	<script type="text/javascript">
 		runGrafar(function() {
 			var pan3d = new grafar.Panel(document.getElementById('plot3d')),
@@ -35,6 +35,8 @@
 				angRescale = 2 * pi / segAng / seg,
 				power = 2,
 				hScale = 1/3;
+			
+			pan3d.camera.position.set(-1.3, .47, .7);
 				
 			bld1.constrain({what: 'r', maxlen: 30, as: grafar.logseq(0, 1, 'r')})
 				.constrain({what: 'phi', maxlen: 50, as: grafar.seq(-segAng / 2, segAng / 2, 'phi')})
@@ -55,7 +57,7 @@
 				}})
 				.refresh();
 			console.log(bld1.db.select('x,y,z').indexBufferSize());
-		}, '');
+		}, '../');
 	</script>
 
 	</body>
