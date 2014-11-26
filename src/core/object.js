@@ -31,18 +31,39 @@
 	Object.prototype = new Observable();
 	
 	Object.prototype.pin = function(panel) {
-		var geometry = new BufferGeometry();
-		geometry.addAttribute('position', new BufferAttribute(pool.get(Float32Array, 0), 3));
-		geometry.addAttribute('index', new BufferAttribute(pool.get(Uint32Array, 0), 2));
+		var pointGeometry = new BufferGeometry(),
+			lineGeometry = new BufferGeometry(),
+			meshGeometry = new BufferGeometry(),
+			position = new BufferAttribute(pool.get(Float32Array, 0), 3),
+			lineIndex = new BufferAttribute(pool.get(Uint32Array, 0), 2),
+			meshIndex = new BufferAttribute(pool.get(Uint32Array, 0), 3),
+			normal = new BufferAttribute(pool.get(Float32Array, 0), 3);
+			
+		pointGeometry.addAttribute('position', position);
+		lineGeometry.addAttribute('position', position);
+		meshGeometry.addAttribute('position', position);
+		lineGeometry.addAttribute('index', lineIndex);
+		meshGeometry.addAttribute('index', meshIndex);
+		meshGeometry.addAttribute('normal', normal);
+		
+		// lame color
+		var meshMaterial = new THREE.MeshLambertMaterial({
+			side: THREE.DoubleSide,
+			color: 0xffffff
+		});
 		var object = new Object3D()
-			.add(new PointCloud(geometry, this.uniforms.style.getParticleMaterial(this.id)))	
-			.add(new Line(geometry, this.uniforms.style.getLineMaterial(this.id), LinePieces));
+			.add(new PointCloud(pointGeometry, this.uniforms.style.getParticleMaterial(this.id)))	
+			.add(new Line(lineGeometry, this.uniforms.style.getLineMaterial(this.id), LinePieces))
+			.add(new THREE.Mesh(meshGeometry, meshMaterial));
+		
 		panel.scene.add(object);
 			
 		this.glinstances.push({
 				panel: panel,
-				target: geometry.getAttribute('position'),
-				index: geometry.getAttribute('index'),
+				target: position,
+				index: lineIndex,
+				meshIndex: meshIndex,
+				normal: normal,
 				object: object,
 				resize: function(size) {
 					var oldArr = this.target.array,
@@ -63,9 +84,30 @@
 						pool.push(this.index.array);
 						this.index.array = temp;
 					}
+				},
+				resizeMeshIndex: function(size) {
+					var oldArr = this.meshIndex.array,
+						oldSize = oldArr.length;
+					if (size !== oldSize) {
+						var temp = pool.get(oldArr.constructor, size);
+						temp.set(oldArr.subarray(0, Math.min(oldSize, size)));
+						pool.push(this.meshIndex.array);
+						this.meshIndex.array = temp;
+					}
+				},
+				resizeNormals: function(size) {
+					var oldArr = this.normal.array,
+						oldSize = oldArr.length;
+					if (size !== oldSize) {
+						var temp = pool.get(oldArr.constructor, size);
+						temp.set(oldArr.subarray(0, Math.min(oldSize, size)));
+						pool.push(this.normal.array);
+						this.normal.array = temp;
+					}
 				}
 			}
 		);
+		console.log('hello');
 		
 		//var self = this;
 		//panel.on('update', function() {self.db.refresh();});
@@ -89,14 +131,27 @@
 			tab.export(names, instance.target.array);
 			instance.target.needsUpdate = true;
 			
-			var edgeCount = tab.indexBufferSize(),
-				hasEdges = (edgeCount !== 0);
-			instance.object.children[0].visible = !hasEdges;
-			instance.object.children[1].visible = hasEdges;
-			if (hasEdges) {
-				instance.resizeIndex(edgeCount);
-				tab.computeIndexBuffer(instance.index);
+			// var edgeCount = tab.indexBufferSize(),
+				// hasEdges = (edgeCount !== 0);
+			// instance.object.children[0].visible = !hasEdges;
+			// instance.object.children[1].visible = hasEdges;
+			// if (hasEdges) {
+				// instance.resizeIndex(edgeCount);
+				// tab.computeIndexBuffer(instance.index);
+				// needsUpdate
+			// }
+			var faceCount = 2*30*50*16*3;//tab.indexBufferSize(),
+			instance.object.children[0].visible = false;
+			instance.object.children[1].visible = false;
+			if (true) {
+				instance.resizeMeshIndex(faceCount);
+				instance.resizeNormals(tab.length * names.length);
+				tab.computeMeshIndex(instance.meshIndex.array);
+				console.log('wait');
+				instance.object.children[2].geometry.computeVertexNormals();
+				console.log(instance.normal);
 			}
+			console.log('bye');
 		}
 		return this;
 	}

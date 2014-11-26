@@ -258,11 +258,13 @@
 					newAdj = pool.get(Uint32Array, v * pv.e.length + (e * pv.v) * 2),				
 					i = 0;
 				
+				// copy current graph
 				for (i = 0; i < v; i++) {
 					newAdj.set(pv.e, i * pv.e.length);
 					incArray(pv.e, pv.v);
 				}
 				
+				// edges across
 				if (cv.type === 'c') {
 					var path = timesArray(pv.v, pathGraph(v));
 					for (i = 0; i < pv.v; i++) {
@@ -279,6 +281,44 @@
 		buffer.set(Table2.indexCache[key]);
 		return this;
 	};
+	
+	Table2.prototype.computeMeshIndex = function(buffer) {
+		var mgd = this.minGraphDescriptor();
+		if (mgd[0].type !== 'd')
+			mgd.splice(0, 0, {qty: 1, type: 'd'});
+		if (mgd[2].type !== 'd')
+			mgd.splice(2, 0, {qty: 1, type: 'd'});
+		if (mgd.length !== 5)
+			mgd.push({qty: 1, type: 'd'});
+			
+		var rMult = mgd[4].qty,
+			rSize = mgd[3].qty,
+			lMult = mgd[2].qty * mgd[3].qty * rMult,
+			lSize = mgd[1].qty,
+			fMult = mgd[0].qty,
+			pointer = 0;
+			
+		for (var i = 0; i < lSize - 1; i++)
+			for (var j = 0; j < rSize - 1; j++) {
+				buffer[pointer] = i * lMult + j * rMult;
+				buffer[pointer + 1] = i * lMult + (j + 1) * rMult;
+				buffer[pointer + 2] = (i + 1) * lMult + j * rMult;
+				pointer += 3;
+				
+				buffer[pointer] = (i + 1) * lMult + j * rMult;
+				buffer[pointer + 1] = i * lMult + (j + 1) * rMult;
+				buffer[pointer + 2] = (i + 1) * lMult + (j + 1) * rMult;
+				pointer += 3;
+			}
+			
+		var basic = pool.get(Uint32Array, pointer);
+		basic.set(buffer.subarray(0, pointer));
+		console.log(this.length);
+		for (var i = 1; i < rMult; i++)
+			buffer.set(incArray(basic, fMult), pointer * i);
+				
+		return this;
+	}
 	
 	Table2.indexCache = {};
 			

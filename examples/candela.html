@@ -39,7 +39,7 @@
 			bld1.constrain({what: 'r', maxlen: 30, as: grafar.logseq(0, 1, 'r')})
 				.constrain({what: 'phi', maxlen: 50, as: grafar.seq(-segAng / 2, segAng / 2, 'phi')})
 				.constrain({what: 'rep', maxlen: seg, as: grafar.seq(0, 2 * pi, 'rep', true, true)})
-				.constrain({what: 'layer', maxlen: 2, as: grafar.seq(0, 1, 'layer')})
+				.constrain({what: 'layer', maxlen: 2, as: grafar.seq(0, 1, 'layer', false, true)})
 				.constrain({what: 'z', using: 'r, phi, rep, layer', as: function(data, l) {
 					var r = data.r, phi = data.phi;
 					for (var i = 0; i < l; i++)
@@ -54,7 +54,6 @@
 						data.y[i] = Math.sin(data.rep[i] + angRescale * data.phi[i]) * data.r[i];
 				}})
 				.refresh();
-			console.log(bld1.db.select('x,y,z').indexBufferSize());
 		}, '../');
 	</script>
 
