@@ -131,27 +131,25 @@
 			tab.export(names, instance.target.array);
 			instance.target.needsUpdate = true;
 			
-			// var edgeCount = tab.indexBufferSize(),
-				// hasEdges = (edgeCount !== 0);
-			// instance.object.children[0].visible = !hasEdges;
-			// instance.object.children[1].visible = hasEdges;
-			// if (hasEdges) {
-				// instance.resizeIndex(edgeCount);
-				// tab.computeIndexBuffer(instance.index);
-				// needsUpdate
-			// }
-			var faceCount = 2*30*50*16*3;//tab.indexBufferSize(),
-			instance.object.children[0].visible = false;
-			instance.object.children[1].visible = false;
-			if (true) {
-				instance.resizeMeshIndex(faceCount);
-				instance.resizeNormals(tab.length * names.length);
-				tab.computeMeshIndex(instance.meshIndex.array);
-				console.log('wait');
-				instance.object.children[2].geometry.computeVertexNormals();
-				console.log(instance.normal);
+			 var edgeCount = tab.indexBufferSize(),
+				 hasEdges = (edgeCount !== 0);
+			instance.object.children[0].visible = !hasEdges;
+			instance.object.children[1].visible = hasEdges;
+			if (hasEdges) {
+				instance.resizeIndex(edgeCount);
+				tab.computeIndexBuffer(instance.index);
+				needsUpdate
 			}
-			console.log('bye');
+			
+			// var faceCount = 2*30*50*16*3;//tab.indexBufferSize(),
+			// instance.object.children[0].visible = false;
+			// instance.object.children[1].visible = false;
+			// if (true) {
+				// instance.resizeMeshIndex(faceCount);
+				// instance.resizeNormals(tab.length * names.length);
+				// tab.computeMeshIndex(instance.meshIndex.array);
+				// instance.object.children[2].geometry.computeVertexNormals();
+			// }
 		}
 		return this;
 	}
