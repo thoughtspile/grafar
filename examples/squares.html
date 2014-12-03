@@ -1,0 +1,90 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<title>grafar interface test page</title>
+	<style>
+		#plot_area {
+			margin: 0px;
+			overflow: hidden;
+			position: absolute;
+			left: 0px;
+			top: 0px;
+			width: 100%;
+			height: 100%;
+			background: black;
+		}
+	</style>
+</head>
+
+<body>
+	<figure class="panel" id="plot_area"></figure>
+	
+	<script type="text/javascript" src="../loader.js"></script>
+	<script type="text/javascript">
+		runGrafar(function() {
+			var pan = new grafar.Panel(document.getElementById('plot_area')).setAxes(['x', 'y']),
+				sides = [];
+				
+			for (var i = 0; i < 4; i++) {
+				sides.push(new grafar.Object()
+					.constrain({what: 't', maxlen: 30, as: grafar.seq(-2, 2, 't')})
+					.pin(pan)
+				);
+			}
+			
+			sides[0].constrain({what: 'x', using: 't, ang', as: function(data, l) {
+				for (var i = 0; i < l; i++)
+					data.x[i] = data.t[i] * Math.sin(data.ang[i]) + 1;
+			}})
+			.constrain({what: 'y', using: 't, ang', as: function(data, l) {
+				for (var i = 0; i < l; i++)
+					data.y[i] = data.t[i] * Math.cos(data.ang[i]);
+			}});
+			
+			sides[1].constrain({what: 'x', using: 't, ang', as: function(data, l) {
+				for (var i = 0; i < l; i++)
+					data.x[i] = data.t[i] * Math.cos(data.ang[i]);
+			}})
+			.constrain({what: 'y', using: 't, ang', as: function(data, l) {
+				for (var i = 0; i < l; i++)
+					data.y[i] = data.t[i] * Math.sin(-data.ang[i]) + 1;
+			}});
+			
+			sides[2].constrain({what: 'x', using: 't, ang', as: function(data, l) {
+				for (var i = 0; i < l; i++)
+					data.x[i] = data.t[i] * Math.sin(data.ang[i]) - 1;
+			}})
+			.constrain({what: 'y', using: 't, ang', as: function(data, l) {
+				for (var i = 0; i < l; i++)
+					data.y[i] = data.t[i] * Math.cos(data.ang[i]);
+			}});
+			
+			sides[3].constrain({what: 'x', using: 't, ang', as: function(data, l) {
+				for (var i = 0; i < l; i++)
+					data.x[i] = data.t[i] * Math.cos(data.ang[i]);
+			}})
+			.constrain({what: 'y', using: 't, ang', as: function(data, l) {
+				//console.log('call');
+				for (var i = 0; i < l; i++)
+					data.y[i] = data.t[i] * Math.sin(-data.ang[i]) - 1;
+			}});
+			
+			
+			//var f = false;
+			var anim = new grafar.Process(new grafar.Timer(1400), function (t) {
+				console.log(sides[0]);
+				for (var i = 0; i < 1; i++) {
+					sides[i].constrain({what: 'ang', maxlen: 1, as: grafar.constant(t, 'ang')}).refresh();
+				}
+				//f = true;
+				//if (f) ff.f();
+			}).start();
+			
+			document.getElementById('plot_area').addEventListener('click', function() {
+				anim.active? anim.stop(): anim.start();
+			});
+		}, '../');
+	</script>
+</body>
+</html>
