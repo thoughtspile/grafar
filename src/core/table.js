@@ -77,7 +77,7 @@
 			setpush(this.schema(), name);
 			
 			this.needsupdate[name] = true;
-			this.lastupdate[name] = -1;
+			this.lastupdate[name] = _G.frameId;
 			this.groups[name] = names;
 			this.using[name] = using;
 			this.generators[name] = upfunc; // how to trigger multiple?
@@ -202,9 +202,12 @@
 			
 		for (var j = 0; j < itemsize; j++) {
 			if (isExisty(order[j]) && this.lastupdate[order[j]] === frameId) {
+				//console.log('rly', order[j]);
 				var col = this.data[order[j]];
 				for (var i = 0, k = j; i < n; i++, k += itemsize)
 					target[k] = col[i];
+			} else {
+				//console.log('fake', order[j]);
 			}
 		}
 		

@@ -107,7 +107,6 @@
 				}
 			}
 		);
-		console.log('hello');
 		
 		//var self = this;
 		//panel.on('update', function() {self.db.refresh();});
@@ -135,10 +134,11 @@
 				 hasEdges = (edgeCount !== 0);
 			instance.object.children[0].visible = !hasEdges;
 			instance.object.children[1].visible = hasEdges;
+			console.log('yep');
 			if (hasEdges) {
 				instance.resizeIndex(edgeCount);
 				tab.computeIndexBuffer(instance.index);
-				needsUpdate
+				instance.index.needsUpdate = true;
 			}
 			
 			// var faceCount = 2*30*50*16*3;//tab.indexBufferSize(),

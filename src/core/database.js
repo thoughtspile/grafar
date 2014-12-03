@@ -54,6 +54,7 @@
 				this.constraints = setMinus(this.constraints, conflicts);
 				// only psubs
 				def.baseTable = conflicts[0].baseTable;
+				console.log('tab', def.baseTable);
 			}
 			// Merge dupe explicit: x = f(v) <- x = g(v): add f(v) = g(v)
 			// Adding i to e: x = f(v) <- f(x, v) = g(u): Will cascade
@@ -138,8 +139,9 @@
 	Database.prototype.setUpdate = function(names) {
 		var affected = union(names, this.graph.down(names));
 		for (var i = 0; i < this.tables.length; i++)
-			for (var j = 0; j < affected.length; j++)
-				this.tables[i].needsupdate[affected[j]] = true;		
+			for (var j = 0; j < affected.length; j++) {
+				this.tables[i].needsupdate[affected[j]] = true;
+			}
 	};
 		
 	Database.prototype.prepare = function() {
