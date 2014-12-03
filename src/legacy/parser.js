@@ -3,7 +3,6 @@
 (function(global) {
 	var _G = global.grafar,
 		parserConfig = _G.config.grafaryaz,
-		stats = _G.stats,
 		
 		seq = _G.seq,
 		traceZeroSet = _G.traceZeroSet,
@@ -17,7 +16,6 @@
 		
 		Plan = _G.Plan;
 
-	stats.add('parse').add('merge').add('plan');
 	// locals
 	
 	var prefixes = {
@@ -70,16 +68,11 @@
 	}
 		
 	function MathSystem(str, targetRef) {
-		stats.enter('parse');
 		
 		var nodes = MathSystem.strToAtomicNodes(str);
-		stats.exit('parse').enter('merge');
 		nodes = MathSystem.collapseNodes(nodes);
-		stats.exit('merge').enter('plan');
 		
 		this.plan = new Plan(nodes, targetRef);
-		
-		stats.exit('plan');
 	}
 
 	MathSystem.strToAtomicNodes = function(str) {

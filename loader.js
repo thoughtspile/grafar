@@ -30,15 +30,15 @@ var runGrafar = function(callback, pathOverride) {
 		.script('src/core/database.js').wait()
 		.script('src/core/object.js').wait()
 		
-		.script('src/generators/gen_interface.js').wait()
-		.script('src/generators/grafaryaz/planner.js').wait()
-		.script('src/generators/grafaryaz/parser.js').wait()
+		//.script('src/generators/gen_interface.js').wait()
+		//.script('src/generators/grafaryaz/planner.js').wait()
+		//.script('src/generators/grafaryaz/parser.js').wait()
 		.script('src/generators/grafaryaz/parser_.js').wait()
-		.script('src/generators/grafaryaz/context.js')
+		//.script('src/generators/grafaryaz/context.js')
 	
 		.script('src/core/animation.js')
 		.script('src/core/panel.js').wait()
-		.script('src/core/graph.js')
+		//.script('src/core/graph.js')
 		
 		.script('src/legacy/grafar_samples.js')
 		.script('src/legacy/grafar_ui.js')
