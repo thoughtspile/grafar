@@ -3,7 +3,6 @@
 (function(global) {
 	var _G = global.grafar,
 		parserConfig = _G.config.grafaryaz,
-		stats = _G.stats,
 		
 		seq = _G.seq,
 		traceZeroSet = _G.traceZeroSet,
@@ -16,8 +15,6 @@
 		setMinus = _G.setMinus,
 		
 		Plan = _G.Plan;
-
-	stats.add('parse').add('merge').add('plan');
 	// locals
 	
 	var prefixes = {

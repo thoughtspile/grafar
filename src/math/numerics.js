@@ -6,10 +6,8 @@
 		norm = _G.norm,
 		arraySum = _G.arraySum,
 		arrayTimes = _G.arrayTimes,
-		config = _G.config.grafaryaz,
-		stats = _G.stats;
+		config = _G.config.grafaryaz;
 	
-	stats.add('probe').add('trace');
 	
 	function zeros(arr, l) {
 		for (var i = 0; i < l; i++)
@@ -34,8 +32,11 @@
 		return NaN;
 	}
 	
-	function constant(val, name) {
+	function constant(valOuter, name) {
+		var val = valOuter;
+		console.log('create', val);
 		return function(data, l, extras) {
+			console.log('call C', val);
 			for (var i = 0; i < l ; i++)
 				data[name][i] = val;
 			extras.continuous = true;
