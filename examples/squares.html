@@ -33,52 +33,19 @@
 				);
 			}
 			
-			sides[0].constrain({what: 'x', using: 't, ang', as: function(data, l) {
-				for (var i = 0; i < l; i++)
-					data.x[i] = data.t[i] * Math.sin(data.ang[i]) + 1;
-			}})
-			.constrain({what: 'y', using: 't, ang', as: function(data, l) {
-				for (var i = 0; i < l; i++)
-					data.y[i] = data.t[i] * Math.cos(data.ang[i]);
-			}});
-			
-			sides[1].constrain({what: 'x', using: 't, ang', as: function(data, l) {
-				for (var i = 0; i < l; i++)
-					data.x[i] = data.t[i] * Math.cos(data.ang[i]);
-			}})
-			.constrain({what: 'y', using: 't, ang', as: function(data, l) {
-				for (var i = 0; i < l; i++)
-					data.y[i] = data.t[i] * Math.sin(-data.ang[i]) + 1;
-			}});
-			
-			sides[2].constrain({what: 'x', using: 't, ang', as: function(data, l) {
-				for (var i = 0; i < l; i++)
-					data.x[i] = data.t[i] * Math.sin(data.ang[i]) - 1;
-			}})
-			.constrain({what: 'y', using: 't, ang', as: function(data, l) {
-				for (var i = 0; i < l; i++)
-					data.y[i] = data.t[i] * Math.cos(data.ang[i]);
-			}});
-			
-			sides[3].constrain({what: 'x', using: 't, ang', as: function(data, l) {
-				for (var i = 0; i < l; i++)
-					data.x[i] = data.t[i] * Math.cos(data.ang[i]);
-			}})
-			.constrain({what: 'y', using: 't, ang', as: function(data, l) {
-				//console.log('call');
-				for (var i = 0; i < l; i++)
-					data.y[i] = data.t[i] * Math.sin(-data.ang[i]) - 1;
-			}});
+			sides[0].constrain(grafar.ductConstraint('x == t * sin(ang) + 1'))
+				.constrain(grafar.ductConstraint('y == t * cos(ang)'));
+			sides[1].constrain({what: 'x', using: 't, ang', as: grafar.ductGenerator('t * cos(ang)', 'x')})
+				.constrain({what: 'y', using: 't, ang', as: grafar.ductGenerator('t * sin(-ang) + 1', 'y')});
+			sides[2].constrain({what: 'x', using: 't, ang', as: grafar.ductGenerator('t * sin(ang) - 1', 'x')})
+				.constrain({what: 'y', using: 't, ang', as: grafar.ductGenerator('t * cos(ang)', 'y')});
+			sides[3].constrain({what: 'x', using: 't, ang', as: grafar.ductGenerator('t * cos(ang)', 'x')})
+				.constrain({what: 'y', using: 't, ang', as: grafar.ductGenerator('t * sin(-ang) - 1', 'y')});
 			
 			
-			//var f = false;
 			var anim = new grafar.Process(new grafar.Timer(1400), function (t) {
-				console.log(sides[0]);
-				for (var i = 0; i < 1; i++) {
+				for (var i = 0; i < 4; i++)
 					sides[i].constrain({what: 'ang', maxlen: 1, as: grafar.constant(t, 'ang')}).refresh();
-				}
-				//f = true;
-				//if (f) ff.f();
 			}).start();
 			
 			document.getElementById('plot_area').addEventListener('click', function() {

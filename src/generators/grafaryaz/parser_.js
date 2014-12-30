@@ -3,19 +3,14 @@
 (function(global) {
 	var _G = global.grafar,
 		parserConfig = _G.config.grafaryaz,
-		
 		seq = _G.seq,
 		traceZeroSet = _G.traceZeroSet,
-		
 		haveCommon = _G.haveCommon,
 		isExisty = _G.isExisty,
 		firstMatch = _G.firstMatch,
 		union = _G.union,
 		unique = _G.unique,
-		setMinus = _G.setMinus,
-		
-		Plan = _G.Plan;
-	// locals
+		setMinus = _G.setMinus;
 	
 	var prefixes = {
 		sin: 'Math.sin',
@@ -33,7 +28,7 @@
 			number: '[+-]?[0-9]*\\.?[0-9]+',
 			integer: '[+-]?[0-9]*',
 			id: '[A-Za-z_]+[A-Za-z0-9_]*',
-			postVar: '(?=$|[\\)+\\-*\\/\\^\\,])',
+			postVar: '(?=$|[\\+\\s-*/^,)])',
 			postFunc: '(?=\\()'
 		};
 	regexTemplates.literal = '(?:' + regexTemplates.number + '|' + regexTemplates.id + ')';
@@ -50,116 +45,10 @@
 			pds: new RegExp(regexTemplates.id + '\'' + regexTemplates.id, 'g'),
 			//brackets: /[\[\]\{\}]/g,
 			comparator: /(==|@=|<=|>=)/
-		},
-		compNames = (function() {
-			var temp = {};
-			temp['>='] = 'geq';
-			temp['<='] = 'leq';
-			temp['=='] = 'eq';
-			temp['@='] = 'in';
-			return temp;
-		}());
-
-	function snapNodeState(arr) {
-		return arr.map(function(node) {
-			return node.clone();
-		});
-	}
-		
-	function MathSystem(str, targetRef) {
-		var nodes = MathSystem.strToAtomicNodes(str);
-		nodes = MathSystem.collapseNodes(nodes);
-		this.plan = new Plan(nodes, targetRef);
-	}
-
-	MathSystem.strToAtomicNodes = function(str) {
-		str = str.replace(/ /g, '');
-		var temp = str.split('&'),
-			nodes = [];
-		temp.forEach(function(line) {
-			var sides = line.split(parserRegex.comparator);
-			if (sides[1] === '@=' && parserRegex.range.test(sides[2]) && parserRegex.id.test(sides[0])) {
-				var temp = sides[2].slice(1, sides[2].length - 1).split(',');
-				nodes.push(new Node(sides[0], temp[0], 'geq'), new Node(sides[0], temp[1], 'leq'));
-			} else {
-				nodes.push(new Node(sides[0], sides[2], compNames[sides[1]]));
-			}
-		});
-		return nodes;
-	};
-
-	
-	MathSystem.collapseNodes = function(nodes) {
-		nodes = MathSystem.genericCollapse(nodes);
-		nodes = MathSystem.matchRanges(nodes);
-		nodes = MathSystem.pullDerivatives(nodes);
-		nodes = MathSystem.inlineCalls(nodes);
-		
-		return nodes;
-	};
-
-	MathSystem.genericCollapse = function(nodes) {
-		// the chaotic order is no good; it misses possible intermediate substitutions
-		// should be:
-		//   i-merge (extend supplies)
-		//   e-merge (transform supplies)
-		//   loop ^^ while e-merge possible
-		
-		var flag = true;
-		while (flag) {
-			flag = false;
-			var i = 0;
-			while (i < nodes.length) {
-				var j = 0;
-				while (j < nodes.length) {
-					if (haveCommon(nodes[i].supplies, nodes[j].supplies) && Node.mergeable(nodes[i], nodes[j])) {
-						nodes[i].merge(nodes[j]);
-						if (nodes[j].mode !== 'eq')
-							nodes.splice(j ,1);
-						j = 0;
-						flag = true;
-					} else {
-						j++;
-					}
-				}
-				i++;
-			}
 		};
-		
-		return nodes;
-	};
 
-	// this should now have unbounded generation
-	MathSystem.matchRanges = function(nodes) {
-		var bNodes = nodes.filter(function(node) {
-				return node.mode === 'geq';
-			}),
-			tNodes = nodes.filter(function(node) {
-				return node.mode === 'leq';
-			});
 		
-		bNodes.forEach(function(bnode) {
-			var tnode = firstMatch(tNodes, function(tnode) {
-					return bnode.supplies[0] === tnode.supplies[0];
-				});
-			
-			if (isExisty(tnode)) {
-				nodes.push(new Node(bnode, tnode));				
-				nodes = setMinus(nodes, [bnode, tnode]);
-				tNodes = setMinus(tNodes, [tnode]);
-			} else {
-				bnode.toImplicit();
-			}
-		});
-		tNodes.forEach(function(tnode) {
-			tnode.toImplicit();
-		});
-		
-		// add implicitization for unmatched bord
-		
-		return nodes;
-	};
-	
+	var MathSystem = {};
 	// these two are just plain ugly
 	MathSystem.pullDerivatives = function(nodes) {
 		var newNodes = [];
@@ -210,7 +99,6 @@
 		return newNodes;
 	};
 
-	
 	MathSystem.extractCalls = function(str) {
 		return (str.match(parserRegex.allCalls) || []).reduce(unique, []);
 	};
@@ -227,7 +115,6 @@
 		return (str.match(parserRegex.functions) || []).reduce(unique, []);
 	};
 
-	
 	MathSystem.formatFunction = function(str) {
 		str = MathSystem.uncaret(str);
 		str = str.replace(parserRegex.functions, function(match) {
@@ -235,186 +122,6 @@
 		});	
 		return str;		
 	};
-
-
-	// somewhat of a big issue:
-	//   x @= [1, y] is not converted to implicit and can't be computed
-	// in fact, it's not even parsed
-
-	function Node(/*arguments*/) {
-		if (arguments.length === 0) {
-			Node.call(this, '', '', 'eq');
-		} else if (arguments.length === 1) {
-			var cloned = arguments[0];
-			if (!cloned instanceof Node)
-				throw new Error('node - cloning error');
-			this.mode = cloned.mode;
-			this.body = cloned.body;
-			this.variables = cloned.variables.slice();
-			this.requires = cloned.requires.slice();
-			this.supplies = cloned.supplies.slice();
-			//this.isBorder = cloned.isBorder;
-		} else if (arguments.length === 2) {
-			var node1 = arguments[0],
-				node2 = arguments[1];
-			if (!Node.mergeable(node1, node2))
-				throw new Error('merge not possible ' + node1 + ' ' + node2);
-				
-			if (node1.mode === 'eq' && node2.mode === 'eq' && !haveCommon(node1.supplies, node2.supplies)) {
-				this.mode = 'eq';
-				this.body = node1.body + (node1.supplies.length > 0 && node2.supplies.length > 0? ',': '') + node2.body;
-				this.supplies = node1.supplies.concat(node2.supplies);
-				this.variables = union(node1.variables, node2.variables);
-			} else if (node1.mode === 'eq' && (node2.mode === 'leq' || node2.mode === 'geq' || node2.mode === 'eq')) {
-				Node.call(this, node1.clone().toImplicit(), node2.clone().toImplicit());
-			} else if ((node1.mode === 'leq' && node2.mode === 'leq') || (node1.mode === 'geq' && node2.mode === 'geq')) {
-				this.mode = node1.mode;
-				this.body = (node1.mode === 'leq'? 'min': 'max') + '(' + node1.body + ',' +node2.body + ')';
-				this.supplies = node1.supplies.slice();
-				this.variables = union(node1.variables, node2.variables);
-			} else if (node1.mode === 'geq' && node2.mode === 'leq') {
-				this.mode = 'in';
-				this.body = node1.body + ',' + node2.body;
-				this.supplies = node1.supplies.slice();
-				this.variables = union(node1.variables, node2.variables);
-			} else if (node1.mode === 'implicit' && node2.mode === 'eq') {
-				this.mode = 'implicit';
-				this.body = node1.body;
-				node2.supplies.forEach(function(name) {
-					this.body = inlineSubstitute(this.body, name, node2.body);
-				}.bind(this));
-				this.variables = union(setMinus(node1.variables, node2.supplies), node2.variables);
-			} else if (node1.mode === 'implicit' && (node2.mode === 'leq' || node2.mode === 'geq')) {
-				Node.call(this, node1, node2.clone().toImplicit());
-			} else if (node1.mode === 'implicit' && node2.mode === 'implicit') {
-				this.mode = 'implicit';
-				this.variables = union(node1.variables, node2.variables);
-				this.body = 'max(' + node1.body + ', ' + node2.body + ')';
-			}
-		} else if (arguments.length === 3) {
-			var l = arguments[0],
-				r = arguments[1],
-				mode = arguments[2];
-				
-			if (parserRegex.id.test(l)) {
-				this.mode = mode;
-				this.body = r;
-				this.variables = MathSystem.extractVariables(this.body);
-				this.supplies = MathSystem.extractVariables(l);
-			} else if (parserRegex.signature.test(l)) {
-				this.mode = mode;
-				var rVariables = MathSystem.extractVariables(r),
-					lVariables = MathSystem.extractVariables(l);
-				if (setMinus(rVariables, lVariables).length !== 0) // another test needed
-					throw new Error('incorrect signature');
-				this.variables = lVariables.slice();
-				this.body = r;
-				this.supplies = MathSystem.extractFunctions(l);
-			} else {
-				this.mode = 'implicit';
-				this.body = Node.implicitize(l, r, mode);
-				this.variables = MathSystem.extractVariables(this.body);
-			}
-		}
-		
-		this._f = null;
-		if (this.mode === 'implicit') {
-			this.requires = [];
-			this.supplies = this.variables;
-		} else if (this.mode === 'eq' || this.mode === 'leq' || this.mode === 'geq' || this.mode === 'in') {
-			this.requires = this.variables;
-		}
-	}
-
-	Node.mergeable = function(node1, node2) {
-		if (node1 === node2)
-			return false;
-		var disjointEq = node1.mode === 'eq' && node2.mode === 'eq' && !haveCommon(node1.supplies, node2.supplies),
-			singleCommonArg = node1.supplies.length === 1 && node2.supplies.length === 1 && haveCommon(node1.supplies, node2.supplies),
-			multipleDefinition = node1.mode === 'eq' && (node2.mode === 'leq' || node2.mode === 'geq' || node2.mode === 'eq'),
-			rangeBoundCollapse = (node1.mode === 'leq' && node2.mode === 'leq') || (node1.mode === 'geq' && node2.mode === 'geq'),
-			rangeBounds = node1.mode === 'geq' && node2.mode === 'leq',
-			iSubs = node1.mode === 'implicit' && node2.mode === 'eq',
-			iBound = node1.mode === 'implicit' && (node2.mode === 'leq' || node2.mode === 'geq'),
-			iMerge = node1.mode === 'implicit' && node2.mode === 'implicit';
-		return disjointEq || iSubs || iBound || iMerge ||
-			(singleCommonArg && (multipleDefinition || rangeBoundCollapse || rangeBounds));
-	};
-
-	Node.implicitize = function(l, r, mode) {
-		if (mode === 'eq') {
-			return '((' + l + ')-(' + r + '))^2'; // or should it be sum-of squares?
-		} else if (mode === 'leq') {
-			return '(' + l + ')-(' + r + ')';
-		} else if (mode === 'geq') {
-			return '(' + r + ')-(' + l + ')';
-		}
-	};
-
-	Node.prototype.toImplicit = function() {
-		if (this.type !== 'implicit' && this.supplies.length === 1) {
-			this.variables = union(this.requires, this.supplies);
-			this.requires = [];
-			this.body = Node.implicitize(this.supplies[0], this.body, this.mode);
-			this.mode = 'implicit';
-		}
-		return this;
-	};
-
-	Node.prototype.merge = function(otherNode) {
-		Node.call(this, this, otherNode);
-		return this;
-	};
-
-	Node.prototype.clone = function() {
-		return new Node(this);
-	};
-
-	Node.prototype.diff = function(over) {
-		if (this.mode !== 'eq')
-			throw new Error('differentiation not possible');
-		var diffBody = '((' + inlineSubstitute(this.body, over, '(' + over + '+ .001)') + ')-(' + this.body + '))/(.001)',
-			temp = this.clone();
-		temp.supplies = [this.supplies[0] + '_' + over];
-		temp.body = diffBody;
-		return temp;
-	};
-
-	Node.prototype.grad = function() {
-		return new Node();
-	};
-
-	Node.prototype.toString = function() {
-		return '(' + this.requires.join(', ') + ') -> (' + this.supplies.join(',') + ') : ' + this.body + ' ' + this.mode;
-	};
-
-	Node.prototype.f = function() {
-		var body = MathSystem.formatFunction(this.body);
-		if (!isExisty(this._f)) {
-			if (this.mode === 'eq') {
-				this.variables.forEach(function(n, i) {
-					body = body.replace(new RegExp('\\b' + n + '\\b', 'g'), 'data[\'' + n + '\'][i]');
-				});
-				var output = this.supplies.map(function(n) { return 'data[\'' + n + '\'][i]'; }),
-					input = [body];
-				this._f = new Function('data', 'l', 'for (var i = 0; i < l; i++) {' + output.map(function(o, i) {
-					return o + '=' + input[i] + ';'
-				}) + '}');
-			} else if (this.mode === 'in') {
-				var sides = body.split(','),
-					min = sides[0],
-					max = sides[1];
-				this._f = seq(min, max, this.supplies[0]);
-			} else if (this.mode === 'implicit') {		
-				this.variables.forEach(function(n, i) {
-					body = body.replace(new RegExp('\\b' + n + '\\b', 'g'), 'pt[' + i + ']');
-				});
-				this._f = traceZeroSet(new Function('pt', 'return ' + body), this.variables);
-			}
-		}
-		return this._f;
-	};
-
 
 	function inlineSubstitute(body, name, sub) {
 		return body.replace(new RegExp('\\b' + name + '\\b', 'g'), '(' + sub + ')');
@@ -491,9 +198,36 @@
 		return f;
 	}
 	
+	var loopBody = 'for (var $i = 0; $i < l; $i++)\n';
+	
+	function ductGenerator(str, name) {
+		var body = MathSystem.formatFunction(str),
+			vars = MathSystem.extractVariables(str);
+		for (var i = 0; i < vars.length; i++)
+			body = inlineSubstitute(body, vars[i], 'data.' + vars[i] + '[$i]');
+		return new Function('data', 'l', 'extras', loopBody +  'data.' + name + '[$i] = ' + body + ';');
+	}
+	
+	function ductConstraint(str, opts) {
+		opts = opts || {};
+		var sides = str.split(/(==|@=)/g);
+		if (sides[1] === '==' && parserRegex.variables.test(sides[0])) {
+			var using = MathSystem.extractVariables(sides[2]);
+			return {
+				what: sides[0],
+				using: using,
+				maxlen: using? opts.maxlen || 200: null,
+				as: ductGenerator(sides[2], sides[0])
+			};
+		}
+		throw new Error('imparsible!');
+	}
+	
 	// exports
 	
 	_G.MathSystem = MathSystem;
+	_G.ductGenerator = ductGenerator;
+	_G.ductConstraint = ductConstraint;
 	_G.ductParse = ductParse;
 	_G.Node = Node;
 }(this));
