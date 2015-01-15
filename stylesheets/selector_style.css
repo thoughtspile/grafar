@@ -1,7 +1,12 @@
-.option:hover {
-	border-left: 1px solid orange;
+.option {
+	border-left: 2pt solid transparent;
+	color: #222222;
 }
-
-body {
-	background: red;
+.option:hover {
+	border-left: 2pt solid orange;
+	color: #000;
+}
+.mmvce {
+	background: #acc;
+	border-radius: 1pt;
 }
