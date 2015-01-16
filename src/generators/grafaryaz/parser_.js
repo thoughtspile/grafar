@@ -36,6 +36,7 @@
 			range: new RegExp('^\\[' + regexTemplates.number + '\\,' + regexTemplates.number + '\\]$'),
 			set: new RegExp('^\\{(?:' + regexTemplates.number + ',)*' + regexTemplates.number + '\\}$'),
 			id: new RegExp('^' + regexTemplates.id + '$|^$'), // includes empty string
+			number: new RegExp('^' + regexTemplates.number + '$|^$'), // includes empty string
 			variables: new RegExp(regexTemplates.id + regexTemplates.postVar, 'g'),
 			functions: new RegExp(regexTemplates.id + regexTemplates.postFunc, 'g'),
 			literals: new RegExp(regexTemplates.literal, 'g'),
@@ -172,25 +173,40 @@
 	};
 	
 
-	function ductParse(str, params, section) {
-		var fixed = setMinus(Object.keys(params).filter(function(r) {return !Array.isArray(params[r])}), ['x', 'y', 'z']),
-			isSection = isExisty(section);
-		for (var i = 0; i < fixed.length; i++)
-			str = inlineSubstitute(str, fixed[i], params[fixed[i]]);
+	function ductParse(str, params) {
+		var target = ['x', 'y', 'z'],
+			fixed = {},
+			targetConstraints = [];
+		//var c = str.split('&').map(function());
+		//var fixed = setMinus(Object.keys(params).filter(function(r) {return !Array.isArray(params[r])}), ['x', 'y', 'z']);
+		//for (var i = 0; i < fixed.length; i++)
+		//	str = inlineSubstitute(str, fixed[i], params[fixed[i]]);
 		str = str.replace(/<[^=]/g, '<=').replace(/>[^=]/g, '>=');
 		var constraints = str.split('&');
 		for (var i = 0; i < constraints.length; i++) {
-			var sides = constraints[i].split(/(<=|>=|==)/g);
-			if (sides[1] === '==')
-				constraints[i] = 'abs(' + sides[0] + '-(' + sides[2] + '))';
-			else if (sides[1] === '>=')
-				constraints[i] = sides[2] + '-' + sides[0];
-			else if (sides[1] === '<=')
-				constraints[i] = sides[0] + '-' + sides[2];
-			constraints[i] = MathSystem.formatFunction(constraints[i]);
+			var sides = constraints[i].split(/\s*(<=|>=|==)\s*/g);
+			if (parserRegex.id.test(sides[0]) && target.indexOf(sides[0]) === -1 && parserRegex.number.test(sides[2])) {
+				fixed[sides[0]] = sides[2];
+			} else {
+				if (sides[1] === '==')
+					constraints[i] = 'abs(' + sides[0] + '-(' + sides[2] + '))';
+				else if (sides[1] === '>=')
+					constraints[i] = sides[2] + '-' + sides[0];
+				else if (sides[1] === '<=')
+					constraints[i] = sides[0] + '-' + sides[2];
+				targetConstraints.push(MathSystem.formatFunction(constraints[i]));
+			}
 		}
-		var body = constraints.length > 1? 'Math.max(' + constraints.join(',') + ')': constraints[0],
+		var fixedList = Object.keys(fixed);
+		console.log(fixedList, targetConstraints);
+		targetConstraints = targetConstraints.map(function(str) {
+			for (var i = 0; i < fixedList.length; i++)
+				str = inlineSubstitute(str, fixedList[i], fixed[fixedList[i]]);
+			return str;
+		})
+		var body = targetConstraints.length > 1? 'Math.max(' + targetConstraints.join(',') + ')': targetConstraints[0],
 			vars = union(MathSystem.extractVariables(body), ['x', 'y', 'z']);
+		console.log(body);
 		for (var i = 0; i < vars.length; i++)
 			body = inlineSubstitute(body, vars[i], 'pt[' + i + ']');
 		var coref = new Function('pt', 'return ' + body);

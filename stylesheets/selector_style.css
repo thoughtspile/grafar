@@ -1,9 +1,9 @@
 .option {
-	border-left: 2pt solid transparent;
+	border-left: 4pt solid transparent;
 	color: #222222;
 }
 .option:hover {
-	border-left: 2pt solid orange;
+	border-left: 4pt solid orange;
 	color: #000;
 }
 .mmvce {
