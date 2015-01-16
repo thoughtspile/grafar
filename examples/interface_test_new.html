@@ -16,6 +16,7 @@
 	</menu>
 
 	<script src = '../src/math_mvc.js'></script>
+	<script src = 'problemlist.js'></script>
 	<script>
 		var examples = [
 			[
@@ -30,7 +31,10 @@
 			]
 		];
 		
-		mathMVC.select(document.getElementById('exampleSelect'), examples.map(mathMVC.div));
+		mathMVC.select(
+			document.getElementById('exampleSelect'), 
+			problems.map(function(pr) {return pr.eqns}).map(mathMVC.div)
+		);
 		MathJax.Hub.Queue(
 			['Typeset', MathJax.Hub],
 			[mathMVC.bind]
