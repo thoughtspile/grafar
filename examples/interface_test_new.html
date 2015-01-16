@@ -31,13 +31,19 @@
 			]
 		];
 		
+		var update = function() {
+			console.log(mathMVC.getModel());
+		};
+		
 		mathMVC.select(
 			document.getElementById('exampleSelect'), 
-			problems.map(function(pr) {return pr.eqns}).map(mathMVC.div)
+			problems.map(function(pr) {return mathMVC.div(pr.tex)}),
+			problems.map(function(pr) {return mathMVC.addModel(pr.model)}),
+			update
 		);
 		MathJax.Hub.Queue(
 			['Typeset', MathJax.Hub],
-			[mathMVC.bind]
+			[mathMVC.bind, update]
 		);
 	</script>
 </body>
