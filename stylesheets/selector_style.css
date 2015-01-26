@@ -45,7 +45,7 @@
 	margin-left: auto;
 	margin-right: auto;
 	border-top: 12px solid #909080;
-	vertical-align: 100%;
+	user-select: none;
 }
 
 .option {
