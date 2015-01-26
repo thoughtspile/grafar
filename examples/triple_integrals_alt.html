@@ -1,10 +1,11 @@
 ﻿<!doctype html>
 
 <html lang="en">
+
 <head>
 	<title>Тройные интегралы</title>
 	
-	<link rel="stylesheet" type="text/css" href="../stylesheets/grafar_style.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="../stylesheets/triple_int_alt.css" media="screen" />
 	<link rel="stylesheet" type="text/css" href="../stylesheets/selector_style.css" media="screen" />
 	
 	<script type="text/x-mathjax-config">
@@ -13,51 +14,118 @@
 			"HTML-CSS": { linebreaks: { automatic: true, width: "75% container" } }
 		});
     </script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-    </script>
+    <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 </head>
 
 <body>
-	<div id = "plot_area"><!--
-		--><div id = "plot3d"></div><!--
-		--><div id = "plot2d"></div>
-	</div><!--
-	--><div id = "ui">
-		<h1 id = "logo">grafar jr.</h1>
+	<nav id = "top_bar">
+		<h1 id = "logo">f</h1>
+	</nav>
+
+	<article id = "content">
+		<h2 id = "title">Тройные интегралы</h2>
+	
+		<figure id = "plot_area"><!--
+			--><div id = "plot3d"></div><!--
+			--><div id = "plot2d"></div>
+		</figure>
 		
-		<div id = "wildSelect"></div>
-		<div id = "options"></div>
-		<div id = "info"></div>
-	</div>
+		<section id = "content">
+			<div id = "ui">
+				<div id = "wildSelect"></div>
+				<div id = "sectionControl"></div>
+				<div id = "originalShapesControl"></div>
+				<div id = "options"></div>
+			</div>
+			<div id = "solution">
+				<p>
+				Три дня в деканате покойник лежал, в штаны Пифагора одетый, <br>
+				В руках Фихтенгольца он томик держал, что сжил его с белого света, <br>
+				К ногам привязали тройной интеграл, и в матрицу труп обернули, <br>
+				А вместо молитвы какой-то нахал прочёл теорему Бернулли. <br>
+				</p>
+				
+				<p>
+				Тройные интегралы – это то, чего уже можно не бояться =) Ибо 
+				если Вы читаете сей текст, то, скорее всего, неплохо разобрались 
+				с теорией и практикой «обычных» интегралов, а также двойными 
+				интегралами. А там, где двойной, неподалёку и тройной:
+				$$ \iiint\limits_{T} f(x, y, z) dxdydz $$
+				</p>
+
+				<p>
+				Разбираемся в записи:
+				<ul>
+					<li>\( \iiint \) &mdash; значок тройного интеграла;</li>
+					<li>\( u = f(x, y, z) \) &mdash; подынтегральная функция трёх переменных;</li>
+					<li>\( dxdydz \) &mdash; произведение дифференциалов.</li>
+					<li>\( T \) &mdash; область интегрирования.</li>
+				</ul>
+				</p>
+				
+				<p>
+				Особо остановимся на области интегрирования. Если в двойном 
+				интеграле она представляет собой плоскую фигуру, то здесь – 
+				пространственное тело, которое, как известно, ограничено 
+				множеством поверхностей. Таким образом, помимо вышеуказанного 
+				вы должны ориентироваться в основных поверхностях пространства 
+				и уметь выполнять простейшие трёхмерные чертежи.
+				</p>
+
+				<p>
+				Некоторые приуныли, понимаю…. Увы, статью нельзя озаглавить 
+				«тройные интегралы для чайников», и кое-что знать/уметь нужно. 
+				Но ничего страшного – весь материал изложен в предельно доступной 
+				форме и осваивается в кратчайшие сроки!
+				</p>
+				
+				<p>
+				Что значит вычислить тройной интеграл и что это вообще такое?
+				Вычислить тройной интеграл – это значит найти ЧИСЛО:	
+				В простейшем случае, когда , тройной интеграл  численно равен объёму тела. 
+				И действительно, в соответствии с общим смыслом интегрирования, произведение 
+				равно бесконечно малому объёму элементарного «кирпичика» тела. А тройной
+				интеграл как раз и объединяет все эти бесконечно малые частички по области, 
+				в результате чего получается интегральное (суммарное) значение объёма тела: .
+				</p>
+
+				<p>
+				Кроме того, у тройного интеграла есть важные физические приложения. Но об этом позже – 
+				во 2-ой части урока, посвящённой вычислениям произвольных тройных интегралов, у 
+				которых функция  в общем случае отлична от константы и непрерывна в области . В 
+				данной же статье детально рассмотрим задачу нахождения объёма, которая по моей 
+				субъективной оценке встречается в 6-7 раз чаще.
+				</p>
+			</div>
+		</section>
+	</article>
 	
 	<script type="text/javascript" src="problemlist.js"></script>
 	<script type="text/javascript" src="../loader.js"></script>
 	<script src = '../src/math_mvc.js'></script>
 	<script type="text/javascript">
 		runGrafar(function() {
+			grafar.config.debug = false;
 			var infoDiv = document.getElementById('info');
 			
 			var maxHelpers = Math.max.apply(null, problems.map(function(p) {return p.model.length;})),
 				activeHelpers = 0;
 			
 			grafar.ui([
-				//{type: 'label', init: 'Choose the problem: '},
-				//{type: 'select', id: 'problem', init: problems.map(function(pr) {
-				//		return pr.id + ': ' + pr.eqns.join(' & ');
-				//	}), bind: updateProblem},
-				//{type: 'br'},
 				{type: 'select', id: 'dim', init: ['x', 'y', 'z'], bind: updateSection},
 				{type: 'label', init: ' = '},
 				{type: 'number', id: 'val', init: 0, bind: updateSection},
 				{type: 'br'},
 				{type: 'checkbox', id: 'helpers', bind: plotArea},
-				{type: 'label', init: 'Show the original shapes'}
-				//{type: 'br'},
-				//{type: 'label', init: 'n = '},
-				//{type: 'number', id: 'n', init: 2, bind: plotArea}
+				{type: 'label', init: ' Show the original shapes'}
 			], {container: 'options'});
+			
+			//document.getElementById('sectionControl').appendChild(
+				//mathMVC.div('\\control{sectVarName}{x} = \\control{sectValue}{0}')
+			//);
+			//mathMVC.addModel('$sectVarName == $sectValue');
 			
 			mathMVC.select(
 				document.getElementById('wildSelect'), 
@@ -67,14 +135,14 @@
 			);
 			MathJax.Hub.Queue(
 				['Typeset', MathJax.Hub],
-				[mathMVC.bind, updateProblem]
+				[mathMVC.bind, updateProblem],
+				[updateProblem]
 			);
 			
+			
 			var pan3d = new grafar.Panel(document.getElementById('plot3d')),
-				pan2d = new grafar.Panel(document.getElementById('plot2d'));
-			
-			
-			var helpers2d = [], 
+				pan2d = new grafar.Panel(document.getElementById('plot2d')),
+				helpers2d = [], 
 				helpers3d = [];
 			for (var i = 0; i < maxHelpers; i++) {
 				helpers2d.push(new grafar.Object().pin(pan2d));
@@ -86,11 +154,11 @@
 				section2 = new grafar.Object().pin(pan2d);//.pin(pan2d);
 			
 			var problem;
-			//updateProblem();			
+			//updateProblem();
 			
 			function updateProblem() {
 				problem = mathMVC.getModel();
-				console.log(problem);
+				//console.log(problem);
 				
 				activeHelpers = problem.length;
 				for (var i = 0; i < activeHelpers; i++) {
@@ -127,6 +195,6 @@
 			}
 		}, '../');
 	</script>
+</body>
 
-	</body>
 </html>

@@ -1,12 +1,71 @@
-.option {
-	border-left: 4pt solid transparent;
-	color: #222222;
-}
-.option:hover {
-	border-left: 4pt solid orange;
-	color: #000;
-}
 .mmvce {
 	background: #acc;
 	border-radius: 1pt;
+}
+
+.dropDown {
+	position: fixed;
+	visibility: hidden;
+	background: white;
+	margin-top: -8px;
+	border-radius: 0 0 8px 8px;
+	border: solid 1px #909080;
+	border-top: none;
+	overflow-y: scroll;
+}
+
+.selectContainer {
+	display: table;
+	border: solid 1px #909080;
+	border-radius: 8px;
+	width: 100%;
+}
+
+.selectActive {
+	display: table-cell;
+	width: 90%;
+}
+
+.dropper {
+	display: table-cell;
+	width: 10%;
+	height: 100%;
+	border-left: 1px solid rgba(144, 144, 128, .4);
+}
+
+.dropper:hover .arrow-down {
+	border-top: 12px solid orangered;
+}
+
+.arrow-down {
+	width: 0; 
+	height: 0; 
+	border-left: 8px solid transparent;
+	border-right: 8px solid transparent;
+	margin-left: auto;
+	margin-right: auto;
+	border-top: 12px solid #909080;
+	vertical-align: 100%;
+}
+
+.option {
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
+}
+
+.option:last-child {	
+	border-bottom-left-radius: 8px;
+}
+
+.option:only-child {	
+	border-bottom-left-radius: 8px;
+	border-top-left-radius: 8px;
+}
+
+.option:hover {
+	background: #F0F0E0;
+}
+
+html {
+	height: 100%;
 }

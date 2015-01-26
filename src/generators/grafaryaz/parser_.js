@@ -198,7 +198,7 @@
 			}
 		}
 		var fixedList = Object.keys(fixed);
-		console.log(fixedList, targetConstraints);
+		//console.log(fixedList, targetConstraints);
 		targetConstraints = targetConstraints.map(function(str) {
 			for (var i = 0; i < fixedList.length; i++)
 				str = inlineSubstitute(str, fixedList[i], fixed[fixedList[i]]);
@@ -206,7 +206,7 @@
 		})
 		var body = targetConstraints.length > 1? 'Math.max(' + targetConstraints.join(',') + ')': targetConstraints[0],
 			vars = union(MathSystem.extractVariables(body), ['x', 'y', 'z']);
-		console.log(body);
+		//console.log(body);
 		for (var i = 0; i < vars.length; i++)
 			body = inlineSubstitute(body, vars[i], 'pt[' + i + ']');
 		var coref = new Function('pt', 'return ' + body);

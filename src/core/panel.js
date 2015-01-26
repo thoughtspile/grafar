@@ -28,8 +28,8 @@
 		container = container || config.container;
 		var containerStyle = window.getComputedStyle(container),
 			bgcolor = containerStyle.backgroundColor,
-		    width = Math.max(parseInt(containerStyle.width), config.minPanelWidth),
-		    height = Math.max(parseInt(containerStyle.height), config.minPanelHeight);
+		    width = parseInt(containerStyle.width),
+		    height = parseInt(containerStyle.height);
 
 		this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 500);
 		this.camera.position.set(-4, 4, 5);

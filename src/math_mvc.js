@@ -45,16 +45,72 @@
 	
 	
 	mathMVC.select = function(field, divs, models, callback) {
-		for (var i = 0; i < divs.length; i++) {
-			field.appendChild(divs[i]);
-			(function() {
-				var model = models[i];
-				divs[i].addEventListener('click', function() {
-					mathMVC.activeModel = model;
-					callback();
-				});
-			}());
-		};
+		// make field into pseudo-select
+		field.className += 'selectContainer';
+		
+		// add active display
+		var activeSelect = document.createElement('div');
+		activeSelect.className = 'activeSelect';
+		field.appendChild(activeSelect);
+		
+		// add drop button
+		var dropper = document.createElement('div'),
+			arrow = document.createElement('div');
+		arrow.className = 'arrow-down';
+		dropper.appendChild(arrow);
+		field.appendChild(dropper);
+		dropper.className = 'dropper';
+		dropper.addEventListener('click', function() {
+			var style = window.getComputedStyle(dropDown);
+			//console.log('select fired');
+			if (style.visibility === 'hidden')
+				dropDown.style.visibility = 'visible';
+			else
+				dropDown.style.visibility = 'hidden';
+			var pos = field.getBoundingClientRect();
+			dropDown.style.left = Math.floor(pos.left) + 'px';
+			dropDown.style.top = Math.floor(pos.bottom) + 'px';
+			dropDown.style.width = Math.floor(pos.right - pos.left) + 'px';
+			dropDown.style.height = window.innerHeight - Math.floor(pos.bottom) + 'px';
+		});
+		
+		// add the options container
+		var dropDown = document.createElement('div');
+		dropDown.className = 'dropDown';
+		document.body.appendChild(dropDown);
+
+		// prevent window scroll
+		dropDown.addEventListener('mouseover', function(e) {
+			document.body.style.overflow = 'hidden';
+			document.getElementsByTagName('html')[0].style['overflow-y'] = 'scroll';
+		});
+		dropDown.addEventListener('mouseout', function(e) {
+			document.body.style.overflow = 'auto';
+			document.getElementsByTagName('html')[0].style['overflow-y'] = 'hidden';
+		});
+		
+		// append divs
+		var activeIndex = 0,
+			optionListener = function(i) {
+				//console.log('option choice fired');
+				if (activeIndex === i)
+					return;
+				//console.log('option choice confirmed');
+				mathMVC.activeModel = models[i];
+				dropDown.style.visibility = 'hidden';
+				dropDown.appendChild(activeSelect.firstChild);
+				activeSelect.appendChild(divs[i]);
+				activeIndex = i;
+				callback();
+			};
+		divs.forEach(function(div, i) {
+			dropDown.appendChild(div);
+			div.addEventListener('click', optionListener.bind(null, i));
+		});
+		
+		// default choice
+		mathMVC.activeModel = models[0];
+		activeSelect.appendChild(divs[0]);
 	};
 	
 	mathMVC.div = function(tex, callback) {
