@@ -32,13 +32,15 @@ body {
 #plot_area {
 	margin: 0px;
 	padding: 0px;
+	width: 100%;
+	display: table;
 }
 
 #plot3d, #plot2d {
 	width: 50%; 
 	height: 480px;
-	background: white; 
-	display: inline-block;
+	background: white;
+	display: table-cell;
 }
 
 p:first-child {

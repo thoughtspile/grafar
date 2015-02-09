@@ -16,8 +16,8 @@
 			'y > 0', 'z > 0', 'r == $rval', 'h == $hval'],
 		tex: '\\(\\left \\{ \\begin{array}{lcl}' +
 			'x^2+y^2=R^2 \\\\' + 
-			'\\frac{x}{R},+\\frac{z}{H},<1 \\\\' + 
-			'\\frac{x}{R},-\\frac{z}{H},<-1 \\\\' + 
+			'\\frac{x}{R}+\\frac{z}{H}<1 \\\\' + 
+			'\\frac{x}{R}-\\frac{z}{H}<-1 \\\\' + 
 			'y=0 \\\\ z=0 \\\\' +
 			'R=\\control{rval}{2} \\\\' +
 			'h=\\control{hval}{1} \\\\' +
