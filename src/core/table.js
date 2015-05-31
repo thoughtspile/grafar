@@ -213,12 +213,8 @@
 		
 		return this;
 	};
-	
-	
-	
-	
-	
-	
+		
+        
 	// indexing
 	Table2.prototype.minGraphDescriptor = function() {
 		// maybe this logic should occur at gDesc modification
@@ -248,6 +244,20 @@
 			return {v: pv.v * v, e: v * pv.e + e * pv.v};
 		}, {v: 1, e: 0}).e * 2;
 		return temp;
+	};
+    
+    Table2.prototype.isMeshable = function() {
+        return this.minGraphDescriptor().reduceRight(function(pv, cv) {
+			return cv.type === 'c'? pv + 1: pv;
+		}, 0) === 2;
+    };
+    
+    Table2.prototype.faceCount = function() {
+        if (!this.isMeshable())
+            return 0;
+		return 2 * this.minGraphDescriptor().reduceRight(function(pv, cv) {
+			return cv.type === 'c'? pv * (cv.qty - 1): pv * cv.qty;
+		}, 1);
 	};
 	
 	Table2.prototype.computeIndexBuffer = function(buffer) {

@@ -138,21 +138,18 @@
 				 hasEdges = (edgeCount !== 0);
 			instance.object.children[0].visible = !hasEdges;
 			instance.object.children[1].visible = hasEdges;
-			//console.log('yep');
 			if (hasEdges) {
 				instance.resizeIndex(edgeCount);
 				tab.computeIndexBuffer(instance.index);
 				instance.index.needsUpdate = true;
-			
-                var faceCount = 2*30*50*16*3;//tab.indexBufferSize(),
-                //instance.object.children[0].visible = false;
-                //instance.object.children[1].visible = false;
-                if (true) {
-                    instance.resizeMeshIndex(faceCount);
-                    instance.resizeNormals(tab.length * names.length);
-                    tab.computeMeshIndex(instance.meshIndex.array);
-                    instance.object.children[2].geometry.computeVertexNormals();
-                }
+			}
+            
+            if (tab.isMeshable()) {
+                var faceCount = tab.faceCount() * 3;
+                instance.resizeMeshIndex(faceCount);
+                instance.resizeNormals(tab.length * names.length);
+                tab.computeMeshIndex(instance.meshIndex.array);
+                instance.object.children[2].geometry.computeVertexNormals();
             }
 		}
 		return this;
