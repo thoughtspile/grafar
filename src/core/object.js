@@ -46,11 +46,15 @@
 		meshGeometry.addAttribute('index', meshIndex);
 		meshGeometry.addAttribute('normal', normal);
 		
-		// lame color
-		var meshMaterial = new THREE.MeshLambertMaterial({
-			side: THREE.DoubleSide,
-			color: 0xffffff
-		});
+		var col = this.uniforms.style.getLineMaterial(this.id).color,
+            meshMaterial = new THREE.MeshLambertMaterial({
+                side: THREE.DoubleSide,
+                color: col,
+                transparent: true,
+                opacity: .5,
+                depthWrite: false
+                //depthTest: false
+            });
 		var object = new Object3D()
 			.add(new PointCloud(pointGeometry, this.uniforms.style.getParticleMaterial(this.id)))	
 			.add(new Line(lineGeometry, this.uniforms.style.getLineMaterial(this.id), LinePieces))
@@ -134,22 +138,22 @@
 				 hasEdges = (edgeCount !== 0);
 			instance.object.children[0].visible = !hasEdges;
 			instance.object.children[1].visible = hasEdges;
-			console.log('yep');
+			//console.log('yep');
 			if (hasEdges) {
 				instance.resizeIndex(edgeCount);
 				tab.computeIndexBuffer(instance.index);
 				instance.index.needsUpdate = true;
-			}
 			
-			// var faceCount = 2*30*50*16*3;//tab.indexBufferSize(),
-			// instance.object.children[0].visible = false;
-			// instance.object.children[1].visible = false;
-			// if (true) {
-                // instance.resizeMeshIndex(faceCount);
-				// instance.resizeNormals(tab.length * names.length);
-				// tab.computeMeshIndex(instance.meshIndex.array);
-				// instance.object.children[2].geometry.computeVertexNormals();
-			// }
+                var faceCount = 2*30*50*16*3;//tab.indexBufferSize(),
+                //instance.object.children[0].visible = false;
+                //instance.object.children[1].visible = false;
+                if (true) {
+                    instance.resizeMeshIndex(faceCount);
+                    instance.resizeNormals(tab.length * names.length);
+                    tab.computeMeshIndex(instance.meshIndex.array);
+                    instance.object.children[2].geometry.computeVertexNormals();
+                }
+            }
 		}
 		return this;
 	}
