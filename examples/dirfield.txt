@@ -1,0 +1,41 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<title>testbox</title>
+	
+	<link rel="stylesheet" type="text/css" href="stylesheets/testbox_style.css" media="screen" />
+	
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+</head>
+
+<body>
+	<div id = "render">
+	
+	<script type="text/javascript" src="../loader.js"></script>
+	<script type="text/javascript">
+		runGrafar(function() {
+			var pan3d = new grafar.Panel(document.getElementById('render')).setAxes(['x','y']),
+				graph = new grafar.Object().pin(pan3d);
+							
+			graph.constrain({what: 'ang', maxlen: 30, as: grafar.seq(-Math.PI / 4, Math.PI / 4, 'ang')})
+                .constrain({what: 'dist', maxlen: 30, as: grafar.seq(Math.log(10), Math.log(60), 'dist')})
+                .constrain({what: 'x,y', using: 'ang, dist', as: function(data, l) {
+                    for (var i = 0; i < l; i++) {
+                        data.x[i] = Math.sin(data.ang[i]) * Math.exp(data.dist[i]);
+                        data.y[i] = Math.cos(data.ang[i]) * Math.exp(data.dist[i]);
+                    }
+                }})
+                .constrain({what: 'z', using: 'x,y', as: function(data, l) {
+                    for (var i = 0; i < l; i++)
+                        data.z[i] = 0;//Math.sin(Math.cos(data.x[i] + data.y[i]));
+                }})
+                .refresh();
+            
+			pan3d.camera.position.set(0, 250, 0);
+            
+		}, '../');
+	</script>
+
+	</body>
+</html>

@@ -43,7 +43,7 @@
 				.constrain({what: 'z', using: 'r, phi, rep, layer', as: function(data, l) {
 					var r = data.r, phi = data.phi;
 					for (var i = 0; i < l; i++)
-						data.z[i] = hScale * Math.pow(r[i], power) * Math.cos(phi[i]) + data.layer[i] / 50 + Math.random() * r[i]/ 100;
+						data.z[i] = hScale * Math.pow(r[i], power) * Math.cos(phi[i]) + data.layer[i] / 50;
 				}})
 				.constrain({what: 'x', using: 'r, phi, rep, layer', as: function(data, l) {
 					for (var i = 0; i < l; i++)
@@ -53,15 +53,7 @@
 					for (var i = 0; i < l; i++)
 						data.y[i] = Math.sin(data.rep[i] + angRescale * data.phi[i]) * data.r[i];
 				}})
-				.refresh();
-			console.log(bld1);
-				
-			(function up() {
-				bld1.db.known['z'] = false;
-				bld1.refresh();
-				window.requestAnimationFrame(up);
-			}());
-			
+				.refresh();			
 		}, '../');
 	</script>
 

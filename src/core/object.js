@@ -145,7 +145,7 @@
 			// instance.object.children[0].visible = false;
 			// instance.object.children[1].visible = false;
 			// if (true) {
-				// instance.resizeMeshIndex(faceCount);
+                // instance.resizeMeshIndex(faceCount);
 				// instance.resizeNormals(tab.length * names.length);
 				// tab.computeMeshIndex(instance.meshIndex.array);
 				// instance.object.children[2].geometry.computeVertexNormals();
