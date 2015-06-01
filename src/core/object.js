@@ -6,7 +6,6 @@
 		
 		Database = _G.Database,
 		Style = _G.Style,
-		Observable = _G.Observable,
 		pool = _G.pool,
 		
 		Object3D = _T.Object3D,
@@ -35,17 +34,17 @@
 		
 		var col = Style.randColor(),
             object = new Object3D();
-        object.add(new PointCloud(pointGeometry, Style.matHelper('point', col)))	
+        object.add(new PointCloud(pointGeometry, Style.matHelper('point', col)))
             .add(new Line(lineGeometry, Style.matHelper('line', col), LinePieces))
             .add(new THREE.Mesh(meshGeometry, Style.matHelper('mesh', col)));
 		panel.scene.add(object);
         
         this.panel = panel;
-        this.target = position;
-        this.index = lineIndex;
-        this.meshIndex = meshIndex;
-        this.normal = normal;
-        this.object = object;        
+        this.position = position;
+        this.segments = lineIndex;
+        this.faces = meshIndex;
+        this.normals = normal;
+        this.object = object;
     };
     
     function resizeBuffer(buffer, size) {
@@ -61,12 +60,7 @@
     
 	
 	function Object(opts) {
-		Observable.call(this);
-		
 		this.db = new Database();
-		this.uniforms = {
-			style: new Style()
-		};
 		this.glinstances = [];
 		this.hidden = false;
 	}
@@ -87,25 +81,29 @@
 				names = instance.panel._axes;
 				
 			var tab = this.db.select(names);
-            resizeBuffer(instance.target, tab.length * names.length);
-			tab.export(names, instance.target.array);
-			instance.target.needsUpdate = true;
+            resizeBuffer(instance.position, tab.length * names.length);
+			tab.export(names, instance.position.array);
+			instance.position.needsUpdate = true;
 			
 			var edgeCount = tab.indexBufferSize(),
-                hasEdges = (edgeCount !== 0);
+                hasEdges = (edgeCount !== 0),
+                faceCount = tab.faceCount() * 3,
+                hasFaces = (faceCount !== 0);
 			instance.object.children[0].visible = !hasEdges;
 			instance.object.children[1].visible = hasEdges;
+            
 			if (hasEdges) {
-				resizeBuffer(instance.index, edgeCount);
-				tab.computeIndexBuffer(instance.index);
-				instance.index.needsUpdate = true;
+				resizeBuffer(instance.segments, edgeCount);
+				tab.computeIndexBuffer(instance.segments);
+				instance.segments.needsUpdate = true;
 			}
             
-            if (tab.isMeshable()) {
-                var faceCount = tab.faceCount() * 3;
-                resizeBuffer(instance.meshIndex, faceCount);
-                resizeBuffer(instance.normal, tab.length * names.length);
-                tab.computeMeshIndex(instance.meshIndex.array);
+            if (hasFaces) {
+                resizeBuffer(instance.faces, faceCount);
+                tab.computeMeshIndex(instance.faces.array);
+                instance.faces.needsUpdate = true;
+                
+                resizeBuffer(instance.normals, tab.length * names.length);
                 instance.object.children[2].geometry.computeVertexNormals();
             }
 		}
@@ -121,6 +119,7 @@
 			this.glinstances[i].object.visible = !hide;
 		return this;
 	}
-			
+        
+        
 	_G.Object = Object;
 }(this));

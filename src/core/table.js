@@ -11,12 +11,10 @@
 		repeatArray = _G.repeatArray,
 		repeatPoints = _G.repeatPoints,
 		incArray = _G.incArray,
-		timesArray = _G.timesArray,
-		Observable = _G.Observable;
+		timesArray = _G.timesArray;
 	
 	
 	function Table2(opts) {
-		Observable.call(this);
 		opts = opts || {};
 
 		this._schema = [];
@@ -33,8 +31,6 @@
 		
 		this._gDesc = '';
 	}
-	
-	Table2.prototype = new Observable();
 	
 	
 	// misc

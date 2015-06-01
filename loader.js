@@ -16,7 +16,7 @@ var runGrafar = function(callback, pathOverride) {
 		.script('src/grafar.js').wait()
 		.script('src/math/polyfills.js')
 		.script('src/math/misc.js').wait()
-		.script('src/core/observer.js')
+		.script('src/legacy/observer.js')
 		.script('src/core/pool.js')
 		
 		.script('src/math/set.js')
@@ -31,13 +31,9 @@ var runGrafar = function(callback, pathOverride) {
 		.script('src/core/database.js').wait()
 		.script('src/core/object.js').wait()
 		
-		//.script('src/generators/gen_interface.js').wait()
-		//.script('src/generators/grafaryaz/planner.js').wait()
-		//.script('src/generators/grafaryaz/parser.js').wait()
 		.script('src/generators/grafaryaz/parser_.js').wait()
-		//.script('src/generators/grafaryaz/context.js')
 	
-		.script('src/core/animation.js')
+		.script('src/legacy/animation.js')
 		.script('src/core/panel.js').wait()
 		//.script('src/core/graph.js')
 		

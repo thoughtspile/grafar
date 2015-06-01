@@ -17,15 +17,11 @@
 	
 	
 	function Database(opts) {
-		Observable.call(this);
-		
 		this.tables = [];
 		this.constraints = [];
 		this.known = {};
 		this.graph = new GraphData();
-	}
-	
-	Database.prototype = new Observable();
+	};
 	
 	Database.prototype.constrain = function(constraint) {
 		//console.log('c in');
