@@ -6,15 +6,12 @@
 		THREE = global.THREE,
 		isExisty = _G.isExisty,
 		config = _G.config,
-		Observable = _G.Observable,
 		makeID = _G.makeID;
 		
 	var styles = {};
     
 	
-	function Style(init) {
-		Observable.call(this);
-		
+	function Style(init) {		
 		init = init || {};
 			
 		this.id = init.id || makeID(styles);		
@@ -38,8 +35,6 @@
 		
 		return this;
 	}
-	
-	Style.prototype = new Observable();
 	
     Style.randColor = function() {
         var rgb = Color.convert({
@@ -77,20 +72,6 @@
     };
     
     
-	Style.prototype.samplePalette = function(paletteSize) {
-		paletteSize = paletteSize || 10;
-		for (var i = 0; i < paletteSize; i++)
-			this.palette.push(Style.randColor());
-		return this;
-	};
-		
-	Style.prototype.setPalette = function(palette) {
-		this.palette = palette.map(function(col) {
-			return new THREE.Color(col);
-		});
-		return this;
-	};
-	
 	Style.prototype.update = function(styleChanges) {
 		Object.getOwnPropertyNames(styleChanges || {}).forEach(function(name) {
 			if (this.hasOwnProperty(name))

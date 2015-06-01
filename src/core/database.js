@@ -2,7 +2,6 @@
 	
 (function(global) {
 	var _G = global.grafar,
-		Observable = _G.Observable,
 		intersection = _G.intersection,
 		interPower = _G.interPower,
 		haveCommon = _G.haveCommon,
@@ -24,7 +23,6 @@
 	};
 	
 	Database.prototype.constrain = function(constraint) {
-		//console.log('c in');
 		var names = asArray(constraint.what || []),
 			using = asArray(constraint.using || []),
 			as = constraint.as || function() {},
@@ -43,7 +41,6 @@
 				using: using,
 				maxlen: maxlen // only for root CCs
 			};
-		//console.log('c', def);
 		
 		if (conflicts.length !== 0) {
 			if (onConflict === 'overwrite') {
@@ -82,9 +79,7 @@
 		
 		if (names.length === 0)
 			return new Table2();
-			
-		// evaluate all definitions
-		// problem: r-copies of atomic table remain the same!
+            
 		for (var i = 0; i < names.length; i++) {
 			if (!this.known[names[i]]) { // tabwise ups
 				var def = firstMatch(this.constraints, function(c) {
@@ -134,21 +129,14 @@
 	
 	Database.prototype.setUpdate = function(names) {
 		var affected = union(names, this.graph.down(names));
-		for (var i = 0; i < this.tables.length; i++)
+		for (var i = 0; i < this.tables.length; i++) {
 			for (var j = 0; j < affected.length; j++) {
 				this.tables[i].needsupdate[affected[j]] = true;
 			}
+        }
+        return this;
 	};
-		
-	Database.prototype.prepare = function() {
-		// Inline explicits into implicits where possible.
-		// Group CCs.
-	};
-	
-	
-	Database.prototype.postSelect = function() {
-		
-	};
+    
 			
 	_G.Database = Database;
 }(this));

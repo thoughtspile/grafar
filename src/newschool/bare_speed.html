@@ -1,0 +1,33 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<title>Bare js speed</title>
+</head>
+
+<body>
+	<script type="text/javascript">
+		var n = 200;
+        var n2 = n * n;
+        var x = new Float32Array(n2);
+        var y = new Float32Array(n2);
+        var z = new Float32Array(n2);
+        var plainmap = function(x, y, z, n) {
+            for (var i = 0; i < n; i++)
+                z[i] = x[i] + Math.sin(Math.cos(x[i]) - y[i]);
+        };
+            
+        for (var i = 0; i < n; i++) {
+            for (var j = 0; j < n; j++) {
+                x[i] = i / n;
+                y[i] = j / n;
+            }
+        }
+            
+        console.time('plain');
+        plainmap(x, y, z, n2);
+        console.timeEnd('plain');
+	</script>
+
+	</body>
+</html>

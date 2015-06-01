@@ -19,9 +19,7 @@
 			none: Error.bind(null, 'no 3D support')
 		}[renderMode];
 			
-	function Panel(container, opts) {
-		Observable.call(this);
-	
+	function Panel(container, opts) {	
 		opts = opts || {};		
 		panels.push(this);
 		
@@ -58,9 +56,7 @@
 		} else {
 			this.stats = {update: function() {}};
 		}
-	}
-	
-	Panel.prototype = new Observable();
+	};
 	
 	Panel.prototype.setContainer = function(container) {
 		container.appendChild(this.renderer.domElement);

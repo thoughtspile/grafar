@@ -1,0 +1,37 @@
+<head>
+    <title>Grafar v2 test</title>
+</head>
+
+<script>
+    var DataWrap = function(data) {
+        this.data = data;
+        
+        this.getClosure = function(i) {
+            return data[i];
+        };
+        
+        this.getAside = function(data, i) {
+            return data[i];
+        }
+    };
+    
+    DataWrap.prototype.get = function(i) {
+        return this.data[i];
+    };
+    
+    var n = 100000;
+    var tData = new Float32Array(n);
+    var xData = new Float32Array(n);
+    var tObj = new DataWrap(tData);
+    var fx = function(t) { return 2 * t - 1; };
+    
+    for (var i = 0; i < n; i++)
+        tData[i] = Math.random() * n - n / 2;
+	
+	// http://jsperf.com/row-vs-col-map
+    // http://jsperf.com/n-list-mapping
+    // http://jsperf.com/diamond-dfg-materialization
+    // http://jsperf.com/tree-dfg-materialization
+    // http://jsperf.com/access-materialization
+    //  http://jsperf.com/chain-dfg-materialization
+</script>
