@@ -326,7 +326,6 @@
 			
 		var basic = pool.get(Uint32Array, pointer);
 		basic.set(buffer.subarray(0, pointer));
-		console.log(this.length);
 		for (var i = 1; i < rMult; i++)
 			buffer.set(incArray(basic, fMult), pointer * i);
 				
