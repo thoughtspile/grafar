@@ -16,22 +16,9 @@
 		BufferGeometry = _T.BufferGeometry,
 		BufferAttribute = _T.BufferAttribute;
 	
-	
-	function Object(opts) {
-		Observable.call(this);
-		
-		this.db = new Database();
-		this.uniforms = {
-			style: new Style()
-		};
-		this.glinstances = [];
-		this.hidden = false;
-	}
-	
-	Object.prototype = new Observable();
-	
-	Object.prototype.pin = function(panel) {
-		var pointGeometry = new BufferGeometry(),
+    
+    function InstanceGL(panel) {
+        var pointGeometry = new BufferGeometry(),
 			lineGeometry = new BufferGeometry(),
 			meshGeometry = new BufferGeometry(),
 			position = new BufferAttribute(pool.get(Float32Array, 0), 3),
@@ -46,76 +33,46 @@
 		meshGeometry.addAttribute('index', meshIndex);
 		meshGeometry.addAttribute('normal', normal);
 		
-		var col = this.uniforms.style.getLineMaterial(this.id).color,
-            meshMaterial = new THREE.MeshLambertMaterial({
-                side: THREE.DoubleSide,
-                color: col,
-                transparent: true,
-                opacity: .5,
-                depthWrite: false
-                //depthTest: false
-            });
-		var object = new Object3D()
-			.add(new PointCloud(pointGeometry, this.uniforms.style.getParticleMaterial(this.id)))	
-			.add(new Line(lineGeometry, this.uniforms.style.getLineMaterial(this.id), LinePieces))
-			.add(new THREE.Mesh(meshGeometry, meshMaterial));
-		
+		var col = Style.randColor(),
+            object = new Object3D();
+        object.add(new PointCloud(pointGeometry, Style.matHelper('point', col)))	
+            .add(new Line(lineGeometry, Style.matHelper('line', col), LinePieces))
+            .add(new THREE.Mesh(meshGeometry, Style.matHelper('mesh', col)));
 		panel.scene.add(object);
-			
-		this.glinstances.push({
-				panel: panel,
-				target: position,
-				index: lineIndex,
-				meshIndex: meshIndex,
-				normal: normal,
-				object: object,
-				resize: function(size) {
-					var oldArr = this.target.array,
-						oldSize = oldArr.length;
-					if (size !== oldSize) {
-						var temp = pool.get(oldArr.constructor, size);
-						temp.set(oldArr.subarray(0, Math.min(oldSize, size)));
-						pool.push(this.target.array);
-						this.target.array = temp;
-					}
-				},
-				resizeIndex: function(size) {
-					var oldArr = this.index.array,
-						oldSize = oldArr.length;
-					if (size !== oldSize) {
-						var temp = pool.get(oldArr.constructor, size);
-						temp.set(oldArr.subarray(0, Math.min(oldSize, size)));
-						pool.push(this.index.array);
-						this.index.array = temp;
-					}
-				},
-				resizeMeshIndex: function(size) {
-					var oldArr = this.meshIndex.array,
-						oldSize = oldArr.length;
-					if (size !== oldSize) {
-						var temp = pool.get(oldArr.constructor, size);
-						temp.set(oldArr.subarray(0, Math.min(oldSize, size)));
-						pool.push(this.meshIndex.array);
-						this.meshIndex.array = temp;
-					}
-				},
-				resizeNormals: function(size) {
-					var oldArr = this.normal.array,
-						oldSize = oldArr.length;
-					if (size !== oldSize) {
-						var temp = pool.get(oldArr.constructor, size);
-						temp.set(oldArr.subarray(0, Math.min(oldSize, size)));
-						pool.push(this.normal.array);
-						this.normal.array = temp;
-					}
-				}
-			}
-		);
+        
+        this.panel = panel;
+        this.target = position;
+        this.index = lineIndex;
+        this.meshIndex = meshIndex;
+        this.normal = normal;
+        this.object = object;        
+    };
+    
+    function resizeBuffer(buffer, size) {
+        var oldArr = buffer.array,
+            oldSize = oldArr.length;
+        if (size !== oldSize) {
+            var temp = pool.get(oldArr.constructor, size);
+            temp.set(oldArr.subarray(0, Math.min(oldSize, size)));
+            pool.push(buffer.array);
+            buffer.array = temp;
+        }
+    };
+    
+	
+	function Object(opts) {
+		Observable.call(this);
 		
-		//var self = this;
-		//panel.on('update', function() {self.db.refresh();});
-		//this.db.on('update', function() {});
+		this.db = new Database();
+		this.uniforms = {
+			style: new Style()
+		};
+		this.glinstances = [];
+		this.hidden = false;
+	}
 		
+	Object.prototype.pin = function(panel) {			
+		this.glinstances.push(new InstanceGL(panel));		
 		return this;
 	};
 	
@@ -130,24 +87,24 @@
 				names = instance.panel._axes;
 				
 			var tab = this.db.select(names);
-			instance.resize(tab.length * names.length);
+            resizeBuffer(instance.target, tab.length * names.length);
 			tab.export(names, instance.target.array);
 			instance.target.needsUpdate = true;
 			
-			 var edgeCount = tab.indexBufferSize(),
-				 hasEdges = (edgeCount !== 0);
+			var edgeCount = tab.indexBufferSize(),
+                hasEdges = (edgeCount !== 0);
 			instance.object.children[0].visible = !hasEdges;
 			instance.object.children[1].visible = hasEdges;
 			if (hasEdges) {
-				instance.resizeIndex(edgeCount);
+				resizeBuffer(instance.index, edgeCount);
 				tab.computeIndexBuffer(instance.index);
 				instance.index.needsUpdate = true;
 			}
             
             if (tab.isMeshable()) {
                 var faceCount = tab.faceCount() * 3;
-                instance.resizeMeshIndex(faceCount);
-                instance.resizeNormals(tab.length * names.length);
+                resizeBuffer(instance.meshIndex, faceCount);
+                resizeBuffer(instance.normal, tab.length * names.length);
                 tab.computeMeshIndex(instance.meshIndex.array);
                 instance.object.children[2].geometry.computeVertexNormals();
             }
@@ -155,6 +112,10 @@
 		return this;
 	}
 	
+    Object.prototype.reset = function() {
+        return this;
+    };
+    
 	Object.prototype.hide = function(hide) {
 		for (var i = 0; i < this.glinstances.length; i++)
 			this.glinstances[i].object.visible = !hide;
