@@ -10,14 +10,7 @@
 		makeID = _G.makeID;
 		
 	var styles = {};
-	
-	function randomLab() {
-		return {
-			l: 60,
-			a: -100 + Math.floor(200 * Math.random()),
-			b: -100 + Math.floor(200 * Math.random())
-		};
-	}
+    
 	
 	function Style(init) {
 		Observable.call(this);
@@ -48,32 +41,49 @@
 	
 	Style.prototype = new Observable();
 	
+    Style.randColor = function() {
+        var rgb = Color.convert({
+                l: 60,
+                a: -100 + Math.floor(200 * Math.random()),
+                b: -100 + Math.floor(200 * Math.random())
+            }, 'rgb');
+        return new THREE.Color('rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ')');
+    };
+    
+    Style.matHelper = function(type, col) {
+        if (!isExisty(col))
+            col = Style.randColor();
+        if (type === 'point')
+            return new THREE.PointCloudMaterial({
+                size: config.particleRadius, 
+                transparent: true, 
+                opacity: 0.5, 
+                sizeAttenuation: false,
+                color: col
+            });
+        else if (type === 'line')
+            return new THREE.LineBasicMaterial({
+                color: col
+            });            
+        else if (type === 'mesh')
+            return new THREE.MeshLambertMaterial({
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: .5,
+                depthWrite: false,
+                color: col
+                //depthTest: false
+            });
+    };
+    
+    
 	Style.prototype.samplePalette = function(paletteSize) {
 		paletteSize = paletteSize || 10;
-		for (var i = 0; i < paletteSize; i++) {
-			var rgb = Color.convert(randomLab(), 'rgb'),
-				rgb2 = new THREE.Color('rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ')');
-			this.palette.push(rgb2);
-		}
+		for (var i = 0; i < paletteSize; i++)
+			this.palette.push(Style.randColor());
 		return this;
 	};
-	
-	Style.prototype.pull = function(id) {
-		this.materials[id] = {
-			line: new THREE.LineBasicMaterial({}),
-			point: new THREE.PointCloudMaterial({size: config.particleRadius, transparent: true, opacity: 0.5, sizeAttenuation: false})
-		};		
-		this.colors[id] = this.palette[(Object.getOwnPropertyNames(this.colors).length + 1) % this.palette.length];
-		this.updateMaterials(id);
-	};
-	
-	Style.prototype.updateMaterials = function(id) {
-		this.materials[id].line.color = this.colors[id];
-		this.materials[id].point.color = this.colors[id];
-		this.materials[id].line.needsUpdate = true;
-		this.materials[id].point.needsUpdate = true;
-	};
-	
+		
 	Style.prototype.setPalette = function(palette) {
 		this.palette = palette.map(function(col) {
 			return new THREE.Color(col);
@@ -89,21 +99,8 @@
 		
 		return this;
 	};
-		
-	Style.prototype.getLineMaterial = function(id) {
-		id = id || 'def';
-		if (!isExisty(this.colors[id]))
-			this.pull(id);
-		return this.materials[id].line;
-	};
 	
-	Style.prototype.getParticleMaterial = function(id) {
-		id = id || 'def';
-		if (!isExisty(this.colors[id]))
-			this.pull(id);
-		return this.materials[id].point;
-	};
-		
+    
 	_G.styles = styles;
 	_G.Style = Style;
 }(this));
