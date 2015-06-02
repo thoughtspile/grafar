@@ -44,23 +44,17 @@
 	
 	Table2.prototype.resize = function(newLength) {
 		if (isExisty(newLength)) {
-			this.extend(newLength);
+			this.capacity = Math.max(this.capacity, newLength);
+            this.schema().forEach(function(name) {
+                if (this.data[name].length < this.capacity) {
+                    var temp = pool.get(Float32Array, this.capacity);
+                    temp.set(this.data[name].subarray(0, this.length));
+                    pool.push(this.data[name]);
+                    this.data[name] = temp;
+                }
+            }.bind(this));
 			this.length = newLength;
 		}
-		return this;
-	};
-	
-	Table2.prototype.extend = function(newCapacity) {
-		// length is not set here
-		this.capacity = Math.max(this.capacity, newCapacity);
-		this.schema().forEach(function(name) {
-			if (this.data[name].length < this.capacity) {
-				var temp = pool.get(Float32Array, this.capacity);
-				temp.set(this.data[name].subarray(0, this.length));
-				pool.push(this.data[name]);
-				this.data[name] = temp;
-			}
-		}.bind(this));
 		return this;
 	};
 	
@@ -242,20 +236,6 @@
 		return temp;
 	};
     
-    Table2.prototype.isMeshable = function() {
-        return this.minGraphDescriptor().reduceRight(function(pv, cv) {
-			return cv.type === 'c'? pv + 1: pv;
-		}, 0) === 2;
-    };
-    
-    Table2.prototype.faceCount = function() {
-        if (!this.isMeshable())
-            return 0;
-		return 2 * this.minGraphDescriptor().reduceRight(function(pv, cv) {
-			return cv.type === 'c'? pv * (cv.qty - 1): pv * cv.qty;
-		}, 1);
-	};
-	
 	Table2.prototype.computeIndexBuffer = function(buffer) {
 		var actions = this.minGraphDescriptor(),		
 			key = actions.toString();
@@ -290,7 +270,21 @@
 		buffer.set(Table2.indexCache[key]);
 		return this;
 	};
-	
+    
+    Table2.prototype.dims = function() {
+        return this.minGraphDescriptor().reduceRight(function(pv, cv) {
+			return cv.type === 'c'? pv + 1: pv;
+		}, 0);
+    };
+    
+    Table2.prototype.faceCount = function() {
+        if (!this.dims() === 2)
+            return 0;
+		return 2 * this.minGraphDescriptor().reduceRight(function(pv, cv) {
+			return cv.type === 'c'? pv * (cv.qty - 1): pv * cv.qty;
+		}, 1);
+	};
+		
 	Table2.prototype.computeMeshIndex = function(buffer) {
 		var mgd = this.minGraphDescriptor();
 		if (mgd[0].type !== 'd')

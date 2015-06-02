@@ -35,23 +35,9 @@
 		return abDist;
 	}
 
-	function arraySum(a, b, out) {
-		var l = a.length;
-		for (var i = 0; i < l; i++)
-			out[i] = a[i] + b[i];
-	}
-
-	function arrayTimes(n, b, out) {
-		var l = b.length;
-		for (var i = 0; i < l; i++)
-			out[i] = n * b[i];
-	}
-	
-	
+		
 	_G.zeroVector = zeroVector;
 	_G.dot = dot;
 	_G.norm = norm;
 	_G.dist = dist;
-	_G.arraySum = arraySum;
-	_G.arrayTimes = arrayTimes;
 }(this));

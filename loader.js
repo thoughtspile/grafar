@@ -23,6 +23,7 @@ var runGrafar = function(callback, pathOverride) {
 		.script('src/math/vector.js').wait()
 		.script('src/math/numerics.js')
 		.script('src/math/graphdata.js')
+		.script('src/math/array_utils.js')
 		
 		.script('src/core/style.js')
 		
@@ -30,6 +31,10 @@ var runGrafar = function(callback, pathOverride) {
 		.script('src/core/table.js').wait()
 		.script('src/core/database.js').wait()
 		.script('src/core/object.js').wait()
+        
+		.script('src/core/reactive.js').wait()
+		.script('src/core/reactive_db.js').wait()
+		.script('src/core/reactive_object.js').wait()
 		
 		.script('src/generators/grafaryaz/parser_.js').wait()
 	

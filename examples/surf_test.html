@@ -38,8 +38,23 @@
 					for (var i = 0; i < l; i++)
 						data.z[i] = data.x[i] * data.y[i];
 				}})
-				.refresh();	
-            console.log(bld1.db.select('x,y,z').isMeshable());
+				.refresh();
+            
+            var x = new grafar.Reactive().buffer(1).lift(function(par, out, l) {
+                    out[0] = 10;
+                });
+            console.log(x.value());
+            var y = new grafar.Reactive()
+                .buffer(1)
+                .lift(function(par, out, l) {
+                    for (var i = 0; i < par.length; i++)
+                        par[i] = par[i].value();
+                    for (var i = 0; i < l; i++)
+                        out[i] = par[0][i] + 15;
+                })
+                .bind([x]);
+            console.log(x, y);
+            console.log(y.value());
 		}, '../');
 	</script>
 

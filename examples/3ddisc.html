@@ -19,13 +19,13 @@
 				graph = new grafar.Object().pin(pan3d);
 							
             var eps = .00001;
-			graph.constrain({what: 'i', maxlen: 2, as: grafar.seq(0, 1, 'i', false, true)})
-                .constrain({what: 't', maxlen: 150, as: grafar.seq(-5, 5, 't')})
-                .constrain({what: 'p', maxlen: 150, as: grafar.seq(-5, 5, 'p')})
+			graph.constrain({what: 'i', maxlen: 2, as: grafar.seq(-1, 1, 'i', false, true)})
+                .constrain({what: 't', maxlen: 30, as: grafar.seq(-5, 5, 't')})
+                .constrain({what: 'p', maxlen: 30, as: grafar.seq(0, 5, 'p')})
                 .constrain({what: 'x,y', using: 'i,t,p', as: function(data, l) {
                     for (var i = 0; i < l; i++) {
                         data.x[i] = data.t[i];
-                        data.y[i] = data.p[i] + data.i[i];
+                        data.y[i] = data.t[i] + data.i[i] * data.p[i];
                     }
                 }})
                 .constrain({what: 'z', using: 'x, y', as: function(data, l) {

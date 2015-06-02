@@ -35,23 +35,19 @@
 				return haveCommon(c.what, names);
 			}),
 			def = {
-				what: names, // is the matching connectivity component
+				what: names,
 				as: as,
 				baseTable: null,
 				using: using,
-				maxlen: maxlen // only for root CCs
+				maxlen: maxlen
 			};
 		
 		if (conflicts.length !== 0) {
 			if (onConflict === 'overwrite') {
 				this.constraints = setMinus(this.constraints, conflicts);
-				// only psubs
 				def.baseTable = conflicts[0].baseTable;
 				console.log('tab', def.baseTable);
 			}
-			// Merge dupe explicit: x = f(v) <- x = g(v): add f(v) = g(v)
-			// Adding i to e: x = f(v) <- f(x, v) = g(u): Will cascade
-			// Adding i to i: F(v) = 0 <- G(v) = 0: OK for ConComp
 		}
 		this.constraints.push(def);
 		
@@ -64,13 +60,11 @@
 				this.graph.addEdge(using[j], name);
 		}
 		
-		//console.log('cascade');
 		var cascadeChanges = this.graph.down(names);
 		for (var i = 0; i < cascadeChanges.length; i++)
 			this.known[cascadeChanges[i]] = false;
 		this.setUpdate(names);
 
-		//console.log('c out');
 		return this;
 	};
 	
