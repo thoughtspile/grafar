@@ -26,12 +26,13 @@
 					for (var i = 0; i < l; i++)
 						data.x[i] = data.i[i] + data.t[i];
 				}})
-				.constrain({what: 'z', using: 'x,y', as: function(data, l) {
+				.constrain({what: 'z', using: 'x,y,t', as: function(data, l) {
 					for (var i = 0; i < l; i++)
 						data.z[i] = data.x[i] * data.y[i];
 				}})
                 .refresh();
             console.log(graph.db);
+            console.log(graph.db.select('z'));
             //console.log(dbr.select('i'));
             //console.log(dbr.select('t'));
             //console.log(dbr.select('y'));

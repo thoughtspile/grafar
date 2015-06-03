@@ -12,19 +12,10 @@
 <body>
 	<div id = "render">
 	
-	
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-    </script>
-	<script type="text/x-mathjax-config">
-		MathJax.Hub.Config({
-			tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
-			"HTML-CSS": { linebreaks: { automatic: true, width: "75% container" } }
-		});
-    </script>
-	
 	<script type="text/javascript" src="../loader.js"></script>
 	<script type="text/javascript">
 		runGrafar(function() {
+            console.log('hi');
 			var pan3d = new grafar.Panel(document.getElementById('render')),
 				bld1 = new grafar.Object().pin(pan3d),
 				pi = Math.PI,
@@ -35,9 +26,10 @@
 				hScale = 1/3;
 			
 			pan3d.camera.position.set(-1.3, .47, .7);
-				
-			bld1.constrain({what: 'r', maxlen: 25, as: grafar.logseq(0, 1, 'r')})
-				.constrain({what: 'phi', maxlen: 20, as: grafar.seq(-segAng / 2, segAng / 2, 'phi')})
+            
+            
+			bld1.constrain({what: 'r', maxlen: 3, as: grafar.logseq(0, 1, 'r')})
+				.constrain({what: 'phi', maxlen: 3, as: grafar.seq(-segAng / 2, segAng / 2, 'phi')})
 				.constrain({what: 'rep', maxlen: seg, as: grafar.seq(0, 2 * pi, 'rep', true, true)})
 				.constrain({what: 'layer', maxlen: 2, as: grafar.seq(0, 1, 'layer', false, true)})
 				.constrain({what: 'z', using: 'r, phi, rep, layer', as: function(data, l) {
@@ -54,7 +46,6 @@
 						data.y[i] = Math.sin(data.rep[i] + angRescale * data.phi[i]) * data.r[i];
 				}})
 				.refresh();	
-            console.log(bld1.db.select('x,y,z').isMeshable());
 		}, '../');
 	</script>
 

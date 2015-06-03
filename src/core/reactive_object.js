@@ -19,11 +19,13 @@
 		BufferAttribute = _T.BufferAttribute;
 	
     function interleave(tab, names, target) {
-        var len = tab[names[0]].length,
-            itemsize = names.length;
+        // need reactive interleave target!
+        // or at least size
+        var itemsize = names.length;
 		for (var j = 0; j < itemsize; j++) {
 			if (isExisty(names[j])) {
-				var colData = tab[names[j]].value();
+				var colData = tab[names[j]].value(),
+                    len = tab[names[j]].length;
 				for (var i = 0, k = j; i < len; i++, k += itemsize)
 					target[k] = colData[i];
 			}

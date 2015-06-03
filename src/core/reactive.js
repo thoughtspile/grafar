@@ -19,47 +19,45 @@
 		this.isValid = false;
 	};
 	
-    var baseOrder = [];
+    var baseOrder = [],
+        baseComparator = function(a, b) {
+            return baseOrder.indexOf(a) >= baseOrder.indexOf(b);
+        };
 	
 	Reactive.isReactive = function(obj) {
 		return obj instanceof Reactive;
 	};
-	    
+    
     Reactive.contextify = function(col, targetBase) {
-        // sort target base
-        var colBase = col.base(),
-            res = col;
-        for (var i = 0; i < targetBase.length; i++) {
-            if (colBase.indexOf(targetBase[i]) === -1) {
-                var iLoc = i,
-                    getBlockSize = function() {
-                        var res = 1;
-                        for (var j = 0; j < iLoc; j++)
-                            res *= targetBase[j].length;
-                        return res;
-                    };
-                res = new Reactive().lift(function(par, out) {
-                    out.buffer(par[0].length * par[1].length);
-                    var blockSize = getBlockSize();
+        return new Reactive().lift(function(par, out) {
+            var colBase = col.base().sort(baseComparator),
+                totalLength = targetBase.reduce(function(pv, cv) {
+                    return pv * cv.validate().length;
+                }, 1),
+                blockSize = 1,
+                len = par[0].length;
+            var res = out.buffer(totalLength).data;
+            res.set(par[0].value());
+            for (var i = 0; i < targetBase.length; i++) {
+                if (colBase.indexOf(targetBase[i]) === -1) {
                     blockRepeat(
-                        par[0].value(), 
+                        res, 
                         blockSize, 
-                        Math.floor(par[0].length / blockSize),
-                        par[1].length,
-                        out.data
+                        Math.floor(len / blockSize),
+                        targetBase[i].length,
+                        res
                     );
-                }).bind([res, targetBase[i]]);
+                    len *= targetBase[i].length;
+                }
+                blockSize *= targetBase[i].length;
             }
-        }
-        return res;
+        }).bind([col]);
     };
     
     Reactive.unify = function(cols) {
         var targetBase = cols.reduce(function(pv, col) {
             return union(pv, col.base());
-        }, []).sort(function(a, b) {
-            return baseOrder.indexOf(a) >= baseOrder.indexOf(b);
-        });
+        }, []).sort(baseComparator);
         return cols.map(function(col) {
             return Reactive.contextify(col, targetBase);
         });
