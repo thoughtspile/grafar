@@ -3,6 +3,7 @@
     var isExisty = grafar.isExisty;
     var setPop = grafar.setpop;
     var setPush = grafar.setpush;
+    var union = grafar.union;
     var repeatArray = grafar.repeatArray;
     var stretchArray = grafar.repeatPoints;
     
@@ -123,6 +124,13 @@
         return this.validate().data;
     };
     
+    Reactive.prototype.base = function() {
+        if (this.sources.length === 0)
+            return [this];
+        return this.sources.reduce(function(pv, node) {
+            return union(pv, node.base());
+        }, []);
+    };
     
 	grafar.Reactive = Reactive;
 }(this));

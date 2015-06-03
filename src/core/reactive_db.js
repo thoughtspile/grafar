@@ -66,7 +66,7 @@
 		var unifiedReactives = Reactive.prod(temp);
         var data = {};
         for (var i = 0; i < names.length; i++)
-            data[names[i]] = unifiedReactives[i].value();
+            data[names[i]] = unifiedReactives[i].validate();
         return data;
 	};
     
