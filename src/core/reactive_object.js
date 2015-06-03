@@ -7,6 +7,7 @@
 		Database = _G.Database,
 		Style = _G.Style,
 		pool = _G.pool,
+        isExisty = _G.isExisty,
         
         DatabaseR = _G.DatabaseR,
 		
@@ -17,6 +18,18 @@
 		BufferGeometry = _T.BufferGeometry,
 		BufferAttribute = _T.BufferAttribute;
 	
+    function interleave(tab, names, target) {
+        var len = tab[names[0]].length,
+            itemsize = names.length;
+		for (var j = 0; j < itemsize; j++) {
+			if (isExisty(names[j])) {
+				var colData = tab[names[j]].value();
+				for (var i = 0, k = j; i < len; i++, k += itemsize)
+					target[k] = colData[i];
+			}
+		}
+    };
+    
     
     function InstanceGL(panel) {
         var pointGeometry = new BufferGeometry(),
@@ -62,13 +75,13 @@
     
 	
 	function Object(opts) {
-		this.db = new Database();
+		this.db = new DatabaseR();
 		this.glinstances = [];
 		this.hidden = false;
 	}
 		
 	Object.prototype.pin = function(panel) {			
-		this.glinstances.push(new InstanceGL(panel));		
+		this.glinstances.push(new InstanceGL(panel));
 		return this;
 	};
 	
@@ -83,44 +96,40 @@
 				names = instance.panel._axes;
 				
 			var tab = this.db.select(names);
-            resizeBuffer(instance.position, tab.length * names.length);
-			tab.export(names, instance.position.array);
+            resizeBuffer(instance.position, tab[names[0]].length * names.length);
+			interleave(tab, names, instance.position.array);
 			instance.position.needsUpdate = true;
 			
-			var edgeCount = tab.indexBufferSize(),
-                hasEdges = (edgeCount !== 0),
-                faceCount = tab.faceCount() * 3,
-                hasFaces = (faceCount !== 0);
-			instance.object.children[0].visible = !hasEdges;
-			instance.object.children[1].visible = hasEdges;
+			// var edgeCount = tab.indexBufferSize(),
+                // hasEdges = (edgeCount !== 0),
+                // faceCount = tab.faceCount() * 3,
+                // hasFaces = (faceCount !== 0);
+			// instance.object.children[1].visible = !hasEdges;
+			// instance.object.children[1].visible = hasEdges;
             
-			if (hasEdges) {
-				resizeBuffer(instance.segments, edgeCount);
-				tab.computeIndexBuffer(instance.segments);
-				instance.segments.needsUpdate = true;
-			}
+			// if (hasEdges) {
+				// resizeBuffer(instance.segments, edgeCount);
+				// tab.computeIndexBuffer(instance.segments);
+				// instance.segments.needsUpdate = true;
+			// }
             
-            if (hasFaces) {
-                resizeBuffer(instance.faces, faceCount);
-                tab.computeMeshIndex(instance.faces.array);
-                instance.faces.needsUpdate = true;
+            // if (hasFaces) {
+                // resizeBuffer(instance.faces, faceCount);
+                // tab.computeMeshIndex(instance.faces.array);
+                // instance.faces.needsUpdate = true;
                 
-                resizeBuffer(instance.normals, tab.length * names.length);
-                instance.object.children[2].geometry.computeVertexNormals();
-            }
+                // resizeBuffer(instance.normals, tab.length * names.length);
+                // instance.object.children[2].geometry.computeVertexNormals();
+            // }
 		}
 		return this;
-	}
-	
-    Object.prototype.reset = function() {
-        return this;
-    };
+	};
     
 	Object.prototype.hide = function(hide) {
 		for (var i = 0; i < this.glinstances.length; i++)
 			this.glinstances[i].object.visible = !hide;
 		return this;
-	}
+	};
         
         
 	_G.ObjectR = Object;

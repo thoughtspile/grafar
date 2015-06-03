@@ -6,6 +6,7 @@
     var union = grafar.union;
     var repeatArray = grafar.repeatArray;
     var stretchArray = grafar.repeatPoints;
+    var blockRepeat = grafar.blockRepeat;
     
    
 	var Reactive = function() {
@@ -18,59 +19,50 @@
 		this.isValid = false;
 	};
 	
+    var baseOrder = [];
 	
 	Reactive.isReactive = function(obj) {
 		return obj instanceof Reactive;
 	};
-	
-	Reactive.repeat = function(col, factor) {
-        var srcLen = col.length,
-            targetLen = srcLen * factor;
-		return new Reactive()
-            .lift(function(src, target, len) {
-                for (var i = 0; i < len; i += srcLen)
-                    target.data.set(src[0].data, i);
-            })
-            .buffer(targetLen)
-            .bind([col]);
-	};
-	
-	Reactive.stretch = function(col, factor) {
-        var srcLen = col.length,
-            targetLen = srcLen * factor;
-		return new Reactive()
-            .lift(function(src, target, len) {
-                var iFrom = srcLen - 1,
-                    iTo = targetLen - 1;
-                while (iFrom >= 0) {
-                    var val = src[0].data[iFrom];
-                    for (var j = 0; j < factor; j++, iTo--)
-                        target.data[iTo] = val;
-                    iFrom--;
-                }
-            })
-            .buffer(targetLen)
-            .bind([col]);
-	};
-	
-    Reactive.prod = function(factors) {
-        var res = [];
-        var factorCount = factors.length;
-        if (factorCount === 1)
-            return factors;
-        
-        var factorSizes = [];
-        for (var  i = 0; i < factors.length; i++)
-            factorSizes[i] = factors[i].length;
-            
-        for (var i = 0; i < factorCount; i++) {
-            for (var ops = 0; ops < factorCount - 1; ops++)
-                res[i] = Reactive[ops < i? 'repeat': 'stretch'](
-                    factors[i],
-                    factorSizes[(i + ops + 1) % factorCount]
-                );
+	    
+    Reactive.contextify = function(col, targetBase) {
+        // sort target base
+        var colBase = col.base(),
+            res = col;
+        for (var i = 0; i < targetBase.length; i++) {
+            if (colBase.indexOf(targetBase[i]) === -1) {
+                var iLoc = i,
+                    getBlockSize = function() {
+                        var res = 1;
+                        for (var j = 0; j < iLoc; j++)
+                            res *= targetBase[j].length;
+                        return res;
+                    };
+                res = new Reactive().lift(function(par, out) {
+                    out.buffer(par[0].length * par[1].length);
+                    var blockSize = getBlockSize();
+                    blockRepeat(
+                        par[0].value(), 
+                        blockSize, 
+                        Math.floor(par[0].length / blockSize),
+                        par[1].length,
+                        out.data
+                    );
+                }).bind([res, targetBase[i]]);
+            }
         }
         return res;
+    };
+    
+    Reactive.unify = function(cols) {
+        var targetBase = cols.reduce(function(pv, col) {
+            return union(pv, col.base());
+        }, []).sort(function(a, b) {
+            return baseOrder.indexOf(a) >= baseOrder.indexOf(b);
+        });
+        return cols.map(function(col) {
+            return Reactive.contextify(col, targetBase);
+        });
     };
     
     
@@ -125,12 +117,15 @@
     };
     
     Reactive.prototype.base = function() {
-        if (this.sources.length === 0)
+        if (this.sources.length === 0) {
+            baseOrder.push(this);
             return [this];
+        }
         return this.sources.reduce(function(pv, node) {
             return union(pv, node.base());
         }, []);
     };
+    
     
 	grafar.Reactive = Reactive;
 }(this));
