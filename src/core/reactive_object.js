@@ -60,6 +60,7 @@
 	
     Object.prototype.project = function(names, proxy) {
         var names = asArray(names || []);
+        // might use a memo or two
         var temp = [];
         for (var i = 0; i < names.length; i++) {
             if (!this.reactives.hasOwnProperty(names[i])) {
@@ -75,13 +76,10 @@
     
 	Object.prototype.refresh = function() {
 		for (var i = 0; i < this.glinstances.length; i++) {
-			var instance = this.glinstances[i],
-				names = instance.panel._axes;
-				
-			var tab = this.project(names);
-            resizeBuffer(instance.position, tab[0].validate().length * names.length);
-			interleave(tab, instance.position.array);
-			instance.position.needsUpdate = true;
+			var instance = this.glinstances[i];				
+			var tab = this.project(instance.panel._axes);
+            
+			interleave(tab, instance.position);
 			
 			// var edgeCount = tab.indexBufferSize(),
                 // hasEdges = (edgeCount !== 0),

@@ -45,16 +45,19 @@
         return mat;
     };
     
-    function interleave(tab, target) {
+    function interleave(tab, buffer) {
         // need reactive interleave target!
         // or at least size handle
         var itemsize = tab.length;
+        resizeBuffer(buffer, itemsize * tab[0].validate().length);
+        var target = buffer.array;
 		for (var j = 0; j < itemsize; j++) {
             var colData = tab[j].value(),
                 len = tab[j].length;
             for (var i = 0, k = j; i < len; i++, k += itemsize)
                 target[k] = colData[i];
 		}
+        buffer.needsUpdate = true;
     };
                 
     function resizeBuffer(buffer, size) {
