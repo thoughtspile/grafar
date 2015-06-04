@@ -58,7 +58,18 @@
 			}
 		}
     };
-        
+                
+    function resizeBuffer(buffer, size) {
+        var oldArr = buffer.array,
+            oldSize = oldArr.length;
+        if (size !== oldSize) {
+            var temp = pool.get(oldArr.constructor, size);
+            temp.set(oldArr.subarray(0, Math.min(oldSize, size)));
+            pool.push(buffer.array);
+            buffer.array = temp;
+        }
+    };
+    
     function InstanceGL(panel, col) {
         var pointGeometry = new BufferGeometry(),
 			lineGeometry = new BufferGeometry(),
@@ -87,17 +98,6 @@
         this.faces = meshIndex;
         this.normals = normal;
         this.object = object;
-    };
-    
-    function resizeBuffer(buffer, size) {
-        var oldArr = buffer.array,
-            oldSize = oldArr.length;
-        if (size !== oldSize) {
-            var temp = pool.get(oldArr.constructor, size);
-            temp.set(oldArr.subarray(0, Math.min(oldSize, size)));
-            pool.push(buffer.array);
-            buffer.array = temp;
-        }
     };
     
     

@@ -5,12 +5,12 @@
     var Reactive = _G.Reactive;
 	
 	
-	function Graph() {
+	function Topo() {
         Reactive.call(this);
 	};
     
-    Graph.prototype = Reactive;
+    Topo.prototype = Reactive;
     
     
-	_G.GraphR = Graph;
+	_G.Topo = Topo;
 }(this));

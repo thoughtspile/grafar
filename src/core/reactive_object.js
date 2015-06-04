@@ -5,9 +5,11 @@
 		Style = _G.Style,
 		pool = _G.pool,
         isExisty = _G.isExisty,
-        Graph = _G.GraphR,
         asArray = _G.asArray,
+        
+        Graph = _G.GraphR,
         Reactive = _G.Reactive,
+        
         InstanceGL = _G.InstanceGL,
         interleave = _G.interleave,
         resizeBuffer = _G.resizeBuffer;
@@ -32,7 +34,7 @@
 		var names = asArray(constraint.what || []),
 			using = asArray(constraint.using || []),
 			as = constraint.as || function() {},
-			maxlen = constraint.maxlen;
+			maxlen = constraint.maxlen || 40;
             
         if (names.length > 1)
             throw new Error('cannot define > 1');
@@ -63,7 +65,7 @@
 	
     Object.prototype.project = function(names) {
         var names = asArray(names || []);
-        var temp = [];        
+        var temp = [];
         for (var i = 0; i < names.length; i++) {
             if (!this.reactives.hasOwnProperty(names[i]))
                 throw new Error('cannot select undefined');
