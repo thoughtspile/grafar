@@ -58,7 +58,7 @@
                 target[k] = colData[i];
 		}
         buffer.needsUpdate = true;
-    };
+    }
                 
     function resizeBuffer(buffer, size) {
         var oldArr = buffer.array,

@@ -20,9 +20,9 @@
 				graph = new grafar.ObjectR().pin(pan3d);
                 
             graph.constrain({what: 'i', maxlen: 2, as: grafar.seq(-1, 1, 'i')})
-                .constrain({what: 't', maxlen: 20, as: grafar.seq(0, 1, 't')})
+                .constrain({what: 't', maxlen: 100, as: grafar.seq(0, 1, 't')})
                 .constrain({what: 'p', maxlen: 1, as: function(data) {data.p[0] = 0;}})
-				.constrain({what: 'y', maxlen: 20, as: grafar.seq(0, 1, 'y')})
+				.constrain({what: 'y', maxlen: 200, as: grafar.seq(0, 1, 'y')})
 				.constrain({what: 'x', using: 'i, t', as: function(data, l) {
 					for (var i = 0; i < l; i++)
 						data.x[i] = data.i[i] + data.t[i];
@@ -41,18 +41,6 @@
                     .refresh();
                 window.requestAnimationFrame(up);
             }());
-            
-            var p1 = new grafar.Topo();
-            var p2 = new grafar.Topo();
-            p1.edges.buffer(2).lift(grafar.pathGraph);
-            p1.edges.nodeCount = 2;
-            p2.edges.buffer(4).lift(grafar.pathGraph);
-            p2.edges.nodeCount = 3;
-            var grid = new grafar.Reactive()
-                .lift(grafar.cartesianGraphProd);
-            grid.bind([p1.edges, p2.edges]);
-            console.log(grid);
-            console.log(grid.value());
             
             //console.log(dbr.select('i'));
             //console.log(dbr.select('t'));

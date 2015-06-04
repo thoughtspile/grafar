@@ -14,9 +14,9 @@
         interleave = _G.interleave,
         resizeBuffer = _G.resizeBuffer;
 	
-    
-	function Object(opts) {
+    function Object(opts) {
 		this.reactives = {};
+        this.projections = {};
         
 		this.glinstances = [];
         this.graphs = [];
@@ -25,8 +25,12 @@
 	}
 		
 	Object.prototype.pin = function(panel) {
-		this.glinstances.push(new InstanceGL(panel, this.col));
-        this.graphs.push(new Graph());
+        var instance = new InstanceGL(panel, this.col);
+		this.glinstances.push(instance);
+        var graph = new Reactive().lift(function(proj){
+            interleave(proj, instance.position);
+        }).bind(this.project()) // won't work because of undefined unification
+        this.graphs.push(graph);
 		return this;
 	};
 	
@@ -60,18 +64,21 @@
 	
     Object.prototype.project = function(names, proxy) {
         var names = asArray(names || []);
-        // might use a memo or two
-        var temp = [];
-        for (var i = 0; i < names.length; i++) {
-            if (!this.reactives.hasOwnProperty(names[i])) {
-                if (proxy)
-                    this.reactives[using[i]] = new Reactive();
-                else
-                    throw new Error('cannot select undefined');
+        var namesHash = names.slice().sort().toString();
+        if (!this.projections.hasOwnProperty(namesHash)) {
+            var temp = [];
+            for (var i = 0; i < names.length; i++) {
+                if (!this.reactives.hasOwnProperty(names[i])) {
+                    if (proxy)
+                        this.reactives[using[i]] = new Reactive();
+                    else
+                        throw new Error('cannot select undefined');
+                }
+                temp[i] = this.reactives[names[i]];
             }
-            temp[i] = this.reactives[names[i]];
+            this.projections[namesHash] = Reactive.unify(temp);
         }
-		return Reactive.unify(temp);
+		return this.projections[namesHash];
 	};
     
 	Object.prototype.refresh = function() {
@@ -79,6 +86,7 @@
 			var instance = this.glinstances[i];				
 			var tab = this.project(instance.panel._axes);
             
+            //this.graphs[i].validate();
 			interleave(tab, instance.position);
 			
 			// var edgeCount = tab.indexBufferSize(),
@@ -95,6 +103,9 @@
 			// }
             
             // if (hasFaces) {
+                // kinda like
+                // interleave(tab.topo.edges, instance.faces);
+                //
                 // resizeBuffer(instance.faces, faceCount);
                 // tab.computeMeshIndex(instance.faces.array);
                 // instance.faces.needsUpdate = true;
