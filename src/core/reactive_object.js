@@ -38,12 +38,7 @@
             
         if (names.length > 1)
             throw new Error('cannot define > 1');
-        var sources = [];
-        for (var i = 0; i < using.length; i++) {
-            if (!this.reactives.hasOwnProperty(using[i]))
-                this.reactives[using[i]] = new Reactive();
-            sources[i] = this.reactives[using[i]];
-        }
+        var sources = this.project(using, true);
         if (!this.reactives.hasOwnProperty(names[0]))
             this.reactives[names[0]] = new Reactive();
         
@@ -58,24 +53,24 @@
         
         this.reactives[names[0]]
             .lift(compatibilityAs)
-            .bind(Reactive.unify(sources));
+            .bind(sources);
 
 		return this;
 	};
 	
-    Object.prototype.project = function(names) {
+    Object.prototype.project = function(names, proxy) {
         var names = asArray(names || []);
         var temp = [];
         for (var i = 0; i < names.length; i++) {
-            if (!this.reactives.hasOwnProperty(names[i]))
-                throw new Error('cannot select undefined');
+            if (!this.reactives.hasOwnProperty(names[i])) {
+                if (proxy)
+                    this.reactives[using[i]] = new Reactive();
+                else
+                    throw new Error('cannot select undefined');
+            }
             temp[i] = this.reactives[names[i]];
         }
-		var unifiedReactives = Reactive.unify(temp);
-        var data = {};
-        for (var i = 0; i < names.length; i++)
-            data[names[i]] = unifiedReactives[i].validate();
-        return data;
+		return Reactive.unify(temp);
 	};
     
 	Object.prototype.refresh = function() {
@@ -84,8 +79,8 @@
 				names = instance.panel._axes;
 				
 			var tab = this.project(names);
-            resizeBuffer(instance.position, tab[names[0]].length * names.length);
-			interleave(tab, names, instance.position.array);
+            resizeBuffer(instance.position, tab[0].validate().length * names.length);
+			interleave(tab, instance.position.array);
 			instance.position.needsUpdate = true;
 			
 			// var edgeCount = tab.indexBufferSize(),

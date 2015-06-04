@@ -45,17 +45,15 @@
         return mat;
     };
     
-    function interleave(tab, names, target) {
+    function interleave(tab, target) {
         // need reactive interleave target!
-        // or at least size
-        var itemsize = names.length;
+        // or at least size handle
+        var itemsize = tab.length;
 		for (var j = 0; j < itemsize; j++) {
-			if (isExisty(names[j])) {
-				var colData = tab[names[j]].value(),
-                    len = tab[names[j]].length;
-				for (var i = 0, k = j; i < len; i++, k += itemsize)
-					target[k] = colData[i];
-			}
+            var colData = tab[j].value(),
+                len = tab[j].length;
+            for (var i = 0, k = j; i < len; i++, k += itemsize)
+                target[k] = colData[i];
 		}
     };
                 
