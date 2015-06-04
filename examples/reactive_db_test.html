@@ -36,13 +36,23 @@
             (function up() {
                 t += .01;
                 graph.constrain({what: 'p', maxlen: 1, as: function(data) {
-                        data.p[0] = Math.sin(t);
+                        data.p[0] = Math.pow(Math.sin(t), 3);
                     }})
                     .refresh();
                 window.requestAnimationFrame(up);
             }());
             
-            console.log(new grafar.GraphR());
+            var p1 = new grafar.Topo();
+            var p2 = new grafar.Topo();
+            p1.edges.buffer(2).lift(grafar.pathGraph);
+            p1.edges.nodeCount = 2;
+            p2.edges.buffer(4).lift(grafar.pathGraph);
+            p2.edges.nodeCount = 3;
+            var grid = new grafar.Reactive()
+                .lift(grafar.cartesianGraphProd);
+            grid.bind([p1.edges, p2.edges]);
+            console.log(grid);
+            console.log(grid.value());
             
             //console.log(dbr.select('i'));
             //console.log(dbr.select('t'));

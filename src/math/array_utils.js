@@ -75,7 +75,7 @@
 			arr[i] *= n;
 		return arr;
 	}
-		
+    
     
 	_G.arraySum = arraySum;
 	_G.arrayTimes = arrayTimes;
