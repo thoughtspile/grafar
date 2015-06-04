@@ -61,7 +61,7 @@
 		return this;
 	};
 	
-    Object.prototype.select = function(names) {
+    Object.prototype.project = function(names) {
         var names = asArray(names || []);
         var temp = [];        
         for (var i = 0; i < names.length; i++) {
@@ -81,7 +81,7 @@
 			var instance = this.glinstances[i],
 				names = instance.panel._axes;
 				
-			var tab = this.select(names);
+			var tab = this.project(names);
             resizeBuffer(instance.position, tab[names[0]].length * names.length);
 			interleave(tab, names, instance.position.array);
 			instance.position.needsUpdate = true;

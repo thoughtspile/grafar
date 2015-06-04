@@ -34,7 +34,6 @@ var runGrafar = function(callback, pathOverride) {
         
         // new style processing
 		.script('src/core/reactive.js').wait()
-		.script('src/core/reactive_db.js')
 		.script('src/core/glutils.js')
 		.script('src/core/reactive_graph.js').wait()
 		.script('src/core/reactive_object.js').wait()
