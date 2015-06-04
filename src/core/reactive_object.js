@@ -45,15 +45,20 @@
         if (names.length > 1)
             throw new Error('cannot define > 1');
         var sources = this.project(using, true);
-        if (!this.reactives.hasOwnProperty(names[0]))
-            this.reactives[names[0]] = new Reactive();
+        // I only do this shit because project forces product
+        // however, if it doesn't (force), memo would have to go into unify
+        // which sucks as well
+        for (var i = 0; i < names.length; i++)
+            if (!this.reactives.hasOwnProperty(names[0]))
+                this.reactives[names[i]] = new Reactive();
         
         var compatibilityAs = function(par, out, l) {
             out.buffer(par.length === 0? maxlen: par[0].length);
             var data = {};
             for (var i = 0; i < using.length; i++)
                 data[using[i]] = par[i].value();
-            data[names[0]] = out.data;
+            for (var i = 0; i < names.length; i++)
+                data[names[i]] = out.data;
             as(data, out.length, {});
         };
         

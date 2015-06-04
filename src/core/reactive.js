@@ -14,6 +14,7 @@
         this.targets = [];
         
 		this.data = new Float32Array(0);
+        //this.edges = new Reactive();
         this.length = 0;
 		this.fn = function() {};
 		this.isValid = false;

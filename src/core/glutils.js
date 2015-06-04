@@ -3,7 +3,6 @@
 (function(global) {
 	var _G = global.grafar,
 		pool = _G.pool,
-        isExisty = _G.isExisty,
         Panel = _G.Panel,
         config = _G.config,
 		

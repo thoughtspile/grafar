@@ -9,13 +9,17 @@
 	
     
 	function pathGraph(srcDummy, target) {
-        target.buffer(target.length);
-		var edgeCount = target.length / 2;
+		var edgeCount = target.pointCount - 1;
+        target.buffer(edgeCount * 2);
         var data = target.data;
 		for (var i = 0, j = 0; i < edgeCount; i++, j += 2) {
 			data[j] = i;
 			data[j + 1] = i + 1;
 		}
+	}
+    
+	function emptyGraph(srcDummy, target) {
+        target.buffer(0);
 	}
     
     function cartesianGraphProd(src, target) {
@@ -48,25 +52,11 @@
     };
     
     function makeFaces(src, target) {
-    }
-	
-    
-	function Topo(nodeCount) {
-        this.dimension = 0;
-        this.pointCount = nodeCount;
-        this.edges = new Reactive();
-        this.edges.nodeCount = nodeCount;
-        this.faces = new Reactive();
-	};
-    
-    
-    Topo.prototype.bind = function(src) {
-        this.edges.lift(cartesianGraphProd)
-            .bind([src[0].edges, src[1].edges]);
     };
     
     
-	_G.Topo = Topo;
+    _G.emptyGraph = emptyGraph;
     _G.pathGraph = pathGraph;
     _G.cartesianGraphProd = cartesianGraphProd;
+    _G.makeFaces = makeFaces;
 }(this));
