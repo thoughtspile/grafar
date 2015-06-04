@@ -74,6 +74,7 @@
     
     Reactive.prototype.lift = function(fn) {
         this.fn = fn;
+        this.invalidate();
         return this;
     };
     
@@ -89,6 +90,7 @@
         for (var i = 0; i < this.sources.length; i++)
             setPop(this.sources[i].targets, this);      
         this.sources.length = 0;
+        this.invalidate();
         return this;
     };
             	    	
@@ -116,6 +118,8 @@
     
     Reactive.prototype.base = function() {
         if (this.sources.length === 0) {
+            // register for global ordering
+            // might cause memory leaks
             baseOrder.push(this);
             return [this];
         }

@@ -20,17 +20,27 @@
 				graph = new grafar.ObjectR().pin(pan3d);
                 
             graph.constrain({what: 'i', maxlen: 2, as: grafar.seq(-1, 1, 'i')})
-                .constrain({what: 't', maxlen: 20, as: grafar.seq(0, 1, 't')})
-				.constrain({what: 'y', maxlen: 30, as: grafar.seq(0, 1, 'y')})
+                .constrain({what: 't', maxlen: 200, as: grafar.seq(0, 1, 't')})
+                .constrain({what: 'p', maxlen: 1, as: function(data) {data.p[0] = 0;}})
+				.constrain({what: 'y', maxlen: 200, as: grafar.seq(0, 1, 'y')})
 				.constrain({what: 'x', using: 'i, t', as: function(data, l) {
 					for (var i = 0; i < l; i++)
 						data.x[i] = data.i[i] + data.t[i];
 				}})
-				.constrain({what: 'z', using: 'x,y,t', as: function(data, l) {
+				.constrain({what: 'z', using: 'x,y,p', as: function(data, l) {
 					for (var i = 0; i < l; i++)
-						data.z[i] = data.x[i] * data.y[i];
+						data.z[i] = data.x[i] * data.y[i] * data.p[i];
 				}})
                 .refresh();
+            var t = 0;
+            (function up() {
+                t += .01;
+                graph.constrain({what: 'p', maxlen: 1, as: function(data) {
+                        data.p[0] = Math.sin(t);
+                    }})
+                    .refresh();
+                window.requestAnimationFrame(up);
+            }());
             console.log(graph.db);
             console.log(graph.db.select('z'));
             //console.log(dbr.select('i'));

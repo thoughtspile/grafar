@@ -16,32 +16,35 @@ var runGrafar = function(callback, pathOverride) {
 		.script('src/grafar.js').wait()
 		.script('src/math/polyfills.js')
 		.script('src/math/misc.js').wait()
-		.script('src/legacy/observer.js')
 		.script('src/core/pool.js')
 		
 		.script('src/math/set.js')
 		.script('src/math/vector.js').wait()
 		.script('src/math/numerics.js')
-		.script('src/math/graphdata.js')
 		.script('src/math/array_utils.js')
 		
 		.script('src/core/style.js')
 		
+        // old style processing
+		.script('src/math/graphdata.js')
 		.script('src/core/parser_alt.js').wait()
 		.script('src/core/table.js').wait()
 		.script('src/core/database.js').wait()
 		.script('src/core/object.js').wait()
         
+        // new style processing
 		.script('src/core/reactive.js').wait()
 		.script('src/core/reactive_db.js').wait()
+		.script('src/core/reactive_graph.js').wait()
 		.script('src/core/reactive_object.js').wait()
 		
 		.script('src/generators/grafaryaz/parser_.js').wait()
 	
-		.script('src/legacy/animation.js')
 		.script('src/core/panel.js').wait()
-		//.script('src/core/graph.js')
 		
+        // legacy shit
+		.script('src/legacy/observer.js')
+		.script('src/legacy/animation.js')
 		.script('src/legacy/grafar_samples.js')
 		.script('src/legacy/grafar_ui.js')
 		
