@@ -46,8 +46,6 @@
     };
     
     function interleave(tab, buffer) {
-        // need reactive interleave target!
-        // or at least size handle
         var itemsize = tab.length;
         resizeBuffer(buffer, itemsize * tab[0].validate().length);
         var target = buffer.array;
@@ -61,13 +59,10 @@
     }
                 
     function resizeBuffer(buffer, size) {
-        var oldArr = buffer.array,
-            oldSize = oldArr.length;
-        if (size !== oldSize) {
-            var temp = pool.get(oldArr.constructor, size);
-            temp.set(oldArr.subarray(0, Math.min(oldSize, size)));
+        var type = buffer.array.constructor;
+        if (size !== buffer.array.length) {
             pool.push(buffer.array);
-            buffer.array = temp;
+            buffer.array = pool.get(type, size);
         }
     };
     

@@ -14,6 +14,7 @@
         interleave = _G.interleave,
         resizeBuffer = _G.resizeBuffer;
 	
+    
     function Object(opts) {
 		this.reactives = {};
         this.projections = {};
@@ -32,8 +33,9 @@
         }).bind(this.project()) // won't work because of undefined unification
         this.graphs.push(graph);
 		return this;
-	};
 	
+	};
+    
 	Object.prototype.constrain = function(constraint) {
 		var names = asArray(constraint.what || []),
 			using = asArray(constraint.using || []),
