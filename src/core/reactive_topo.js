@@ -7,6 +7,7 @@
     var incArray = _G.incArray;
     var timesArray = _G.timesArray;
     var resizeBuffer = _G.resizeBuffer;
+    var firstMatch = _G.firstMathch;
 	
     
 	function pathGraph(srcDummy, target) {
@@ -22,6 +23,7 @@
 	function emptyGraph(srcDummy, target) {
         resizeBuffer(target, 0);
 	}
+    
     
     function cartesianGraphProd2(src, target) {
         var arr1 = src[0].array,
@@ -101,7 +103,73 @@
         target.pointCount = accum.pointCount;
     };
     
+    
+    function makeFaces2(src, target) {
+        var arr1 = src[0].array,
+            edgeCount1 = src[0].length / 2,
+            nodeCount1 = src[0].pointCount,
+            arr2 = src[1].array,
+            edgeCount2 = src[1].length / 2,
+            nodeCount2 = src[1].pointCount;
+        
+        // reactive of course these should be!
+        resizeBuffer(target, edgeCount1 * edgeCount2 * 2 * 3);
+        var targArray = target.array;
+        target.pointCount = nodeCount1 * nodeCount2;
+        
+        var pos = 0;
+        var buffer1 = new Uint32Array(arr1);
+        for (var i = 0; i < edgeCount1; i++) {
+            for (var j = 0; j < edgeCount2; j++) {
+                var e1from = arr1[2 * i];
+                var e1to = arr1[2 * i + 1];
+                var e2from = arr2[2 * j];
+                var e2to = arr2[2 * j + 1];
+                
+				targArray[pos] = e1from * nodeCount2 + e2from;
+				targArray[pos + 1] = e1from * nodeCount2 + e2to;
+				targArray[pos + 2] = e1to * nodeCount2 + e2to;
+				pos += 3;
+				
+				targArray[pos] = e1from * nodeCount2 + e2from;
+				targArray[pos + 1] = e1to * nodeCount2 + e2to;
+				targArray[pos + 2] = e1to * nodeCount2 + e2from;
+				pos += 3;
+            }
+        }
+    }
+    
     function makeFaces(src, target) {
+        // leads to wild results for non-2D objects        
+        var nonEmpty = src.filter(function(src) { return src.length !== 0; });
+        var leftStretch = src.slice(0, src.indexOf(nonEmpty[0]))
+            .reduce(function(pv, cv) {
+                return pv * cv.pointCount;
+            }, 1);
+        var accum = {
+            array: new Uint32Array(0),
+            pointCount: leftStretch,
+            length: 0
+        };
+        cartesianGraphProd2([accum, nonEmpty[0]], accum);
+        makeFaces2([accum, nonEmpty[1]], accum);
+        
+        var rightStretch = src.slice(src.indexOf(nonEmpty[1]) + 1)
+            .reduce(function(pv, cv) {
+                return pv * cv.pointCount;
+            }, 1);
+        if (rightStretch !== 1) {
+            var rightPad = {
+                array: new Uint32Array(0),
+                pointCount: rightStretch,
+                length: 0
+            };
+            cartesianGraphProd([accum, rightPad], accum)
+        }
+        
+        resizeBuffer(target, accum.length);
+        target.array.set(accum.array);
+        target.pointCount = accum.pointCount;
     };
     
     

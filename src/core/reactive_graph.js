@@ -6,6 +6,7 @@
     var emptyGraph = _G.emptyGraph;
     var pathGraph = _G.pathGraph;
     var cartesianGraphProd = _G.cartesianGraphProd;
+    var makeFaces = _G.makeFaces;
     var Buffer = _G.Buffer;
     var resizeBuffer = _G.resizeBuffer;
     var nunion = _G.nunion;
@@ -15,6 +16,10 @@
 	function Graph() {
         this.data = new Reactive(new Buffer());
         this.edges = new Reactive({
+            array: new Uint32Array(0),
+            length: 0
+        });
+        this.faces = new Reactive({
             array: new Uint32Array(0),
             length: 0
         });
@@ -83,9 +88,18 @@
                 cartesianGraphProd(arr[0], targ);
             })
             .bind([baseEdges]);
+        var targetFaces = new Reactive({
+                array: new Uint32Array(0),
+                length: 0
+            })
+            .lift(function(arr, targ) {
+                makeFaces(arr[0], targ);
+            })
+            .bind([baseEdges]);
         return cols.map(function(col) {
             var unified = Graph.contextify(col, targetBase);
             unified.edges = targetEdges;
+            unified.faces = targetFaces;
             return unified;
         });
     };

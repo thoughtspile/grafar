@@ -33,7 +33,7 @@
             mat = new LineBasicMaterial({
             });            
         else if (type === 'mesh')
-            mat = new MeshLambertMaterial({
+            mat = new THREE.MeshBasicMaterial({
                 side: DoubleSide,
                 transparent: true,
                 opacity: .5,

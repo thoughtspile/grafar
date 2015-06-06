@@ -126,9 +126,14 @@
 			interleave(tab.map(function(c) {return c.data.value()}), instance.position);
 			
             interleave([tab[0].edges.value()], instance.segments);
+            interleave([tab[0].faces.value()], instance.faces);
+            
+            resizeBuffer(instance.normals, tab[0].data.value().length * 3);
+            instance.object.children[2].geometry.computeVertexNormals();
             
 			instance.object.children[0].visible = false;
 			instance.object.children[1].visible = true;
+			instance.object.children[2].visible = true;
             
 			// var edgeCount = tab.indexBufferSize(),
                 // hasEdges = (edgeCount !== 0),
@@ -143,17 +148,6 @@
 				// instance.segments.needsUpdate = true;
 			// }
             
-            // if (hasFaces) {
-                // kinda like
-                // 
-                //
-                // resizeBuffer(instance.faces, faceCount);
-                // tab.computeMeshIndex(instance.faces.array);
-                // instance.faces.needsUpdate = true;
-                
-                // resizeBuffer(instance.normals, tab.length * names.length);
-                // instance.object.children[2].geometry.computeVertexNormals();
-            // }
 		}
 		return this;
 	};
