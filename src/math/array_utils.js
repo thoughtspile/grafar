@@ -76,7 +76,13 @@
 		return arr;
 	}
     
+    function Buffer() {
+        this.array = new Float32Array(0);
+        this.length = 0;
+    }
     
+    
+    _G.Buffer = Buffer;
 	_G.arraySum = arraySum;
 	_G.arrayTimes = arrayTimes;
 	_G.incArray = incArray;

@@ -27,9 +27,24 @@
 		return pow;
 	}
 
-	function union(pv, cv, out) {
-		return pv.concat(cv).reduce(unique, []);
+	function union(a, b, out) {
+        out = out || [];
+        if (out !== a && out !== b)
+            out.length = 0;
+        a.reduce(setpush, out);
+        b.reduce(setpush, out);
+		return out;
 	}
+    
+    function nunion(sets, out) {
+        out = out || [];
+        if (sets.indexOf(out) === -1)
+            out.length = 0;
+        sets.forEach(function(set) {
+            union(out, set, out);
+        });
+		return out;
+    };
 
 	function unique(pv, cv) {
 		if (pv.indexOf(cv) === -1) 
@@ -60,6 +75,7 @@
 	_G.haveCommon = haveCommon;
 	_G.intersection = intersection;
 	_G.union = union;
+	_G.nunion = nunion;
 	_G.unique = unique;
 	_G.setMinus = setMinus;
 	_G.setpush = setpush;

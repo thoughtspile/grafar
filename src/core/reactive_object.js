@@ -6,6 +6,11 @@
 		pool = _G.pool,
         isExisty = _G.isExisty,
         asArray = _G.asArray,
+        nunion = _G.nunion,
+        baseTranslate = _G.baseTranslate,
+        pathGraph = _G.pathGraph,
+        emptyGraph = _G.emptyGraph,
+        cartesianGraphProd = _G.cartesianGraphProd,
         
         Graph = _G.GraphR,
         Reactive = _G.Reactive,
@@ -16,11 +21,11 @@
 	
     
     function Object(opts) {
-		this.reactives = {};
+		this.datasets = {};
         this.projections = {};
         
 		this.glinstances = [];
-        this.graphs = [];
+        //this.graphs = [];
 		this.hidden = false;
         this.col = Style.randColor();
 	}
@@ -28,10 +33,10 @@
 	Object.prototype.pin = function(panel) {
         var instance = new InstanceGL(panel, this.col);
 		this.glinstances.push(instance);
-        var graph = new Reactive().lift(function(proj){
-            interleave(proj, instance.position);
-        }).bind(this.project()) // won't work because of undefined unification
-        this.graphs.push(graph);
+        // var graph = new Reactive().lift(function(proj){
+            // interleave(proj, instance.position);
+        // }).bind(this.project()) // won't work because of undefined unification
+        //this.graphs.push(graph);
 		return this;
 	
 	};
@@ -40,7 +45,8 @@
 		var names = asArray(constraint.what || []),
 			using = asArray(constraint.using || []),
 			as = constraint.as || function() {},
-			maxlen = constraint.maxlen || 40;
+			maxlen = constraint.maxlen || 40,
+            discrete = constraint.discrete || false;
             
         if (names.length > 1)
             throw new Error('cannot define > 1');
@@ -49,22 +55,45 @@
         // however, if it doesn't (force), memo would have to go into unify
         // which sucks as well
         for (var i = 0; i < names.length; i++)
-            if (!this.reactives.hasOwnProperty(names[0]))
-                this.reactives[names[i]] = new Reactive();
+            if (!this.datasets.hasOwnProperty(names[0]))
+                this.datasets[names[i]] = new Graph();
         
-        var compatibilityAs = function(par, out, l) {
-            out.buffer(par.length === 0? maxlen: par[0].length);
+        var compatibilityAs = function(par, out) {
+            resizeBuffer(out, par.length === 0? maxlen: par[0].length);
             var data = {};
             for (var i = 0; i < using.length; i++)
-                data[using[i]] = par[i].value();
+                data[using[i]] = par[i].array;
             for (var i = 0; i < names.length; i++)
-                data[names[i]] = out.data;
+                data[names[i]] = out.array;
             as(data, out.length, {});
         };
-        
-        this.reactives[names[0]]
+                
+        this.datasets[names[0]].base
+            .lift(Graph.baseTranslate)
+            .bind(sources.map(function(src) {
+                return src.base;
+            }));
+            
+        this.datasets[names[0]].data
             .lift(compatibilityAs)
-            .bind(sources);
+            .bind(sources.map(function(src) {
+                return src.data;
+            }));
+            
+        if (sources.length === 0) {
+            this.datasets[names[0]].edges.data.pointCount = maxlen;
+            this.datasets[names[0]].edges.lift(discrete? emptyGraph: pathGraph);
+        } else {
+            this.datasets[names[0]].edges
+                .lift(function(src, targ) {
+                    targ.pointCount = src[0].pointCount;
+                    resizeBuffer(targ, src[0].length);
+                    targ.array.set(src[0].array);
+                })
+                .bind(sources.map(function(src) {
+                    return src.edges;
+                }));
+        }
 
 		return this;
 	};
@@ -75,15 +104,15 @@
         if (!this.projections.hasOwnProperty(namesHash)) {
             var temp = [];
             for (var i = 0; i < names.length; i++) {
-                if (!this.reactives.hasOwnProperty(names[i])) {
+                if (!this.datasets.hasOwnProperty(names[i])) {
                     if (proxy)
-                        this.reactives[using[i]] = new Reactive();
+                        this.datasets[using[i]] = new Graph();
                     else
                         throw new Error('cannot select undefined');
                 }
-                temp[i] = this.reactives[names[i]];
+                temp[i] = this.datasets[names[i]];
             }
-            this.projections[namesHash] = Reactive.unify(temp);
+            this.projections[namesHash] = Graph.unify(temp);
         }
 		return this.projections[namesHash];
 	};
@@ -94,8 +123,13 @@
 			var tab = this.project(instance.panel._axes);
             
             //this.graphs[i].validate();
-			interleave(tab, instance.position);
+			interleave(tab.map(function(c) {return c.data.value()}), instance.position);
 			
+            interleave([tab[0].edges.value()], instance.segments);
+            
+			instance.object.children[0].visible = false;
+			instance.object.children[1].visible = true;
+            
 			// var edgeCount = tab.indexBufferSize(),
                 // hasEdges = (edgeCount !== 0),
                 // faceCount = tab.faceCount() * 3,
@@ -111,7 +145,7 @@
             
             // if (hasFaces) {
                 // kinda like
-                // interleave(tab.topo.edges, instance.faces);
+                // 
                 //
                 // resizeBuffer(instance.faces, faceCount);
                 // tab.computeMeshIndex(instance.faces.array);

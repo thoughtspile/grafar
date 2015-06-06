@@ -46,10 +46,10 @@
     
     function interleave(tab, buffer) {
         var itemsize = tab.length;
-        resizeBuffer(buffer, itemsize * tab[0].validate().length);
+        resizeBuffer(buffer, itemsize * tab[0].length);
         var target = buffer.array;
 		for (var j = 0; j < itemsize; j++) {
-            var colData = tab[j].value(),
+            var colData = tab[j].array,
                 len = tab[j].length;
             for (var i = 0, k = j; i < len; i++, k += itemsize)
                 target[k] = colData[i];
@@ -62,6 +62,8 @@
         if (size !== buffer.array.length) {
             pool.push(buffer.array);
             buffer.array = pool.get(type, size);
+            if (buffer.hasOwnProperty('length'))
+                buffer.length = size;
         }
     };
     
