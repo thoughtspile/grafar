@@ -140,37 +140,54 @@
     }
     
     function makeFaces(src, target) {
-        // leads to wild results for non-2D objects        
+        // leads to wild results for non-2D objects
         var nonEmpty = src.filter(function(src) { return src.length !== 0; });
         var leftStretch = src.slice(0, src.indexOf(nonEmpty[0]))
             .reduce(function(pv, cv) {
                 return pv * cv.pointCount;
             }, 1);
+        var midStretch = src.slice(src.indexOf(nonEmpty[0]) + 1, src.indexOf(nonEmpty[1]))
+            .reduce(function(pv, cv) {
+                return pv * cv.pointCount;
+            }, 1);
+        var rightStretch = src.slice(src.indexOf(nonEmpty[1]) + 1)
+            .reduce(function(pv, cv) {
+                return pv * cv.pointCount;
+            }, 1);
+            
         var accum = {
             array: new Uint32Array(0),
             pointCount: leftStretch,
             length: 0
         };
         
-        // resizeBuffer(target, (edgeCount1 * nodeCount2 + edgeCount2 * nodeCount1) * 2);
-        // target.pointCount = nodeCount1 * nodeCount2;
+        var edgeCount1 = nonEmpty[0].length / 2;
+        var nodeCount1 = nonEmpty[0].pointCount;
+        var buffer = new Uint32Array(nonEmpty[0].array);
         
-        // var edgeCount2 = nonEmpty[0].length;
-        // var buffer2 = new Uint32Array(nonEmpty[0].array);
-        // timesArray(leftStretch, buffer2);
-        // for (var i = 0; i < leftStretch; i++, pos += 2 * edgeCount2) {
-            // accum.array.set(buffer2, pos);
-            // incArray(buffer2, 1);
-        // }
+        resizeBuffer(accum, edgeCount1 * leftStretch * 2);
+        accum.pointCount = leftStretch * nodeCount1;
         
-        //cartesianGraphProd2([accum, nonEmpty[0]], accum);
-        //makeFaces2([accum, nonEmpty[1]], accum);
-        makeFaces2([nonEmpty[0], nonEmpty[1]], accum);
+        timesArray(leftStretch, buffer);
+        for (var i = 0, pos = 0; i < leftStretch; i++, pos += 2 * edgeCount1) {
+            accum.array.set(buffer, pos);
+            incArray(buffer, 1);
+        }
         
-        var rightStretch = src.slice(src.indexOf(nonEmpty[1]) + 1)
-            .reduce(function(pv, cv) {
-                return pv * cv.pointCount;
-            }, 1);
+        edgeCount1 = accum.length / 2;
+        nodeCount1 = accum.pointCount;
+        buffer = new Uint32Array(accum.array);
+        
+        resizeBuffer(accum, edgeCount1 * midStretch * 2);
+        accum.pointCount = midStretch * nodeCount1;
+        
+        for (var i = 0, pos = 0; i < midStretch; i++, pos += 2 * edgeCount1) {
+            accum.array.set(buffer, pos);
+            incArray(buffer, nodeCount1);
+        }
+        
+        makeFaces2([accum, nonEmpty[1]], accum);
+        
         if (rightStretch !== 1) {
             var rightPad = {
                 array: new Uint32Array(0),
