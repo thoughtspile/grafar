@@ -57,15 +57,15 @@
 			var pan3d_main = new grafar.Panel(document.getElementById('plot3d_main')),
 				pan3d_anim = new grafar.Panel(document.getElementById('plot3d_cond'));
 			
-			var main_graf = new grafar.Object().pin(pan3d_main),
-				main_cond = new grafar.Object().pin(pan3d_main),
-				extrema_points_main = new grafar.Object().pin(pan3d_main),
-				extrema_points_anim = new grafar.Object().pin(pan3d_anim),
-				intersect = new grafar.Object().pin(pan3d_main),
-				intersect2 = new grafar.Object().pin(pan3d_anim),
+			var main_graf = new grafar.ObjectR().pin(pan3d_main),
+				main_cond = new grafar.ObjectR().pin(pan3d_main),
+				extrema_points_main = new grafar.ObjectR().pin(pan3d_main),
+				extrema_points_anim = new grafar.ObjectR().pin(pan3d_anim),
+				intersect = new grafar.ObjectR().pin(pan3d_main),
+				intersect2 = new grafar.ObjectR().pin(pan3d_anim),
 				cond_graf = [];
 			for (var i = 0; i < maxLambda; i++) {
-				cond_graf.push(new grafar.Object().pin(pan3d_anim));
+				cond_graf.push(new grafar.ObjectR().pin(pan3d_anim));
 				cond_graf[i].hide(true);
 			}
 			var problem,
@@ -92,76 +92,76 @@
 				
 				//Plotting Main function
 				main_graf.reset()
-						.constrain({what: 'x', maxlen: 50, as: grafar.seq(-5, 5, 'x')})
-						.constrain({what: 'y', maxlen: 50, as: grafar.seq(-5, 5, 'y')})
-						.constrain({what: 'z', using: 'x, y', as: function (data, l) {
-							var x = data.x, y = data.y;
-							for (var i = 0; i < l; i++) {
-								data.z[i] = problem.eqn_comp(x[i], y[i]);
-							}
-						 }})
-						 .refresh();
+                    .constrain({what: 'x', maxlen: 50, as: grafar.seq(-5, 5, 'x')})
+                    .constrain({what: 'y', maxlen: 50, as: grafar.seq(-5, 5, 'y')})
+                    .constrain({what: 'z', using: 'x, y', as: function (data, l) {
+                        var x = data.x, y = data.y;
+                        for (var i = 0; i < l; i++) {
+                        data.z[i] = problem.eqn_comp(x[i], y[i]);
+                        }
+                    }})
+                    .refresh();
 				
 				//Plotting starting graph for animated panel
 				cond_graf[0].reset()
-						.constrain({what: 'x', maxlen: 50, as: grafar.seq(-5, 5, 'x')})
-						.constrain({what: 'y', maxlen: 50, as: grafar.seq(-5, 5, 'y')})
-						.constrain({what: 'z', using: 'x, y', as: function (data, l) {
-							var x = data.x, y = data.y;
-							for (var i = 0; i < l; i++) {
-								data.z[i] = problem.eqn_comp(x[i], y[i]);
-							}
-						 }})
-						 .hide(false)
-						 .refresh();
+                    .constrain({what: 'x', maxlen: 50, as: grafar.seq(-5, 5, 'x')})
+                    .constrain({what: 'y', maxlen: 50, as: grafar.seq(-5, 5, 'y')})
+                    .constrain({what: 'z', using: 'x, y', as: function (data, l) {
+                        var x = data.x, y = data.y;
+                        for (var i = 0; i < l; i++) {
+                            data.z[i] = problem.eqn_comp(x[i], y[i]);
+                        }
+                    }})
+                    .hide(false)
+                    .refresh();
 				
 				//Plotting condition's graph
 				main_cond.reset();
 				if (problem.cond_type == 'explicit') {
 					var cond_f = problem.conditions_comp[0];
 					main_cond.constrain({what: 'z', maxlen: 50, as: grafar.seq(-60, 60, 'z')})
-							.constrain({what: 'x', maxlen: 50, as: grafar.seq(-5, 5, 'x')})
-							.constrain({what: 'y', using: 'x, z', as: function(data, l) {
-								var x = data.x;
-								for (var i = 0; i < l; i++) {
-									data.y[i] = cond_f(x[i]);
-								}
-							}})
-							.refresh();
+                        .constrain({what: 'x', maxlen: 50, as: grafar.seq(-5, 5, 'x')})
+                        .constrain({what: 'y', using: 'x, z', as: function(data, l) {
+                            var x = data.x;
+                            for (var i = 0; i < l; i++) {
+                                data.y[i] = cond_f(x[i]);
+                            }
+                        }})
+                        .refresh();
 				} else if (problem.cond_type == 'polar') {
 					var cond_f = problem.conditions_comp;
 					main_cond.constrain({what: 'z', maxlen: 50, as: grafar.seq(-60, 60, 'z')})
-							.constrain({what: 'phi', maxlen: 60, as: grafar.seq(0, 2.408*Math.PI, 'phi')})
-							.constrain({what: 'x', using: 'phi', as: function(data, l) {
-								var phi = data.phi;
-								for (var i = 0; i < l; i++) {
-									data.x[i] = cond_f[1](phi[i]);
-								}
-							}})
-							.constrain({what: 'y', using: 'phi', as: function(data, l) {
-								var phi = data.phi;
-								for (var i = 0; i < l; i++) {
-									data.y[i] = cond_f[0](phi[i]);
-								}
-							}})
-							.refresh();
+                        .constrain({what: 'phi', maxlen: 60, as: grafar.seq(0, 2.408*Math.PI, 'phi')})
+                        .constrain({what: 'x', using: 'phi', as: function(data, l) {
+                            var phi = data.phi;
+                            for (var i = 0; i < l; i++) {
+                                data.x[i] = cond_f[1](phi[i]);
+                            }
+                        }})
+                        .constrain({what: 'y', using: 'phi', as: function(data, l) {
+                            var phi = data.phi;
+                            for (var i = 0; i < l; i++) {
+                                data.y[i] = cond_f[0](phi[i]);
+                            }
+                        }})
+                        .refresh();
 				} else if (problem.cond_type == 'parametric') {
 					var cond_f = problem.conditions_comp;
 					main_cond.constrain({what: 'z', maxlen: 50, as: grafar.seq(-5, 5, 'z')})
-							.constrain({what: 't', maxlen: 50, as: grafar.seq(-10, 10, 't')})
-							.constrain({what: 'x', using: 't', as: function(data, l) {
-								var t = data.t;
-								for (var i = 0; i < l; i++) {
-									data.x[i] = cond_f[1](t[i]);
-								}
-							}})
-							.constrain({what: 'y', using: 't', as: function(data, l) {
-								var t = data.t;
-								for (var i = 0; i < l; i++) {
-									data.y[i] = cond_f[0](t[i]);
-								}
-							}})
-							.refresh();
+                        .constrain({what: 't', maxlen: 50, as: grafar.seq(-10, 10, 't')})
+                        .constrain({what: 'x', using: 't', as: function(data, l) {
+                            var t = data.t;
+                            for (var i = 0; i < l; i++) {
+                                data.x[i] = cond_f[1](t[i]);
+                            }
+                        }})
+                        .constrain({what: 'y', using: 't', as: function(data, l) {
+                            var t = data.t;
+                            for (var i = 0; i < l; i++) {
+                                data.y[i] = cond_f[0](t[i]);
+                            }
+                        }})
+                        .refresh();
 				}
 				
 				//Plotting intersection 1
@@ -169,58 +169,58 @@
 				if (problem.intersect_type == 'explicit') {
 					var inter_f = problem.intersection;
 					intersect.constrain({what: 'x', maxlen: 50000, as: grafar.seq(-5, 5, 'x', false, true)})
-							.constrain({what: 'y', using: 'x', as: function (data, l) {
-								var x = data.x;
-								for (var i = 0; i < l; i++) {
-									data.y[i] = inter_f[0](x[i]);
-								}
-							}})
-							.constrain({what: 'z', using: 'x', as: function (data, l) {
-								var x = data.x;
-								for (var i = 0; i < l; i++) {
-									data.z[i] = inter_f[1](x[i]);
-								}
-							}})
-							.refresh();
+                        .constrain({what: 'y', using: 'x', as: function (data, l) {
+                            var x = data.x;
+                            for (var i = 0; i < l; i++) {
+                                data.y[i] = inter_f[0](x[i]);
+                            }
+                        }})
+                        .constrain({what: 'z', using: 'x', as: function (data, l) {
+                            var x = data.x;
+                            for (var i = 0; i < l; i++) {
+                                data.z[i] = inter_f[1](x[i]);
+                            }
+                        }});
+                    intersect.refresh();
 				} else if (problem.intersect_type == 'polar') {
 					var inter_f = problem.intersection;
 					intersect.constrain({what: 'phi', maxlen: 5000, as: grafar.seq(0, 2*Math.PI, 'phi', false, true)})
-							.constrain({what: 'x', using: 'phi', as: function(data, l) {
-								var phi = data.phi;
-								for (var i = 0; i < l; i++) {
-									data.x[i] = inter_f[2](phi[i]);
-								}
-							}})
-							.constrain({what: 'y', using: 'phi', as: function(data, l) {
-								var phi = data.phi;
-								for (var i = 0; i < l; i++) {
-									data.y[i] = inter_f[0](phi[i]);
-								}
-							}})
-							.constrain({what: 'z', using: 'x, y', as: function(data, l) {
-								var x = data.x, y = data.y;
-								for (var i = 0; i < l; i++) {
-									data.z[i] = inter_f[1](x[i], y[i]);
-								}
-							}})
-							.refresh();
+                        .constrain({what: 'x', using: 'phi', as: function(data, l) {
+                            var phi = data.phi;
+                            for (var i = 0; i < l; i++) {
+                                data.x[i] = inter_f[2](phi[i]);
+                            }
+                        }})
+                        .constrain({what: 'y', using: 'phi', as: function(data, l) {
+                            var phi = data.phi;
+                            for (var i = 0; i < l; i++) {
+                                data.y[i] = inter_f[0](phi[i]);
+                            }
+                        }})
+                        .constrain({what: 'z', using: 'x, y', as: function(data, l) {
+                            var x = data.x, y = data.y;
+                            for (var i = 0; i < l; i++) {
+                                data.z[i] = inter_f[1](x[i], y[i]);
+                            }
+                        }})
+                        .refresh();
 				} else if (problem.intersect_type == 'parametric') {
 					var inter_f = problem.intersection;
 					intersect.constrain({what: 'z', maxlen: 50, as: grafar.seq(-5, 5, 'z')})
-							.constrain({what: 't', maxlen: 100, as: grafar.seq(0, 2.408*Math.PI, 't')})
-							.constrain({what: 'x', using: 't', as: function(data, l) {
-								var t = data.t;
-								for (var i = 0; i < l; i++) {
-									data.x[i] = inter_f[2](t[i]);
-								}
-							}})
-							.constrain({what: 'y', using: 't', as: function(data, l) {
-								var t = data.t;
-								for (var i = 0; i < l; i++) {
-									data.y[i] = inter_f[0](t[i]);
-								}
-							}})
-							.refresh();
+                        .constrain({what: 't', maxlen: 100, as: grafar.seq(0, 2.408*Math.PI, 't')})
+                        .constrain({what: 'x', using: 't', as: function(data, l) {
+                            var t = data.t;
+                            for (var i = 0; i < l; i++) {
+                                data.x[i] = inter_f[2](t[i]);
+                            }
+                        }})
+                        .constrain({what: 'y', using: 't', as: function(data, l) {
+                            var t = data.t;
+                            for (var i = 0; i < l; i++) {
+                                data.y[i] = inter_f[0](t[i]);
+                            }
+                        }})
+                        .refresh();
 				}
 				
 				//Plotting intersection 2
@@ -228,102 +228,102 @@
 				if (problem.intersect_type == 'explicit') {
 					var inter_f = problem.intersection;
 					intersect2.constrain({what: 'x', maxlen: 50000, as: grafar.seq(-5, 5, 'x', false, true)})
-							.constrain({what: 'y', using: 'x', as: function (data, l) {
-								var x = data.x;
-								for (var i = 0; i < l; i++) {
-									data.y[i] = inter_f[0](x[i]);
-								}
-							}})
-							.constrain({what: 'z', using: 'x', as: function (data, l) {
-								var x = data.x;
-								for (var i = 0; i < l; i++) {
-									data.z[i] = inter_f[1](x[i]);
-								}
-							}})
-							.refresh();
+                        .constrain({what: 'y', using: 'x', as: function (data, l) {
+                            var x = data.x;
+                            for (var i = 0; i < l; i++) {
+                                data.y[i] = inter_f[0](x[i]);
+                            }
+                        }})
+                        .constrain({what: 'z', using: 'x', as: function (data, l) {
+                            var x = data.x;
+                            for (var i = 0; i < l; i++) {
+                                data.z[i] = inter_f[1](x[i]);
+                            }
+                        }})
+                        .refresh();
 				} else if (problem.intersect_type == 'polar') {
 					var inter_f = problem.intersection;
 					intersect2.constrain({what: 'phi', maxlen: 5000, as: grafar.seq(0, 2*Math.PI, 'phi', false, true)})
-							.constrain({what: 'x', using: 'phi', as: function(data, l) {
-								var phi = data.phi;
-								for (var i = 0; i < l; i++) {
-									data.x[i] = inter_f[2](phi[i]);
-								}
-							}})
-							.constrain({what: 'y', using: 'phi', as: function(data, l) {
-								var phi = data.phi;
-								for (var i = 0; i < l; i++) {
-									data.y[i] = inter_f[0](phi[i]);
-								}
-							}})
-							.constrain({what: 'z', using: 'x, y', as: function(data, l) {
-								var x = data.x, y = data.y;
-								for (var i = 0; i < l; i++) {
-									data.z[i] = inter_f[1](x[i], y[i]);
-								}
-							}})
-							.refresh();
+                        .constrain({what: 'x', using: 'phi', as: function(data, l) {
+                            var phi = data.phi;
+                            for (var i = 0; i < l; i++) {
+                                data.x[i] = inter_f[2](phi[i]);
+                            }
+                        }})
+                        .constrain({what: 'y', using: 'phi', as: function(data, l) {
+                            var phi = data.phi;
+                            for (var i = 0; i < l; i++) {
+                                data.y[i] = inter_f[0](phi[i]);
+                            }
+                        }})
+                        .constrain({what: 'z', using: 'x, y', as: function(data, l) {
+                            var x = data.x, y = data.y;
+                            for (var i = 0; i < l; i++) {
+                                data.z[i] = inter_f[1](x[i], y[i]);
+                            }
+                        }})
+                        .refresh();
 				} else if (problem.intersect_type == 'parametric') {
 					var inter_f = problem.intersection;
 					intersect2.constrain({what: 'z', maxlen: 50, as: grafar.seq(-5, 5, 'z')})
-							.constrain({what: 't', maxlen: 100, as: grafar.seq(0, 2.408*Math.PI, 't')})
-							.constrain({what: 'x', using: 't', as: function(data, l) {
-								var t = data.t;
-								for (var i = 0; i < l; i++) {
-									data.x[i] = inter_f[2](t[i]);
-								}
-							}})
-							.constrain({what: 'y', using: 't', as: function(data, l) {
-								var t = data.t;
-								for (var i = 0; i < l; i++) {
-									data.y[i] = inter_f[0](t[i]);
-								}
-							}})
-							.refresh();
+                        .constrain({what: 't', maxlen: 100, as: grafar.seq(0, 2.408*Math.PI, 't')})
+                        .constrain({what: 'x', using: 't', as: function(data, l) {
+                            var t = data.t;
+                            for (var i = 0; i < l; i++) {
+                                data.x[i] = inter_f[2](t[i]);
+                            }
+                        }})
+                        .constrain({what: 'y', using: 't', as: function(data, l) {
+                            var t = data.t;
+                            for (var i = 0; i < l; i++) {
+                                data.y[i] = inter_f[0](t[i]);
+                            }
+                        }})
+                        .refresh();
 				}
 				
 				//Plotting Extrema points on main graph
 				extrema_points_main.reset();
 				var points = problem.extr_points;
-				extrema_points_main.constrain({what: 'x, y', maxlen: 4, as: function(data, l) {
-									var x = data.x, y = data.y;
-									for (var i = 0; i < l; i++) {
-										x[i] = points.x[i];
-										y[i] = points.y[i];
-									}
-								}})
-								.constrain({what: 'z', using: 'x, y', as: function (data, l) {
-									var x = data.x, y = data.y;
-									for (var j = 0; j < l; j++) {
-										data.z[j] = problem.eqn_comp(x[j], y[j]);
-									}
-								}})
-								.refresh();
-					extrema_points_main.glinstances[0].object.children[0].visible = true;
-					extrema_points_main.glinstances[0].object.children[0].material.transparent = false;
-					extrema_points_main.glinstances[0].object.children[0].material.size = 20;
+				extrema_points_main.constrain({what: 'x, y', maxlen: points.x.length, as: function(data, l) {
+                        var x = data.x, y = data.y;
+                        for (var i = 0; i < l; i++) {
+                            x[i] = points.x[i];
+                            y[i] = points.y[i];
+                        }
+                    }})
+                    .constrain({what: 'z', using: 'x, y', as: function (data, l) {
+                        var x = data.x, y = data.y;
+                        for (var j = 0; j < l; j++) {
+                            data.z[j] = problem.eqn_comp(x[j], y[j]);
+                        }
+                    }})
+                    .refresh();
+                extrema_points_main.glinstances[0].object.children[0].visible = true;
+                extrema_points_main.glinstances[0].object.children[0].material.transparent = false;
+                extrema_points_main.glinstances[0].object.children[0].material.size = 20;
 					
 				//Plotting Extrema points on animated graph
 				extrema_points_anim.reset();
 				var points = problem.extr_points;
-				extrema_points_anim.constrain({what: 'x, y', maxlen: 4, as: function(data, l) {
-									var x = data.x, y = data.y;
-									for (var i = 0; i < l; i++) {
-										x[i] = points.x[i];
-										y[i] = points.y[i];
-									}
-								}})
-								.constrain({what: 'z', using: 'x, y', as: function (data, l) {
-									var x = data.x, y = data.y;
-									for (var j = 0; j < l; j++) {
-										data.z[j] = problem.eqn_comp(x[j], y[j]);
-									}
-								}})
-								.refresh();
-					extrema_points_anim.glinstances[0].object.children[0].visible = true;
-					extrema_points_anim.glinstances[0].object.children[0].material.transparent = false;
-					extrema_points_anim.glinstances[0].object.children[0].material.size = 20;
-			}
+				extrema_points_anim.constrain({what: 'x, y', maxlen: points.x.length, as: function(data, l) {
+                        var x = data.x, y = data.y;
+                        for (var i = 0; i < l; i++) {
+                            x[i] = points.x[i];
+                            y[i] = points.y[i];
+                        }
+                    }})
+                    .constrain({what: 'z', using: 'x, y', as: function (data, l) {
+                        var x = data.x, y = data.y;
+                        for (var j = 0; j < l; j++) {
+                            data.z[j] = problem.eqn_comp(x[j], y[j]);
+                        }
+                    }})
+                    .refresh();
+                extrema_points_anim.glinstances[0].object.children[0].visible = true;
+                extrema_points_anim.glinstances[0].object.children[0].material.transparent = false;
+                extrema_points_anim.glinstances[0].object.children[0].material.size = 20;
+            }
 			
 			function animate() {
 				lam = [];
@@ -336,8 +336,8 @@
 				}
 				
 				var i = 0;
-					f = problem.eqn_comp;
 				function frame() {
+					f = problem.eqn_comp;
 					for (var j = 0; j < maxLam; j++) {
 						cur_lmbd = lam[j];
 						cond_graf[j].constrain({what: 'x', maxlen: 50, as: grafar.seq(-5, 5, 'x')})

@@ -20,8 +20,8 @@
 				graph = new grafar.Object().pin(pan3d),
                 len = .05;
 							
-			graph.constrain({what: 'q', maxlen: 30, as: grafar.seq(-2.1, 2.1, 'q', 0, 1)})
-                .constrain({what: 'p', maxlen: 30, as: grafar.seq(-2.1, 2.1, 'p', 0, 1)})
+			graph.constrain({what: 'q', maxlen: 30, as: grafar.seq(-2.1, 2.1, 'q'), discrete: true})
+                .constrain({what: 'p', maxlen: 30, as: grafar.seq(-2.1, 2.1, 'p'), discrete: true})
                 .constrain({what: 'e', maxlen: 2, as: grafar.seq(-len, len, 'e')})
                 .constrain({what: 't', maxlen: 1, as: function(data) {
                     data.t[0] = 0;

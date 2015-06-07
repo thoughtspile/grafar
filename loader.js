@@ -28,9 +28,6 @@ var runGrafar = function(callback, pathOverride) {
         // old style processing
 		.script('src/math/graphdata.js')
 		.script('src/core/parser_alt.js').wait()
-		.script('src/core/table.js').wait()
-		.script('src/core/database.js').wait()
-		.script('src/core/object.js').wait()
         
         // new style processing
 		.script('src/core/reactive.js').wait()

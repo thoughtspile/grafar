@@ -66,7 +66,6 @@
                 data[names[i]] = out[i].array;
             }
             as(data, out[0].length, {});
-            console.log(out)
         };        
         
         var computation = new Reactive(names.map(function() { return new Buffer(); }))
@@ -135,11 +134,10 @@
 	Object.prototype.refresh = function() {
 		for (var i = 0; i < this.glinstances.length; i++) {
 			var instance = this.glinstances[i];				
-			var tab = this.project(instance.panel._axes);
+			var tab = this.project(instance.panel._axes, false);
             
 			interleave(tab.map(function(c) {return c.data.value()}), instance.position);
-			
-            interleave([tab[0].edges.value()], instance.segments);
+			interleave([tab[0].edges.value()], instance.segments);
             interleave([tab[0].faces.value()], instance.faces);
             
             resizeBuffer(instance.normals, tab[0].data.value().length * 3);
@@ -147,7 +145,7 @@
             
 			instance.object.children[0].visible = false;
 			instance.object.children[1].visible = true;
-			instance.object.children[2].visible = true;            
+			instance.object.children[2].visible = true;
 		}
 		return this;
 	};
@@ -158,6 +156,8 @@
 		return this;
 	};
         
+    Object.prototype.reset = function() {return this;};
         
-	_G.ObjectR = Object;
+        
+	_G.Object = Object;
 }(this));

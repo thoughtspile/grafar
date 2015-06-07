@@ -17,7 +17,7 @@
 	<script type="text/javascript">
 		runGrafar(function() {
 			var pan3d = new grafar.Panel(document.getElementById('render')),
-				graph = new grafar.ObjectR().pin(pan3d);                
+				graph = new grafar.Object().pin(pan3d);                
             
             graph.constrain({what: 't', maxlen: 30, as: grafar.seq(0, Math.PI, 't')})
                 .constrain({what: 'p', maxlen: 50, as: grafar.seq(-Math.PI, Math.PI, 'p')})
