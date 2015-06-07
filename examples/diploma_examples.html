@@ -16,10 +16,10 @@
 	<script type="text/javascript">
 		runGrafar(function() {
 			var pan3d = new grafar.Panel(document.getElementById('render')),//.setAxes(['x','y']),
-				graph = new grafar.Object().pin(pan3d);
+				graph = new grafar.ObjectR().pin(pan3d);
 							
-			graph.constrain({what: 'ang', maxlen: 60, as: grafar.seq(-Math.PI, Math.PI, 'ang')})
-                .constrain({what: 'dist', maxlen: 60, as: grafar.seq(0, Math.atan(60), 'dist')})
+			graph.constrain({what: 'ang', maxlen: 40, as: grafar.seq(-Math.PI, Math.PI, 'ang')})
+                .constrain({what: 'dist', maxlen: 40, as: grafar.seq(0, Math.atan(60), 'dist')})
                 .constrain({what: 'x,y', using: 'ang, dist', as: function(data, l) {
                     for (var i = 0; i < l; i++) {
                         data.x[i] = Math.sin(data.ang[i]) * Math.tan(data.dist[i]);

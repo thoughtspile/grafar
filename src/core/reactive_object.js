@@ -14,6 +14,7 @@
         
         Graph = _G.GraphR,
         Reactive = _G.Reactive,
+        Buffer = _G.Buffer,
         
         InstanceGL = _G.InstanceGL,
         interleave = _G.interleave,
@@ -48,51 +49,65 @@
 			maxlen = constraint.maxlen || 40,
             discrete = constraint.discrete || false;
             
-        if (names.length > 1)
-            throw new Error('cannot define > 1');
         var sources = this.project(using, true);
         // I only do this shit because project forces product
         // however, if it doesn't (force), memo would have to go into unify
-        // which sucks as well
+        // which sucks even worse
         for (var i = 0; i < names.length; i++)
-            if (!this.datasets.hasOwnProperty(names[0]))
+            if (!this.datasets.hasOwnProperty(names[i]))
                 this.datasets[names[i]] = new Graph();
-        
+                
         var compatibilityAs = function(par, out) {
-            resizeBuffer(out, par.length === 0? maxlen: par[0].length);
             var data = {};
             for (var i = 0; i < using.length; i++)
                 data[using[i]] = par[i].array;
-            for (var i = 0; i < names.length; i++)
-                data[names[i]] = out.array;
-            as(data, out.length, {});
-        };
-                
-        this.datasets[names[0]].base
-            .lift(Graph.baseTranslate)
-            .bind(sources.map(function(src) {
-                return src.base;
-            }));
-            
-        this.datasets[names[0]].data
+            for (var i = 0; i < names.length; i++) {
+                resizeBuffer(out[i], par.length === 0? maxlen: par[0].length);
+                data[names[i]] = out[i].array;
+            }
+            as(data, out[0].length, {});
+            console.log(out)
+        };        
+        
+        var computation = new Reactive(names.map(function() { return new Buffer(); }))
             .lift(compatibilityAs)
             .bind(sources.map(function(src) {
                 return src.data;
             }));
             
-        if (sources.length === 0) {
-            this.datasets[names[0]].edges.data.pointCount = maxlen;
-            this.datasets[names[0]].edges.lift(discrete? emptyGraph: pathGraph);
-        } else {
-            this.datasets[names[0]].edges
-                .lift(function(src, targ) {
-                    targ.pointCount = src[0].pointCount;
-                    resizeBuffer(targ, src[0].length);
-                    targ.array.set(src[0].array);
-                })
+        for (var i = 0; i < names.length; i++) {
+            var dataset = this.datasets[names[i]]
+            
+            dataset.base
+                .lift(Graph.baseTranslate)
                 .bind(sources.map(function(src) {
-                    return src.edges;
+                    return src.base;
                 }));
+            
+            (function(iLoc) {
+                dataset.data
+                    .lift(function(src, target) {
+                        target.length = src[0][iLoc].length;
+                        target.array = src[0][iLoc].array;
+                    })
+                    .bind([computation]);
+            }(i));
+                
+            if (sources.length === 0) {
+                dataset.edges.data.pointCount = maxlen;
+                dataset.edges.lift(discrete? emptyGraph: pathGraph);
+            } else {
+                dataset.edges
+                    .lift(function(src, targ) {
+                        // is clone stupid?
+                        targ.pointCount = src[0].pointCount;
+                        resizeBuffer(targ, src[0].length);
+                        targ.array.set(src[0].array);
+                    })
+                    .bind(sources.map(function(src) {
+                        return src.edges;
+                    }));
+            }
         }
 
 		return this;
