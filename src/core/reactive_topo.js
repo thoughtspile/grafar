@@ -126,14 +126,14 @@
                 var e2from = arr2[2 * j];
                 var e2to = arr2[2 * j + 1];
                 
-				targArray[pos] = e1from * nodeCount2 + e2from;
-				targArray[pos + 1] = e1from * nodeCount2 + e2to;
-				targArray[pos + 2] = e1to * nodeCount2 + e2to;
+				targArray[pos] = e1from + e2from  * nodeCount1;
+				targArray[pos + 1] = e1from + e2to  * nodeCount1;
+				targArray[pos + 2] = e1to + e2to  * nodeCount1;
 				pos += 3;
 				
-				targArray[pos] = e1from * nodeCount2 + e2from;
-				targArray[pos + 1] = e1to * nodeCount2 + e2to;
-				targArray[pos + 2] = e1to * nodeCount2 + e2from;
+				targArray[pos] = e1from + e2from  * nodeCount1;
+				targArray[pos + 1] = e1to + e2to  * nodeCount1;
+				targArray[pos + 2] = e1to + e2from  * nodeCount1;
 				pos += 3;
             }
         }
@@ -151,8 +151,21 @@
             pointCount: leftStretch,
             length: 0
         };
-        cartesianGraphProd2([accum, nonEmpty[0]], accum);
-        makeFaces2([accum, nonEmpty[1]], accum);
+        
+        // resizeBuffer(target, (edgeCount1 * nodeCount2 + edgeCount2 * nodeCount1) * 2);
+        // target.pointCount = nodeCount1 * nodeCount2;
+        
+        // var edgeCount2 = nonEmpty[0].length;
+        // var buffer2 = new Uint32Array(nonEmpty[0].array);
+        // timesArray(leftStretch, buffer2);
+        // for (var i = 0; i < leftStretch; i++, pos += 2 * edgeCount2) {
+            // accum.array.set(buffer2, pos);
+            // incArray(buffer2, 1);
+        // }
+        
+        //cartesianGraphProd2([accum, nonEmpty[0]], accum);
+        //makeFaces2([accum, nonEmpty[1]], accum);
+        makeFaces2([nonEmpty[0], nonEmpty[1]], accum);
         
         var rightStretch = src.slice(src.indexOf(nonEmpty[1]) + 1)
             .reduce(function(pv, cv) {

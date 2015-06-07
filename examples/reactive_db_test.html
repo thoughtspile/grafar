@@ -19,15 +19,14 @@
 			var pan3d = new grafar.Panel(document.getElementById('render')),
 				graph = new grafar.ObjectR().pin(pan3d);                
             
-            graph//.constrain({what: 'i', maxlen: 2, as: grafar.seq(-1, 1, 'i'), discrete: true})
-                //.constrain({what: 't', maxlen: 2, as: grafar.seq(0, 1, 't')})
+            graph.constrain({what: 'i', maxlen: 20, as: grafar.seq(-1, 1, 'i'), discrete: true})
+                .constrain({what: 't', maxlen: 20, as: grafar.seq(0, 1, 't')})
                 .constrain({what: 'p', maxlen: 1, as: function(data) {data.p[0] = 0;}})
-				.constrain({what: 'y', maxlen: 71, as: grafar.seq(-4, 4, 'y')})
-				.constrain({what: 'x', maxlen: 71, as: grafar.seq(-4, 4, 'x')})
-				//.constrain({what: 'x', using: 'i, t', as: function(data, l) {
-				//	for (var i = 0; i < l; i++)
-				//		data.x[i] = data.i[i] + data.t[i];
-				//}})
+				.constrain({what: 'y', maxlen: 30, as: grafar.seq(-4, 4, 'y')})
+				.constrain({what: 'x', using: 'i, t', as: function(data, l) {
+					for (var i = 0; i < l; i++)
+						data.x[i] = data.i[i] + data.t[i];
+				}})
                 .constrain({what: 'f', using: 'x,y', as: function(data, l) {
 					for (var i = 0; i < l; i++)
 						data.f[i] = Math.sin(data.x[i] * data.y[i]) / 2;

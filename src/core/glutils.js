@@ -33,11 +33,11 @@
             mat = new LineBasicMaterial({
             });            
         else if (type === 'mesh')
-            mat = new THREE.MeshBasicMaterial({
+            mat = new THREE.MeshPhongMaterial({
                 side: DoubleSide,
-                transparent: true,
-                opacity: .5,
-                depthWrite: false
+                //transparent: true,
+                //opacity: .5,
+                //depthWrite: false
                 //depthTest: false
             });
         mat.color = col;

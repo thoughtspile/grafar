@@ -122,7 +122,6 @@
 			var instance = this.glinstances[i];				
 			var tab = this.project(instance.panel._axes);
             
-            //this.graphs[i].validate();
 			interleave(tab.map(function(c) {return c.data.value()}), instance.position);
 			
             interleave([tab[0].edges.value()], instance.segments);
@@ -133,21 +132,7 @@
             
 			instance.object.children[0].visible = false;
 			instance.object.children[1].visible = true;
-			instance.object.children[2].visible = true;
-            
-			// var edgeCount = tab.indexBufferSize(),
-                // hasEdges = (edgeCount !== 0),
-                // faceCount = tab.faceCount() * 3,
-                // hasFaces = (faceCount !== 0);
-			// instance.object.children[1].visible = !hasEdges;
-			// instance.object.children[1].visible = hasEdges;
-            
-			// if (hasEdges) {
-				// resizeBuffer(instance.segments, edgeCount);
-				// tab.computeIndexBuffer(instance.segments);
-				// instance.segments.needsUpdate = true;
-			// }
-            
+			instance.object.children[2].visible = true;            
 		}
 		return this;
 	};
