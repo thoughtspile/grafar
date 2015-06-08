@@ -35,8 +35,8 @@
         else if (type === 'mesh')
             mat = new THREE.MeshPhongMaterial({
                 side: DoubleSide,
-                //transparent: true,
-                //opacity: .5,
+                transparent: true,
+                opacity: .7,
                 //depthWrite: false
                 //depthTest: false
             });
