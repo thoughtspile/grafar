@@ -140,7 +140,7 @@
 			var instance = this.glinstances[i];
 			var tab = this.project(instance.panel._axes, false);
             
-			interleave(tab.map(function(c) {return c.data.value()}), instance.position);
+			interleave(tab.map(function(c) {return c.data.value()}), instance.position, 3);
 			interleave([tab[0].edges.value()], instance.segments);
             interleave([tab[0].faces.value()], instance.faces);
             

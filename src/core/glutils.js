@@ -44,8 +44,8 @@
         return mat;
     };
     
-    function interleave(tab, buffer) {
-        var itemsize = tab.length;
+    function interleave(tab, buffer, itemsize) {
+        var itemsize = itemsize || tab.length;
         resizeBuffer(buffer, itemsize * tab[0].length);
         var target = buffer.array;
 		for (var j = 0; j < itemsize; j++) {
