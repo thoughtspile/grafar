@@ -45,14 +45,18 @@
     };
     
     function interleave(tab, buffer, itemsize) {
-        var itemsize = itemsize || tab.length;
+        itemsize = itemsize || tab.length;
         resizeBuffer(buffer, itemsize * tab[0].length);
         var target = buffer.array;
-		for (var j = 0; j < itemsize; j++) {
+		for (var j = 0; j < tab.length; j++) {
             var colData = tab[j].array,
                 len = tab[j].length;
             for (var i = 0, k = j; i < len; i++, k += itemsize)
                 target[k] = colData[i];
+		}
+        for (var j = tab.length; j < itemsize; j++) {
+            for (var i = 0, k = j; i < len; i++, k += itemsize)
+                target[k] = 0;
 		}
         buffer.needsUpdate = true;
     }
