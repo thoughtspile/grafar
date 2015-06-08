@@ -1,8 +1,0 @@
-1. input all
-2. parse
-3. remove dupe edges
-4. assemble graph
-5. remove cycles
-6. resolve non-initial groups
-7. add multiplication noeds
-8. select apt table, export
