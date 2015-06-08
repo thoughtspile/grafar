@@ -1,11 +1,13 @@
 'use strict';
 
 (function(global) {
-	var _G = (global.grafar = {}),
+	var _G = (global.grafar = {
+            version: '4.01r'
+        }),
 		panels = [];
 				
 	var config = {
-		debug: true,
+		debug: false,
 		
 		rootGraphId: '$',
 		
