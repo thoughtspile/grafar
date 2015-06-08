@@ -139,6 +139,10 @@
 		for (var i = 0; i < this.glinstances.length; i++) {
 			var instance = this.glinstances[i];
 			var tab = this.project(instance.panel._axes, false);
+            if (tab.every(function(col) { return col.data.isValid; })) {
+                console.log('othing to see here');
+                return this;
+            }
             
 			interleave(tab.map(function(c) {return c.data.value()}), instance.position, 3);
 			interleave([tab[0].edges.value()], instance.segments);
@@ -155,6 +159,12 @@
 		}
 		return this;
 	};
+    
+    Object.prototype.run = function() {
+        this.refresh();
+        window.requestAnimationFrame(this.run.bind(this));
+        return this;
+    };
     
 	Object.prototype.hide = function(hide) {
 		for (var i = 0; i < this.glinstances.length; i++)

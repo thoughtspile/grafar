@@ -35,15 +35,14 @@
 					for (var i = 0; i < l; i++)
 						data.z[i] = data.f[i] * data.p[i];
 				}})
-                .refresh();
+                .run();
                 
             var t = 0;
             (function up() {
                 t += .025;
                 graph.constrain({what: 'p', maxlen: 1, as: function(data) {
                         data.p[0] = Math.pow(Math.sin(t), 3);
-                    }})
-                    .refresh();
+                    }});
                 window.requestAnimationFrame(up);
             }());
             
