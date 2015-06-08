@@ -98,10 +98,10 @@
             }));
             
         for (var i = 0; i < names.length; i++) {
-            var dataset = this.datasets[names[i]]
+            var dataset = this.datasets[names[i]];
             
-            // need shared base
             dataset.base = computation.base;
+            dataset.edges = computation.edges;
             
             (function(iLoc) {
                 dataset.data
@@ -110,12 +110,7 @@
                         target.array = src[0].buffers[iLoc].array;
                     })
                     .bind([computation.data]);
-            }(i));
-                
-            dataset.edges = computation.edges;
-            console.log(computation.base.value().struct.map(function(g) {
-                return g.data.value().length
-            }))
+            }(i));                
         }
 
 		return this;
