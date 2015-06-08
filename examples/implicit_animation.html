@@ -23,7 +23,8 @@
                         maxlen: 12000, 
                         as: grafar.traceZeroSet(function(v) {
                             return v[0] * v[0] + v[1] * v[1] + v[2] * v[2] * Math.sin(l) - 2;
-                        }, ['x', 'y', 'z'])
+                        }, ['x', 'y', 'z']),
+                        discrete: true
                     })
                     .refresh();
 				

@@ -57,7 +57,8 @@
                 helpers3d[i].constrain({
                     what: 'x, y, z', 
                     maxlen: 12000, 
-                    as: grafar.ductParse(problem.eqns[i], problem.cube)
+                    as: grafar.ductParse(problem.eqns[i], problem.cube),
+                    discrete: true
                 });
             };
             for ( ; i < maxHelpers; i++) {
@@ -67,11 +68,12 @@
             area.constrain({
                 what: 'x, y, z', 
                 maxlen: 15000, 
-                as: grafar.ductParse(problem.eqns.join('&'), problem.cube)
+                as: grafar.ductParse(problem.eqns.join('&'), problem.cube),
+                discrete: true
             }).refresh();
-            console.log('hi');
-            //plotArea();
-            //updateSection();
+            
+            plotArea();
+            updateSection();
         }
         
         function plotArea() {
@@ -89,21 +91,30 @@
                 
             pan2d.setAxes(grafar.setpop(['x', 'y', 'z'], targetvar));
             section.constrain({
-                what: 'x, y, z', 
-                maxlen: 5000, 
-                as: grafar.ductParse(problem.eqns.join('&') + sector, problem.cube)
-            });
-            section2.constrain({
-                what: 'x, y, z', 
-                maxlen: 5000, 
-                as: grafar.ductParse(problem.eqns.join('&') + sector, problem.cube)
-            });
-            for (var i = 0; i < activeHelpers; i++)
-                helpers2d[i].constrain({
                     what: 'x, y, z', 
                     maxlen: 5000, 
-                    as: grafar.ductParse(problem.eqns[i] + sector, problem.cube)
-                });
+                    as: grafar.ductParse(problem.eqns.join('&') + sector, problem.cube),
+                    discrete: true
+                })
+                .refresh();
+            
+            section2.constrain({
+                    what: 'x, y, z', 
+                    maxlen: 5000, 
+                    as: grafar.ductParse(problem.eqns.join('&') + sector, problem.cube),
+                    discrete: true
+                })
+                .refresh();
+            
+            for (var i = 0; i < activeHelpers; i++)
+                helpers2d[i].constrain({
+                        what: 'x, y, z', 
+                        maxlen: 5000, 
+                        as: grafar.ductParse(problem.eqns[i] + sector, problem.cube),
+                        discrete: true
+                    })
+                    .refresh();
+            console.log(section2);
         }
         
         hideAllBut = function(container, visible) {
