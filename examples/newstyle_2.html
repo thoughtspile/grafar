@@ -13,24 +13,21 @@
 	<div id = "render">
     </script>
 	
-	<script type="text/javascript" src="../loader.js"></script>
+	<script type="text/javascript" src="../build/grafar.js"></script>
 	<script type="text/javascript">
-		runGrafar(function() {
-			var pan3d = new grafar.Panel(document.getElementById('render')),
-				graph = new grafar.Object().pin(pan3d);                
-            
-            graph.constrain({what: 't', maxlen: 30, as: grafar.seq(0, Math.PI, 't')})
-                .constrain({what: 'p', maxlen: 50, as: grafar.seq(-Math.PI, Math.PI, 'p')})
-				.constrain({what: 'x,y,z', using: 't,p', as: function(data, l) {
-                    for (var i = 0; i < l; i++) {
-						data.x[i] = Math.sin(data.t[i]) * Math.sin(data.p[i]);
-						data.y[i] = 4 * Math.cos(data.t[i]) * Math.sin(data.p[i]);
-						data.z[i] = 2 * Math.cos(data.p[i]);
-                    }
-				}})
-                .refresh();
-            //console.log(graph);
-		}, '../');
+        var pan3d = new grafar.Panel(document.getElementById('render')),
+            graph = new grafar.Object().pin(pan3d);                
+        
+        graph.constrain({what: 't', maxlen: 30, as: grafar.seq(0, Math.PI, 't')})
+            .constrain({what: 'p', maxlen: 50, as: grafar.seq(-Math.PI, Math.PI, 'p')})
+            .constrain({what: 'x,y,z', using: 't,p', as: function(data, l) {
+                for (var i = 0; i < l; i++) {
+                    data.x[i] = Math.sin(data.t[i]) * Math.sin(data.p[i]);
+                    data.y[i] = 4 * Math.cos(data.t[i]) * Math.sin(data.p[i]);
+                    data.z[i] = 2 * Math.cos(data.p[i]);
+                }
+            }})
+            .refresh();
 	</script>
 
 	</body>

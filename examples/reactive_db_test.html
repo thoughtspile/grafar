@@ -13,39 +13,37 @@
 	<div id = "render">
     </script>
 	
-	<script type="text/javascript" src="../loader.js"></script>
+	<script type="text/javascript" src="../build/grafar.js"></script>
 	<script type="text/javascript">
-		runGrafar(function() {
-			var pan3d = new grafar.Panel(document.getElementById('render')),
-				graph = new grafar.Object().pin(pan3d);                
+        var pan3d = new grafar.Panel(document.getElementById('render')),
+            graph = new grafar.Object().pin(pan3d);                
+        
+        graph.constrain({what: 'i', maxlen: 2, as: grafar.seq(-1, 1, 'i'), discrete: true})
+            .constrain({what: 't', maxlen: 30, as: grafar.seq(0, 1, 't')})
+            .constrain({what: 'p', maxlen: 1, as: function(data) {data.p[0] = 0;}})
+            .constrain({what: 'y', maxlen: 60, as: grafar.seq(-1, 1, 'y')})
+            .constrain({what: 'x', using: 'i, t', as: function(data, l) {
+                for (var i = 0; i < l; i++)
+                    data.x[i] = data.i[i] + data.t[i];
+            }})
+            .constrain({what: 'f', using: 'x,y', as: function(data, l) {
+                for (var i = 0; i < l; i++)
+                    data.f[i] = Math.sin(data.x[i] * data.y[i]) / 2;
+            }})
+            .constrain({what: 'z', using: 'f,p', as: function(data, l) {
+                for (var i = 0; i < l; i++)
+                    data.z[i] = data.f[i] * data.p[i];
+            }})
+            .run();
             
-            graph.constrain({what: 'i', maxlen: 2, as: grafar.seq(-1, 1, 'i'), discrete: true})
-                .constrain({what: 't', maxlen: 30, as: grafar.seq(0, 1, 't')})
-                .constrain({what: 'p', maxlen: 1, as: function(data) {data.p[0] = 0;}})
-				.constrain({what: 'y', maxlen: 60, as: grafar.seq(-1, 1, 'y')})
-				.constrain({what: 'x', using: 'i, t', as: function(data, l) {
-					for (var i = 0; i < l; i++)
-						data.x[i] = data.i[i] + data.t[i];
-				}})
-                .constrain({what: 'f', using: 'x,y', as: function(data, l) {
-					for (var i = 0; i < l; i++)
-						data.f[i] = Math.sin(data.x[i] * data.y[i]) / 2;
-				}})
-				.constrain({what: 'z', using: 'f,p', as: function(data, l) {
-					for (var i = 0; i < l; i++)
-						data.z[i] = data.f[i] * data.p[i];
-				}})
-                .run();
-                
-            var t = 0;
-            (function up() {
-                t += .025;
-                graph.constrain({what: 'p', maxlen: 1, as: function(data) {
-                        data.p[0] = Math.pow(Math.sin(t), 3);
-                    }});
-                window.requestAnimationFrame(up);
-            }());
-		}, '../');
+        var t = 0;
+        (function up() {
+            t += .025;
+            graph.constrain({what: 'p', maxlen: 1, as: function(data) {
+                    data.p[0] = Math.pow(Math.sin(t), 3);
+                }});
+            window.requestAnimationFrame(up);
+        }());
 	</script>
 
 	</body>

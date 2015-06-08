@@ -10,36 +10,25 @@
 </head>
 
 <body>
-	<div id = "render">
-		
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-    </script>
-	<script type="text/x-mathjax-config">
-		MathJax.Hub.Config({
-			tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
-			"HTML-CSS": { linebreaks: { automatic: true, width: "75% container" } }
-		});
-    </script>
+	<div id = "render"></div>
 	
-	<script type="text/javascript" src="../loader.js"></script>
+	<script type="text/javascript" src="../build/grafar.js"></script>
 	<script type="text/javascript">
-		runGrafar(function() {
-			var pan3d = new grafar.Panel(document.getElementById('render')),
-				graph = new grafar.Object().pin(pan3d);
-				
-			graph.constrain({what: 'i', maxlen: 2, as: grafar.seq(-1, 1, 'i', 0, 1)})
-                .constrain({what: 't', maxlen: 20, as: grafar.seq(0, 1, 't')})
-				.constrain({what: 'y', maxlen: 20, as: grafar.seq(0, 1, 'y')})
-				.constrain({what: 'x', using: 'i, t', as: function(data, l) {
-					for (var i = 0; i < l; i++)
-						data.x[i] = data.i[i] + data.t[i];
-				}})
-				.constrain({what: 'z', using: 'x,y', as: function(data, l) {
-					for (var i = 0; i < l; i++)
-						data.z[i] = data.x[i] * data.y[i];
-				}})
-				.refresh();
-		}, '../');
+        var pan3d = new grafar.Panel(document.getElementById('render')),
+            graph = new grafar.Object().pin(pan3d);
+            
+        graph.constrain({what: 'i', maxlen: 2, as: grafar.seq(-1, 1, 'i', 0, 1)})
+            .constrain({what: 't', maxlen: 20, as: grafar.seq(0, 1, 't')})
+            .constrain({what: 'y', maxlen: 20, as: grafar.seq(0, 1, 'y')})
+            .constrain({what: 'x', using: 'i, t', as: function(data, l) {
+                for (var i = 0; i < l; i++)
+                    data.x[i] = data.i[i] + data.t[i];
+            }})
+            .constrain({what: 'z', using: 'x,y', as: function(data, l) {
+                for (var i = 0; i < l; i++)
+                    data.z[i] = data.x[i] * data.y[i];
+            }})
+            .refresh();
 	</script>
 
 	</body>
