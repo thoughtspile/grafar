@@ -1,0 +1,30 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<title>testbox</title>
+	
+	<link rel="stylesheet" type="text/css" href="stylesheets/testbox_style.css" media="screen" />
+	
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+</head>
+
+<body>
+	<div id = "render">
+    </script>
+	
+	<script type="text/javascript" src="../loader.js"></script>
+	<script type="text/javascript">
+		runGrafar(function() {
+			var r = new grafar.Reactive(0).lift(function(dummy, val) {
+                    val += 2;
+                    return val;
+                });
+            console.log(r.value());
+            console.log(r.invalidate().value());
+            console.log(r.invalidate().value());
+		}, '../');
+	</script>
+
+	</body>
+</html>

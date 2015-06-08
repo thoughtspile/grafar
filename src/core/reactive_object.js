@@ -77,6 +77,7 @@
         for (var i = 0; i < names.length; i++) {
             var dataset = this.datasets[names[i]]
             
+            // need shared base
             dataset.base
                 .lift(Graph.baseTranslate)
                 .bind(sources.map(function(src) {
@@ -133,7 +134,7 @@
     
 	Object.prototype.refresh = function() {
 		for (var i = 0; i < this.glinstances.length; i++) {
-			var instance = this.glinstances[i];				
+			var instance = this.glinstances[i];
 			var tab = this.project(instance.panel._axes, false);
             
 			interleave(tab.map(function(c) {return c.data.value()}), instance.position);
@@ -143,9 +144,11 @@
             resizeBuffer(instance.normals, tab[0].data.value().length * 3);
             instance.object.children[2].geometry.computeVertexNormals();
             
-			instance.object.children[0].visible = false;
-			instance.object.children[1].visible = true;
-			instance.object.children[2].visible = true;
+            var hasEdges = tab[0].edges.value().length > 0;
+            var hasFaces = tab[0].faces.value().length > 0;
+			instance.object.children[0].visible = !(hasEdges || hasFaces);
+			//instance.object.children[1].visible = true;
+			//instance.object.children[2].visible = true;
 		}
 		return this;
 	};

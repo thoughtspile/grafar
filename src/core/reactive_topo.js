@@ -142,6 +142,10 @@
     function makeFaces(src, target) {
         // leads to wild results for non-2D objects
         var nonEmpty = src.filter(function(src) { return src.length !== 0; });
+        if (nonEmpty.length !== 2) {
+            resizeBuffer(target, 0);
+            return;
+        }
         var leftStretch = src.slice(0, src.indexOf(nonEmpty[0]))
             .reduce(function(pv, cv) {
                 return pv * cv.pointCount;

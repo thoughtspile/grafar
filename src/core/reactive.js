@@ -13,7 +13,7 @@
         this.sources = [];
         this.targets = [];
         
-		this.data = data || {};
+		this.data = isExisty(data)? data: {};
 		this.fn = function() {};
 		this.isValid = false;
 	};
@@ -22,6 +22,10 @@
 		return obj instanceof Reactive;
 	};
     
+    
+    Reactive.prototype.push = function() {
+        return this;
+    };
     
     Reactive.prototype.lift = function(fn) {
         this.fn = fn;
@@ -48,8 +52,9 @@
 	Reactive.prototype.validate = function() {
 		if (!this.isValid) {
             var sourceData = [];
-            for (var i = 0; i < this.sources.length; i++)
+            for (var i = 0; i < this.sources.length; i++) {
                 sourceData[i] = this.sources[i].value();
+            }
             var res = this.fn(sourceData, this.data);
             if (isExisty(res))
                 this.data = res;

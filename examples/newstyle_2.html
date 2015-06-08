@@ -21,17 +21,12 @@
             
             graph.constrain({what: 't', maxlen: 30, as: grafar.seq(0, Math.PI, 't')})
                 .constrain({what: 'p', maxlen: 50, as: grafar.seq(-Math.PI, Math.PI, 'p')})
-				.constrain({what: 'x', using: 't,p', as: function(data, l) {
-                    for (var i = 0; i < l; i++)
+				.constrain({what: 'x,y,z', using: 't,p', as: function(data, l) {
+                    for (var i = 0; i < l; i++) {
 						data.x[i] = Math.sin(data.t[i]) * Math.sin(data.p[i]);
-                }})
-                .constrain({what: 'y', using: 't,p', as: function(data, l) {
-                    for (var i = 0; i < l; i++)
 						data.y[i] = 4 * Math.cos(data.t[i]) * Math.sin(data.p[i]);
-                }})
-				.constrain({what: 'z', using: 'p', as: function(data, l) {
-					for (var i = 0; i < l; i++)
 						data.z[i] = 2 * Math.cos(data.p[i]);
+                    }
 				}})
                 .refresh();
             //console.log(graph);
