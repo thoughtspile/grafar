@@ -7,6 +7,7 @@ copy nul %target% /y
 	
 set srcList=..\src\grafar.js+^
 ..\src\math\polyfills.js+^
+..\src\core\fn_utils.js+^
 ..\src\math\misc.js+^
 ..\src\core\pool.js+^
 ..\src\math\set.js+^
@@ -21,7 +22,7 @@ set srcList=..\src\grafar.js+^
 ..\src\core\reactive_topo.js+^
 ..\src\core\reactive_graph.js+^
 ..\src\core\reactive_object.js+^
-..\src\generators\grafaryaz\parser_.js+^
+..\src\core\parser_.js+^
 ..\src\core\panel.js+^
 ..\src\legacy\observer.js+^
 ..\src\core\animation.js+^
