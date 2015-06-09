@@ -5,12 +5,18 @@
 	
 
 	function firstMatch(set, callback) {
-		for (var i = 0; i <= set.length && !callback(set[i]); i++);
-		return set[i];
+		for (var i = 0; i < set.length; i++)
+            if (callback(set[i]))
+                return set[i];
+		return; // undefined
 	}
 
 	function haveCommon(arr1, arr2) {
-		return arr1.some(function(e1) {return arr2.indexOf(e1) !== -1;});
+        for (var i = 0; i < arr1.length; i++)
+            for (var j = 0; j < arr2.length; j++)
+                if (arr1[i] === arr2[j])
+                    return true
+        return false;
 	}
 
 	function intersection(pv, cv, out) {
@@ -20,11 +26,12 @@
 	}
 	
 	function interPower(arr1, arr2) {
-		var pow = 0;
+		var commonCount = 0;
 		for (var i = 0; i < arr1.length; i++)
-			if (arr2.indexOf(arr1[i]) !== -1)
-				pow++;
-		return pow;
+			for (var j = 0; j < arr2.length; j++)
+                if (arr1[i] === arr2[j])
+                    commonCount++;
+		return commonCount;
 	}
 
 	function union(a, b, out) {
@@ -52,7 +59,7 @@
 		return pv;
 	}
 
-	function setMinus(l, r, out) {
+	function setMinus(arrLeft, arrRight, out) {
 		return l.filter(function(el) {return r.indexOf(el) === -1;});
 	}
 	
