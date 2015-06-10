@@ -31,18 +31,7 @@
 		
 		return NaN;
 	}
-	
-	function constant(valOuter, name) {
-		var val = valOuter;
-		console.log('create', val);
-		return function(data, l, extras) {
-			console.log('call C', val);
-			for (var i = 0; i < l ; i++)
-				data[name][i] = val;
-			extras.continuous = true;
-		};
-	}
-	
+		
 	function ints(m, name) {
 		m = Number(m);
 		return function(data, l, extras) {
@@ -52,6 +41,14 @@
 		};
 	}
 	
+    function constant(val, name) {
+        return function(data, l, extras) {
+			for (var i = 0; i < l; i++)
+				data[name][i] = val;
+			extras.continuous = false;
+		};
+    }
+    
 	function seq(a, b, name, closed, discrete) {
 		a = Number(a);
 		b = Number(b);
@@ -215,6 +212,7 @@
 	
 	_G.constant = constant;
 	_G.ints = ints;
+    _G.constant = constant;
 	_G.seq = seq;
 	_G.logseq = logseq;
 	_G.traceZeroSet = traceZeroSet;

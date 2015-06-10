@@ -51,7 +51,6 @@
                 as = fn || function() {},
                 maxlen = opts.maxlen || 40,
                 discrete = opts.discrete || false;
-            console.log(opts, discrete);
         } else {
             var names = asArray(constraint.what || []),
                 using = asArray(constraint.using || []),

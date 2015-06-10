@@ -49,7 +49,7 @@
         
         graph.constrain('i', grafar.seq(-1, 1, 'i'), {maxlen: 2, discrete: true})
             .constrain('t', grafar.seq(0, 1, 't'), {maxlen: 30})
-            .constrain('p', function(data) {data.p[0] = 0;}, {maxlen: 1})
+            .constrain('p', grafar.constant(0, 'p'), {maxlen: 1})
             .constrain('y', grafar.seq(-1, 1, 'y'), {maxlen: 60})
             .constrain('x: i, t', function(data, l) {
                 for (var i = 0; i < l; i++)
@@ -68,9 +68,8 @@
         var t = 0;
         (function up() {
             t += .025;
-            graph.constrain({what: 'p', maxlen: 1, as: function(data) {
-                    data.p[0] = Math.pow(Math.sin(t), 3);
-                }});
+            var ang = Math.pow(Math.sin(t), 3);
+            graph.constrain('p', grafar.constant(ang, 'p'), {maxlen: 1});
             window.requestAnimationFrame(up);
         }());
 	</script>
