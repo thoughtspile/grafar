@@ -1,0 +1,36 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<title>testbox</title>
+	
+	<link rel="stylesheet" type="text/css" href="stylesheets/testbox_style.css" media="screen" />
+	
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+</head>
+
+<body>
+	<div id = "render">
+	
+	<script type="text/javascript" src="../loader.js"></script>
+	<script type="text/javascript">
+		runGrafar(function() {
+			var pan3d = new grafar.Panel(document.getElementById('render')),//.setAxes(['x','y']),
+				graph = new grafar.Object().pin(pan3d),
+				graph2 = new grafar.Object().pin(pan3d),
+				graph3 = new grafar.Object().pin(pan3d),
+				graph4 = new grafar.Object().pin(pan3d),
+				graph5 = new grafar.Object().pin(pan3d),
+                sq2 = 1 / Math.sqrt(2);
+							
+            var eps = .00001;
+			graph.constrain({what: 'x,y,z', maxlen: 5000, as: grafar.traceZeroSet(function(v) {
+                    return Math.max(v[0] * v[0] + v[1] * v[1] - 1, -v[0]);
+                }, ['x', 'y', 'z']), discrete: true})
+                .refresh();
+            console.log('hello');
+		}, '../');
+	</script>
+
+	</body>
+</html>

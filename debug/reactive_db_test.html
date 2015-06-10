@@ -1,0 +1,79 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<title>testbox</title>
+	
+	<link rel="stylesheet" type="text/css" href="stylesheets/testbox_style.css" media="screen" />
+	
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+</head>
+
+<body>
+	<div id = "render">
+    </script>
+	
+	<script src="../libs/three.min.js"></script>
+	<script src="../libs/stats.min.js"></script>
+	<script src="../libs/Detector.js"></script>
+	<script src="../libs/OrbitControls.js"></script>
+	<script src="../libs/i-color.min.js"></script>    
+	<script src="../src/grafar.js"></script>
+	<script src="../src/core/fn_utils.js"></script>
+	<script src="../src/math/polyfills.js"></script>
+	<script src="../src/math/misc.js"></script>
+	<script src="../src/core/pool.js"></script>    
+	<script src="../src/math/set.js"></script>
+	<script src="../src/math/vector.js"></script>
+	<script src="../src/math/numerics.js"></script>
+	<script src="../src/math/array_utils.js"></script>
+	<script src="../src/core/style.js"></script>
+	<script src="../src/math/graphdata.js"></script>
+	<script src="../src/core/parser_alt.js"></script>    
+	<script src="../src/core/reactive.js"></script>
+	<script src="../src/core/glutils.js"></script>
+	<script src="../src/core/reactive_topo.js"></script>
+	<script src="../src/core/reactive_graph.js"></script>
+	<script src="../src/core/reactive_object.js"></script>    
+	<script src="../src/core/parser_.js"></script>
+	<script src="../src/core/panel.js"></script>    
+	<script src="../src/legacy/observer.js"></script>
+	<script src="../src/legacy/animation.js"></script>
+	<script src="../src/legacy/grafar_samples.js"></script>
+	<script src="../src/legacy/grafar_ui.js"></script>
+    
+	<script type="text/javascript">
+        grafar.config.debug = true;
+        var pan3d = new grafar.Panel(document.getElementById('render')),
+            graph = new grafar.Object().pin(pan3d);                
+        
+        graph.constrain('i', grafar.seq(-1, 1, 'i'), {maxlen: 2, discrete: true})
+            .constrain('t', grafar.seq(0, 1, 't'), {maxlen: 30})
+            .constrain('p', function(data) {data.p[0] = 0;}, {maxlen: 1})
+            .constrain('y', grafar.seq(-1, 1, 'y'), {maxlen: 60})
+            .constrain('x: i, t', function(data, l) {
+                for (var i = 0; i < l; i++)
+                    data.x[i] = data.i[i] + data.t[i];
+            })
+            .constrain('f: x, y', function(data, l) {
+                for (var i = 0; i < l; i++)
+                    data.f[i] = Math.sin(data.x[i] * data.y[i]) / 2;
+            })
+            .constrain('z: f, p', function(data, l) {
+                for (var i = 0; i < l; i++)
+                    data.z[i] = data.f[i] * data.p[i];
+            })
+            .run();
+            
+        var t = 0;
+        (function up() {
+            t += .025;
+            graph.constrain({what: 'p', maxlen: 1, as: function(data) {
+                    data.p[0] = Math.pow(Math.sin(t), 3);
+                }});
+            window.requestAnimationFrame(up);
+        }());
+	</script>
+
+	</body>
+</html>

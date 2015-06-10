@@ -1,0 +1,19 @@
+<!doctype html>
+
+<head>
+	<title>Running with inline code: grafar by example</title>
+</head>
+
+<body>
+	<script src="loader.js"></script>
+	<script>
+		runGrafar(function() {
+			// this code can use grafar
+			document.write('Hello, I\'m monsieur Grafar.');
+			console.log(grafar);
+		}, '');
+		// this code will never be reached
+		document.write(undefobj);
+	</script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<title>Compound areas (August '14 demo)</title>
+	<link rel="stylesheet" type="text/css" href="stylesheets/grafar_style.css" media="screen" />
+	<style>
+		#plot3d {
+			float: left;
+		}
+		#plot2d {
+			float: left;
+		}
+	</style>
+</head>
+
+<body>
+	<div>
+		<div class="panel" id="plot3d"></div>
+		<div class="panel" id="plot2d"></div>
+	</div>
+	<div class = "grafar_ui">
+		<h1 id="grafar_logo">grafar jr.</h1>
+		<div id="options"></div>
+	</div>
+	
+	<script type="text/javascript" src="loader.js"></script>
+	<script type="text/javascript">
+		runGrafar(function() {
+			grafar.ui([
+				{type: 'group', col: 'orange', init: [
+					{type: 'select', id: 'dim', init: ['x', 'y', 'z'], bind: setSectionVar},
+					{type: 'label', init: ' = '},
+					{type: 'number', id: 'val', init: 0, bind: updateSection}]
+				},
+				{type: 'group', col: 'grey', init: [
+					{type: 'checkbox', id: 'helpers', bind: plotArea},
+					{type: 'label', init: 'Show the original shapes'}]
+				}
+			], {container: 'options'});
+						
+			var pan3d = new grafar.Panel(document.getElementById('plot3d')).drawAxes(2),
+				pan2d = new grafar.Panel(document.getElementById('plot2d')).setAxes(['x', 'y']).drawAxes(2),
+				conditions = ['z + 0*x + 0*y <= 2 - x^2 - y^2', 'z + 0*x + 0*y >= 1/3*sqrt(x^2+y^2)'],
+				axesExcept = {'x': ['y', 'z'], 'y': ['x', 'z'], 'z': ['x', 'y']},
+				helpers = new grafar.Graph(),
+				helperContexts = [],
+				graphs = {},
+				contexts = {};
+			
+			(function() {
+				var graph = new grafar.Graph({panel: pan3d, style: new grafar.Style().setPalette([0x4f14cc])}),
+					context = new grafaryaz.Context();
+				grafar.bind(graph.dataInterface(), context);
+				context.set(conditions.join(' & '));
+			}());
+			
+			(function() {
+				var style = new grafar.Style().setPalette(['orangered']),
+					graph3d = new grafar.Graph({panel: pan3d, style: style}),
+					graph2d = new grafar.Graph({panel: pan2d, style: style}),
+					context = new grafaryaz.Context();				
+				grafar.bind(graph3d.dataInterface(), context);
+				grafar.bind(graph2d.dataInterface(), context);
+				contexts['section'] = context;
+			}());
+			
+			conditions.forEach(function(c, i) {
+				var style = new grafar.Style().setPalette([0x777777 + (i * 2) * 255]),
+					graph3d = new grafar.Graph({panel: pan3d, parent: helpers, style: style}),
+					graph2d = new grafar.Graph({panel: pan2d, parent: helpers, style: style}),
+					context3d = new grafaryaz.Context(),
+					context2d = new grafaryaz.Context();
+					
+				grafar.bind(graph3d.dataInterface(), context3d);
+				grafar.bind(graph2d.dataInterface(), context2d);
+				
+				helperContexts[i] = context2d;
+				
+				context3d.set(c);
+			});
+			
+			plotArea();
+			
+			function plotArea() {
+				helpers.setHiding(!grafar.UI.helpers.val);
+				setSectionVar();
+			}
+			
+			function setSectionVar() {
+				var dim = ['x', 'y', 'z'][grafar.UI.dim.val];
+				// TODO: update labels, buffers & context variables!
+				pan2d.setAxes(axesExcept[dim]);
+				updateSection();
+			}
+			
+			function updateSection() {
+				var dim = ['x', 'y', 'z'][grafar.UI.dim.val], 
+				    height = grafar.UI.val.val;			
+				
+				conditions.forEach(function(c, i) {
+					helperContexts[i].set(c + '&' + dim + '==' + height);
+				});
+				
+				contexts['section'].set(conditions.join('&') + ' & ' + dim + '==' + height);
+			}
+		}, '');
+	</script>
+</body>
+</html>

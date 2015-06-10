@@ -1,0 +1,36 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<title>Grafar animation test page</title>
+	<link rel="stylesheet" type="text/css" href="stylesheets/grafar_style.css" media="screen" />
+</head>
+
+<body>
+	<div class="panel" id="plot_area"></div>
+	
+	<script type="text/javascript" src="loader.js"></script>
+	<script type="text/javascript">
+		runGrafar(function() {
+			var mainPan = new grafar.Panel(document.getElementById('plot_area')).drawAxes(2),
+				graph = new grafar.Graph({panel: mainPan}),
+				context = new grafaryaz.Context();				
+			grafar.bind(graph.dataInterface(), context);
+			
+			var anim = new grafar.Process(new grafar.Timer(200), function (t) {
+				context.set('f(x, y) == sin(x*y) + y * cos(y +' + t + ') & z == delta_f_y & x @= [-2, 2] & y @= [-2, 2]');
+				//context.set('t @= [-$e, $e] & q @= [-$e, $e] & x == cos(t) * cos(q) & y == cos(t) * sin(q) & z == sin(t)'.replace(/\$e/g, t+1));				
+				//context.set('x^2 + (sin(y))^2 + sin(z) <= 2 & z == sin(' + t + ')');
+				//context.set('x^2 + sin(' + t + ') * y^2 + z^2 <= 2');
+				//context.set('x @= [0, $e] & y @= [-$e, $e] & z == sin(x)^2 + cos(y)^2'.replace(/\$e/g, t));
+				context.set('r @= [0, $e] & phi @= [-$pi, $pi] & z == 2 / r * sin((x^2 + y^2) / (.3 * r)) & x == .5 * r * sin(phi) & y == .5 * r * cos(phi)'.replace(/\$e/g, t).replace(/\$pi/g, Math.PI));
+			}).start();
+			
+			// stop
+			window.setTimeout(function() {
+				anim.stop();
+			}, 60000);
+		}, '');
+	</script>
+</body>
+</html>

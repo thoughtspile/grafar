@@ -1,0 +1,34 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<title>testbox</title>
+	
+	<link rel="stylesheet" type="text/css" href="stylesheets/testbox_style.css" media="screen" />
+	
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+</head>
+
+<body>
+	<div id = "render">
+    </script>
+	
+	<script type="text/javascript" src="../build/grafar.js"></script>
+	<script type="text/javascript">
+        var pan3d = new grafar.Panel(document.getElementById('render')),
+            graph = new grafar.Object().pin(pan3d);                
+        
+        graph.constrain({what: 't', maxlen: 30, as: grafar.seq(0, Math.PI, 't')})
+            .constrain({what: 'p', maxlen: 50, as: grafar.seq(-Math.PI, Math.PI, 'p')})
+            .constrain({what: 'x,y,z', using: 't,p', as: function(data, l) {
+                for (var i = 0; i < l; i++) {
+                    data.x[i] = Math.sin(data.t[i]) * Math.sin(data.p[i]);
+                    data.y[i] = 4 * Math.cos(data.t[i]) * Math.sin(data.p[i]);
+                    data.z[i] = 2 * Math.cos(data.p[i]);
+                }
+            }})
+            .refresh();
+	</script>
+
+	</body>
+</html>

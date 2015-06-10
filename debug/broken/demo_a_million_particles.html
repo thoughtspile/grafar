@@ -1,0 +1,40 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<title>grafar interface test page</title>
+	<style>
+		body, figure {	
+			margin: 0px;
+		}
+		#plot_area {
+			overflow: hidden;
+		}
+	</style>
+</head>
+
+<body>
+	<figure class="panel" id="plot_area"></figure>
+	
+	<script type="text/javascript" src="loader.js"></script>
+	<script type="text/javascript">
+		runGrafar(function() {
+			grafar.config.antialias = false;
+			grafaryaz.config.samples = 1000;
+			var mainPan = new grafar.Panel(document.getElementById('plot_area')),
+				graph = new grafar.Graph({panel: mainPan}),
+				context = new grafaryaz.Context();				
+			grafar.bind(graph.dataInterface(), context);
+			graph.object.children[1].visible = false;
+			
+			new grafar.Process(new grafar.Timer(1000), function (t) {
+				context.set('x @= [-20, 20] & y @= [-20, 20] & z == sin(x) * cos(y * x + $e)'.replace(/\$e/g, t));
+			}).start();
+			
+			window.setTimeout(function() {
+				anim.stop();
+			}, 30000);
+		}, '');
+	</script>
+</body>
+</html>
