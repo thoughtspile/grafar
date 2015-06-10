@@ -42,12 +42,23 @@
 	
 	};
     
-	Object.prototype.constrain = function(constraint) {
-		var names = asArray(constraint.what || []),
-			using = asArray(constraint.using || []),
-			as = constraint.as || function() {},
-			maxlen = constraint.maxlen || 40,
-            discrete = constraint.discrete || false;
+	Object.prototype.constrain = function(constraint, fn, opts) {
+        if (typeof constraint === 'string') {
+            opts = opts || {};
+            var split = constraint.split(':'),
+                names = asArray(split[0] || []),
+                using = asArray(split[1] || []),
+                as = fn || function() {},
+                maxlen = opts.maxlen || 40,
+                discrete = opts.discrete || false;
+            console.log(opts, discrete);
+        } else {
+            var names = asArray(constraint.what || []),
+                using = asArray(constraint.using || []),
+                as = constraint.as || function() {},
+                maxlen = constraint.maxlen || 40,
+                discrete = constraint.discrete || false;
+        }
             
         var sources = this.project(using, true);
         // I only do this shit because project forces product
