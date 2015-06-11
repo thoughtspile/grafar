@@ -36,6 +36,9 @@
 		var pointLight = new THREE.PointLight(0xFFFFFF);
 		pointLight.position.set( 0, 5, 7 );
 		this.scene.add( pointLight );
+		pointLight = new THREE.PointLight(0xFFFFFF);
+		pointLight.position.set( 0, -5, -7 );
+		this.scene.add( pointLight );
 		
 		this.renderer = new Renderer();
 		this.renderer.antialias = config.antialias;

@@ -102,15 +102,15 @@
             graph.glinstances[0].object.children[1].visible = true;
             
             graph.constrain('r', grafar.constant(1, 'r'), {maxlen: 5})
-                .constrain('phi', grafar.seq(0, 4 * n * Math.PI, 'phi'), {maxlen: 700, discrete: false})
-                .constrain({what: 'x', using: 'r, phi', as: function(data, l) {
+                .constrain('phi', grafar.seq(0, 8 * Math.PI, 'phi'), {maxlen: 7000, discrete: false})
+                .constrain('x: phi, t', function(data, l) {
                     for (var i = 0; i < l; i++)
-                        data.x[i] = Math.cos(data.phi[i]) * data.r[i];
-                }})
-                .constrain({what: 'y', using: 'r, phi', as: function(data, l) {
+                        data.x[i] = Math.cos(data.phi[i]) - Math.pow(Math.cos(data.t[i] * data.phi[i]), 3);
+                })
+                .constrain('y:  phi', function(data, l) {
                     for (var i = 0; i < l; i++)
-                        data.y[i] = Math.sin(data.phi[i]) * (Math.cos(n * data.phi[i]) + data.r[i]);
-                }})
+                        data.y[i] = Math.sin(data.phi[i]) -  Math.pow(Math.sin(data.phi[i]), 3);
+                })
                 .refresh();
         }
         
@@ -136,7 +136,7 @@
         
         function up() {
             var time = (Date.now() - start) / 1500;
-            point.constrain('t', grafar.constant(time, 't'), {maxlen: 1})
+            graph.constrain('t', grafar.constant(time, 't'), {maxlen: 1})
                 .refresh();
             window.requestAnimationFrame(up);
         };

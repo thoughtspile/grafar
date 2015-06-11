@@ -36,7 +36,7 @@
             mat = new THREE.MeshPhongMaterial({
                 side: DoubleSide,
                 transparent: true,
-                opacity: .7,
+                opacity: .7
                 //depthWrite: false
                 //depthTest: false
             });

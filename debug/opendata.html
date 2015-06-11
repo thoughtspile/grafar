@@ -1,0 +1,64 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<title>testbox</title>
+	
+	<link rel="stylesheet" type="text/css" href="stylesheets/testbox_style.css" media="screen" />
+	
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+</head>
+
+<body>
+	<div id = "render">
+	
+	<script src="../libs/three.min.js"></script>
+	<script src="../libs/stats.min.js"></script>
+	<script src="../libs/Detector.js"></script>
+	<script src="../libs/OrbitControls.js"></script>
+	<script src="../libs/i-color.min.js"></script>    
+	<script src="../src/grafar.js"></script>
+	<script src="../src/core/fn_utils.js"></script>
+	<script src="../src/math/polyfills.js"></script>
+	<script src="../src/math/misc.js"></script>
+	<script src="../src/core/pool.js"></script>    
+	<script src="../src/math/set.js"></script>
+	<script src="../src/math/vector.js"></script>
+	<script src="../src/math/numerics.js"></script>
+	<script src="../src/math/array_utils.js"></script>
+	<script src="../src/core/style.js"></script>
+	<script src="../src/math/graphdata.js"></script>
+	<script src="../src/core/parser_alt.js"></script>    
+	<script src="../src/core/reactive.js"></script>
+	<script src="../src/core/glutils.js"></script>
+	<script src="../src/core/reactive_topo.js"></script>
+	<script src="../src/core/reactive_graph.js"></script>
+	<script src="../src/core/reactive_object.js"></script>    
+	<script src="../src/core/parser_.js"></script>
+	<script src="../src/core/panel.js"></script>    
+	<script src="../src/legacy/observer.js"></script>
+	<script src="../src/legacy/animation.js"></script>
+	<script src="../src/legacy/grafar_samples.js"></script>
+	<script src="../src/legacy/grafar_ui.js"></script>
+	
+    
+    <script src = "stops.js"></script>
+    <script type="text/javascript">
+        var pan3d = new grafar.Panel(document.getElementById('render')).setAxes(['x', 'y']),
+            graph = new grafar.Object().pin(pan3d),
+            stopCount = stops.length;
+        
+        graph.glinstances[0].object.children[0].material.opacity = 1;
+        graph.glinstances[0].object.children[0].material.size = 2;        
+            
+        graph.constrain('x, y', function(data, l) {
+                for (var i = 0; i < l; i++) {
+                    data.x[i] = (stops[i][1] - 45.5) * 30;
+                    data.y[i] = (stops[i][2] - 9.2) * 30;
+                }
+            }, {maxlen: stopCount, discrete: true})
+            .refresh();
+	</script>
+
+	</body>
+</html>

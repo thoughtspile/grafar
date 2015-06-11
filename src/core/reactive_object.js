@@ -163,7 +163,7 @@
             
             var hasEdges = tab[0].edges.value().length > 0;
             var hasFaces = tab[0].faces.value().length > 0;
-			instance.object.children[0].visible = !(hasEdges || hasFaces);
+			//instance.object.children[0].visible = true; // !(hasEdges || hasFaces);
 			//instance.object.children[1].visible = true;
 			//instance.object.children[2].visible = true;
 		}
