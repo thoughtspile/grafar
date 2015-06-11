@@ -134,7 +134,7 @@
             for (var i = 0; i < names.length; i++) {
                 if (!this.datasets.hasOwnProperty(names[i])) {
                     if (proxy)
-                        this.datasets[using[i]] = new Graph();
+                        this.datasets[names[i]] = new Graph();
                     else
                         throw new Error('cannot select undefined');
                 }
@@ -150,7 +150,6 @@
 			var instance = this.glinstances[i];
 			var tab = this.project(instance.panel._axes, false);
             if (tab.every(function(col) { return col.data.isValid; })) {
-                console.log('othing to see here');
                 return this;
             }
             
@@ -160,6 +159,7 @@
             
             resizeBuffer(instance.normals, tab[0].data.value().length * 3);
             instance.object.children[2].geometry.computeVertexNormals();
+            instance.normals.needsUpdate = true;
             
             var hasEdges = tab[0].edges.value().length > 0;
             var hasFaces = tab[0].faces.value().length > 0;

@@ -1,0 +1,109 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<title>testbox</title>
+	
+	<link rel="stylesheet" type="text/css" href="stylesheets/testbox_style.css" media="screen" />
+	
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+</head>
+
+<body>
+	<div id = "render">
+	
+	<script src="../libs/three.min.js"></script>
+	<script src="../libs/stats.min.js"></script>
+	<script src="../libs/Detector.js"></script>
+	<script src="../libs/OrbitControls.js"></script>
+	<script src="../libs/i-color.min.js"></script>    
+	<script src="../src/grafar.js"></script>
+	<script src="../src/core/fn_utils.js"></script>
+	<script src="../src/math/polyfills.js"></script>
+	<script src="../src/math/misc.js"></script>
+	<script src="../src/core/pool.js"></script>    
+	<script src="../src/math/set.js"></script>
+	<script src="../src/math/vector.js"></script>
+	<script src="../src/math/numerics.js"></script>
+	<script src="../src/math/array_utils.js"></script>
+	<script src="../src/core/style.js"></script>
+	<script src="../src/math/graphdata.js"></script>
+	<script src="../src/core/parser_alt.js"></script>    
+	<script src="../src/core/reactive.js"></script>
+	<script src="../src/core/glutils.js"></script>
+	<script src="../src/core/reactive_topo.js"></script>
+	<script src="../src/core/reactive_graph.js"></script>
+	<script src="../src/core/reactive_object.js"></script>    
+	<script src="../src/core/parser_.js"></script>
+	<script src="../src/core/panel.js"></script>    
+	<script src="../src/legacy/observer.js"></script>
+	<script src="../src/legacy/animation.js"></script>
+	<script src="../src/legacy/grafar_samples.js"></script>
+	<script src="../src/legacy/grafar_ui.js"></script>
+    
+	<script type="text/javascript">
+        var pan3d = new grafar.Panel(document.getElementById('render')),
+            graph = new grafar.Object().pin(pan3d),
+            stage = 0,
+            start = Date.now();
+                
+        graph.glinstances.forEach(function(gli) {
+            gli.object.children[2].material.transparent = false;
+        })
+        
+        function drawSurf() {
+            stage = 2;
+            pan3d.setAxes(['x', 'y', 'z']);
+            graph.constrain('r', grafar.seq(0, 2, 'r'), {maxlen: 30})
+                .constrain('phi', grafar.seq(0, 2 * Math.PI, 'phi'), {maxlen: 70})
+                .constrain({what: 'x', using: 'r, phi', as: function(data, l) {
+                    for (var i = 0; i < l; i++)
+                        data.x[i] = Math.cos(data.phi[i]) * data.r[i];
+                }})
+                .constrain({what: 'y', using: 'r, phi', as: function(data, l) {
+                    for (var i = 0; i < l; i++)
+                        data.y[i] = Math.sin(data.phi[i]) * data.r[i];
+                }})            
+                .constrain('z: x, y, t', function(data, l) {
+                    var x = data.x,
+                        y = data.y,
+                        t = data.t;
+                    for (var i = 0; i < l; i++)
+                        data.z[i] = Math.sin(x[i] * 2 * Math.cos(y[i] * 3)) * Math.sin(Math.cos(t[i]));
+                });
+        }
+        
+        function drawCurve() {
+            stage = 1;
+            pan3d.setAxes(['x', 'y']);
+            graph.constrain('r', grafar.seq(0, 1, 'r'), {maxlen: 30})
+                .constrain('phi', grafar.seq(0, 2 * Math.PI, 'phi'), {maxlen: 70})
+                .constrain({what: 'x', using: 'r, phi', as: function(data, l) {
+                    for (var i = 0; i < l; i++)
+                        data.x[i] = Math.cos(data.phi[i]) * data.r[i];
+                }})
+                .constrain({what: 'y', using: 'r, phi', as: function(data, l) {
+                    for (var i = 0; i < l; i++)
+                        data.y[i] = Math.sin(data.phi[i]) * data.r[i];
+                }})
+                .refresh();
+        }
+        
+        function up() {
+            graph.constrain(
+                    't', 
+                    grafar.constant((Date.now() - start) / 600, 't'), 
+                    {maxlen: 1}
+                )
+                .refresh();
+            window.requestAnimationFrame(up);
+        };
+        
+        
+        drawSurf();  
+        up();
+             
+	</script>
+
+	</body>
+</html>

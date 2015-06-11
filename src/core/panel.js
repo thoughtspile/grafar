@@ -117,7 +117,6 @@
 		
 	
 	function setAxisGeometry(posArray, length, dim) {
-        console.log(dim)
         dim = dim || 3;
 		for (var i = 0; i < 3; i++) {
             var len = i < dim? length: 0;
