@@ -42,22 +42,49 @@
 	<script src="../src/legacy/grafar_ui.js"></script>
 	
     
+    <script src = "milano_shapes.js"></script>
     <script src = "stops.js"></script>
     <script type="text/javascript">
         var pan3d = new grafar.Panel(document.getElementById('render')).setAxes(['x', 'y']),
             graph = new grafar.Object().pin(pan3d),
-            stopCount = stops.length;
+            stopPts = new grafar.Object().pin(pan3d),
+            stopCount = stops.length,
+            pointCount = milanoShapes.length;
         
-        graph.glinstances[0].object.children[0].material.opacity = 1;
-        graph.glinstances[0].object.children[0].material.size = 2;        
+        pan3d.axisObject.visible = false;
+        pan3d.axisLabels.visible = false;
+        
+        graph.glinstances[0].object.children[0].visible = false;
+        stopPts.glinstances[0].object.children[0].material.opacity = 1;
+        stopPts.glinstances[0].object.children[0].material.size = 3;        
             
         graph.constrain('x, y', function(data, l) {
+                for (var i = 0; i < l; i++) {
+                    data.x[i] = (milanoShapes[i][1] - 45.5) * 30;
+                    data.y[i] = (milanoShapes[i][2] - 9.2) * 30;
+                }
+            }, {maxlen: pointCount, discrete: true})
+            .refresh();
+            
+        stopPts.constrain('x, y', function(data, l) {
                 for (var i = 0; i < l; i++) {
                     data.x[i] = (stops[i][1] - 45.5) * 30;
                     data.y[i] = (stops[i][2] - 9.2) * 30;
                 }
             }, {maxlen: stopCount, discrete: true})
             .refresh();
+            
+        var edges = graph.glinstances[0].segments;
+        grafar.resizeBuffer(edges, 2 * pointCount);
+        for (var i = 1; i < pointCount - 1; i++) {
+            if (milanoShapes[i][0] === milanoShapes[i - 1][0]) {
+                edges.array[2 * i] = i - 1;
+                edges.array[2 * i + 1] = i;
+            }
+        }
+        
+        milanoShapes.length = 0;
+        stops.length = 0;
 	</script>
 
 	</body>
