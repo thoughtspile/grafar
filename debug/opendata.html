@@ -125,7 +125,7 @@
             .refresh();
         tripData.length = 0;
         function up() {
-            stopId += .1;
+            stopId += .2;
             buses.constrain('pos', grafar.constant(stopId, 'pos'), {maxlen: 1})
                 .refresh();
             window.requestAnimationFrame(up);
