@@ -68,6 +68,7 @@
         var tripData = [];
         var tripStart = 0;
         shapes.glinstances[0].object.children[0].visible = false;
+        shapes.glinstances[0].object.children[1].material.color = 0;
         shapes.constrain('x, y', function(data, l) {
                 for (var i = 0; i < l; i++) {
                     data.x[i] = (shapeData[i][1] - 45.5) * 30;
@@ -92,7 +93,7 @@
         var buses = new grafar.Object().pin(map);
         var stopId = 0;
         buses.glinstances[0].object.children[0].visible = true;
-        buses.glinstances[0].object.children[0].material = grafar.circleSprite('red');       
+        buses.glinstances[0].object.children[0].material = grafar.circleSprite('orangered');       
         buses.glinstances[0].object.children[0].material.size = 8;        
         buses.constrain('pos', grafar.constant(stopId, 'pos'), {maxlen: 1})
             .constrain('tripId', function(data, l) {
@@ -102,7 +103,10 @@
             .constrain('x, y: pos, tripId', function(data, l) {
                 for (var  i = 0; i < l; i++) {
                     var trip = tripData[data.tripId[i]];
-                    var pos = shapeData[trip.start + data.pos[i] % trip.count];
+                    var tripPoint = data.pos[i] % (trip.count * 2) > trip.count
+                        ? data.pos[i] % (trip.count)
+                        : trip.count - data.pos[i] % (trip.count);
+                    var pos = shapeData[trip.start + tripPoint];
                     data.x[i] = (pos[1] - 45.5) * 30;
                     data.y[i] = (pos[2] - 9.2) * 30;
                 }
