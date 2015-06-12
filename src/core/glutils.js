@@ -20,6 +20,29 @@
         DoubleSide = _T.DoubleSide;
 	
     
+    function circleSprite() {
+        var canvas = document.createElement('canvas'),
+            context = canvas.getContext('2d'),
+            size = 5;
+            
+        canvas.width = 2 * size;
+        canvas.height = 2 * size;
+        
+        context.beginPath();
+        context.arc(size, size, size, 0, 2 * Math.PI, false);
+        context.fillStyle = 'orange';
+        context.fill();
+      
+        var mat = new THREE.PointCloudMaterial({
+            size: size,
+            transparent: true,
+            sizeAttenuation: false,
+            map: new THREE.Texture(canvas)
+        });
+        mat.map.needsUpdate = true;
+        return mat;
+    };
+    
     function matHelper(type, col) {
         var mat = null;
         if (type === 'point')
@@ -105,4 +128,5 @@
 	_G.InstanceGL = InstanceGL;
 	_G.interleave = interleave;
 	_G.resizeBuffer = resizeBuffer;
+    _G.circleSprite = circleSprite;
 }(this));

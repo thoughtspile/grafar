@@ -55,8 +55,7 @@
         pan3d.axisLabels.visible = false;
         
         graph.glinstances[0].object.children[0].visible = false;
-        stopPts.glinstances[0].object.children[0].material.opacity = 1;
-        stopPts.glinstances[0].object.children[0].material.size = 3;        
+        stopPts.glinstances[0].object.children[0].material = grafar.circleSprite();       
             
         graph.constrain('x, y', function(data, l) {
                 for (var i = 0; i < l; i++) {
