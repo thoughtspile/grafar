@@ -96,24 +96,36 @@
         buses.glinstances[0].object.children[0].material = grafar.circleSprite('orangered');       
         buses.glinstances[0].object.children[0].material.size = 8;        
         buses.constrain('pos', grafar.constant(stopId, 'pos'), {maxlen: 1})
-            .constrain('tripId', function(data, l) {
-                for (var  i = 0; i < l; i++)
-                    data.tripId[i] = i;
-            }, {maxlen: tripData.length, discrete: true})
-            .constrain('x, y: pos, tripId', function(data, l) {
+            .constrain('tripStart, tripCount', function(data, l) {
                 for (var  i = 0; i < l; i++) {
-                    var trip = tripData[data.tripId[i]];
-                    var tripPoint = data.pos[i] % (trip.count * 2) > trip.count
-                        ? data.pos[i] % (trip.count)
-                        : trip.count - data.pos[i] % (trip.count);
-                    var pos = shapeData[trip.start + tripPoint];
-                    data.x[i] = (pos[1] - 45.5) * 30;
-                    data.y[i] = (pos[2] - 9.2) * 30;
+                    data.tripStart[i] = tripData[i].start;
+                    data.tripCount[i] = tripData[i].count;
+                }
+            }, {maxlen: tripData.length, discrete: true}) //tripData.length
+            .constrain('x, y, dir: pos, tripStart, tripCount', function(data, l) {
+                for (var  i = 0; i < l; i++) {
+                    var count = data.tripCount[i];
+                    var start = data.tripStart[i];
+                    var pos = data.pos[i];
+                    
+                    var floor = Math.floor(pos);
+                    var dir = (Math.floor(pos / count) === 0);
+                    var prevPosId = floor % count;
+                    var nextPosId = (floor + 1) % count;
+                    var prevPos = shapeData[start + prevPosId];
+                    var nextPos = shapeData[start + nextPosId];
+                    var frac = floor + 1 - pos;
+                    if (nextPos === 0)
+                        frac = 1;
+                    
+                    data.x[i] = (frac * prevPos[1] + (1 - frac) * nextPos[1] - 45.5) * 30;
+                    data.y[i] = (frac * prevPos[2] + (1 - frac) * nextPos[2] - 9.2) * 30;
                 }
             })
             .refresh();
+        tripData.length = 0;
         function up() {
-            stopId++;
+            stopId += .01;
             buses.constrain('pos', grafar.constant(stopId, 'pos'), {maxlen: 1})
                 .refresh();
             window.requestAnimationFrame(up);
