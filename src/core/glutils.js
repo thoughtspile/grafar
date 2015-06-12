@@ -20,7 +20,7 @@
         DoubleSide = _T.DoubleSide;
 	
     
-    function circleSprite() {
+    function circleSprite(col) {
         var canvas = document.createElement('canvas'),
             context = canvas.getContext('2d'),
             size = 5;
@@ -30,7 +30,7 @@
         
         context.beginPath();
         context.arc(size, size, size, 0, 2 * Math.PI, false);
-        context.fillStyle = 'orange';
+        context.fillStyle = col || 'orange';
         context.fill();
       
         var mat = new THREE.PointCloudMaterial({
