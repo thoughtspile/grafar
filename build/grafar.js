@@ -1571,6 +1571,52 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 		Date.now ||
 		function() { return new Date().getTime(); };
 	
+}(this));(function(global){
+	var grafar = global.grafar;
+    
+    
+    var wrapFn = function(fn) {
+        var nargfn = nListMap(fn.length);
+        var boundfn = function(src, target, len) {
+            nargfn(fn, src, target, len);
+        };
+        return boundfn;
+    };
+        
+    var uniformFn = function(val) {
+        return function(src, target, len) {
+            for (var i = 0; i < len; i++)
+                target[i] = val;
+        };
+    };
+        
+    var nListMap = function(nargs) {
+        var application = '';
+        var getvals = '';//var srcdata = [';
+        for (var i = 0; i < nargs; i++) {
+            //application += 'srcdata[' + i + '][i]';
+            application += 'srcdata_' + i + '[i]';
+            //getvals += 'src[' + i + '].value()';
+            getvals += 'var srcdata_' + i + ' = src[' + i + '].value();';
+            if (i !== nargs - 1) {
+                application += ', ';
+                //getvals += ', ';
+            }
+        }
+        //getvals += '];\n';
+        console.log(getvals + 
+            'for (var i = 0; i < len; i++)\n' + 
+            '  target[i] = fn(' + application + ');');
+        return new Function('fn', 'src', 'target', 'len', 
+            getvals + 
+            'for (var i = 0; i < len; i++)\n' + 
+            '  target[i] = fn(' + application + ');');
+    };
+    
+    
+    grafar.wrapFn = wrapFn;
+    grafar.uniformFn = uniformFn;
+    grafar.nListMap = nListMap;
 }(this));'use strict';
 
 (function(global) {
@@ -1648,12 +1694,18 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 	
 
 	function firstMatch(set, callback) {
-		for (var i = 0; i <= set.length && !callback(set[i]); i++);
-		return set[i];
+		for (var i = 0; i < set.length; i++)
+            if (callback(set[i]))
+                return set[i];
+		return; // undefined
 	}
 
 	function haveCommon(arr1, arr2) {
-		return arr1.some(function(e1) {return arr2.indexOf(e1) !== -1;});
+        for (var i = 0; i < arr1.length; i++)
+            for (var j = 0; j < arr2.length; j++)
+                if (arr1[i] === arr2[j])
+                    return true
+        return false;
 	}
 
 	function intersection(pv, cv, out) {
@@ -1663,11 +1715,12 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 	}
 	
 	function interPower(arr1, arr2) {
-		var pow = 0;
+		var commonCount = 0;
 		for (var i = 0; i < arr1.length; i++)
-			if (arr2.indexOf(arr1[i]) !== -1)
-				pow++;
-		return pow;
+			for (var j = 0; j < arr2.length; j++)
+                if (arr1[i] === arr2[j])
+                    commonCount++;
+		return commonCount;
 	}
 
 	function union(a, b, out) {
@@ -1695,7 +1748,7 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 		return pv;
 	}
 
-	function setMinus(l, r, out) {
+	function setMinus(arrLeft, arrRight, out) {
 		return l.filter(function(el) {return r.indexOf(el) === -1;});
 	}
 	
@@ -1798,18 +1851,7 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 		
 		return NaN;
 	}
-	
-	function constant(valOuter, name) {
-		var val = valOuter;
-		console.log('create', val);
-		return function(data, l, extras) {
-			console.log('call C', val);
-			for (var i = 0; i < l ; i++)
-				data[name][i] = val;
-			extras.continuous = true;
-		};
-	}
-	
+		
 	function ints(m, name) {
 		m = Number(m);
 		return function(data, l, extras) {
@@ -1819,6 +1861,14 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 		};
 	}
 	
+    function constant(val, name) {
+        return function(data, l, extras) {
+			for (var i = 0; i < l; i++)
+				data[name][i] = val;
+			extras.continuous = false;
+		};
+    }
+    
 	function seq(a, b, name, closed, discrete) {
 		a = Number(a);
 		b = Number(b);
@@ -1982,6 +2032,7 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 	
 	_G.constant = constant;
 	_G.ints = ints;
+    _G.constant = constant;
 	_G.seq = seq;
 	_G.logseq = logseq;
 	_G.traceZeroSet = traceZeroSet;
@@ -2457,6 +2508,29 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
         DoubleSide = _T.DoubleSide;
 	
     
+    function circleSprite(col) {
+        var canvas = document.createElement('canvas'),
+            context = canvas.getContext('2d'),
+            size = 5;
+            
+        canvas.width = 2 * size;
+        canvas.height = 2 * size;
+        
+        context.beginPath();
+        context.arc(size, size, size, 0, 2 * Math.PI, false);
+        context.fillStyle = col || 'orange';
+        context.fill();
+      
+        var mat = new THREE.PointCloudMaterial({
+            size: size,
+            transparent: true,
+            sizeAttenuation: false,
+            map: new THREE.Texture(canvas)
+        });
+        mat.map.needsUpdate = true;
+        return mat;
+    };
+    
     function matHelper(type, col) {
         var mat = null;
         if (type === 'point')
@@ -2473,7 +2547,7 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
             mat = new THREE.MeshPhongMaterial({
                 side: DoubleSide,
                 transparent: true,
-                opacity: .7,
+                opacity: .7
                 //depthWrite: false
                 //depthTest: false
             });
@@ -2542,6 +2616,7 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 	_G.InstanceGL = InstanceGL;
 	_G.interleave = interleave;
 	_G.resizeBuffer = resizeBuffer;
+    _G.circleSprite = circleSprite;
 }(this));'use strict';
 	
 (function(global) {
@@ -2919,12 +2994,22 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 	
 	};
     
-	Object.prototype.constrain = function(constraint) {
-		var names = asArray(constraint.what || []),
-			using = asArray(constraint.using || []),
-			as = constraint.as || function() {},
-			maxlen = constraint.maxlen || 40,
-            discrete = constraint.discrete || false;
+	Object.prototype.constrain = function(constraint, fn, opts) {
+        if (typeof constraint === 'string') {
+            opts = opts || {};
+            var split = constraint.split(':'),
+                names = asArray(split[0] || []),
+                using = asArray(split[1] || []),
+                as = fn || function() {},
+                maxlen = opts.maxlen || 40,
+                discrete = opts.discrete || false;
+        } else {
+            var names = asArray(constraint.what || []),
+                using = asArray(constraint.using || []),
+                as = constraint.as || function() {},
+                maxlen = constraint.maxlen || 40,
+                discrete = constraint.discrete || false;
+        }
             
         var sources = this.project(using, true);
         // I only do this shit because project forces product
@@ -3001,7 +3086,7 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
             for (var i = 0; i < names.length; i++) {
                 if (!this.datasets.hasOwnProperty(names[i])) {
                     if (proxy)
-                        this.datasets[using[i]] = new Graph();
+                        this.datasets[names[i]] = new Graph();
                     else
                         throw new Error('cannot select undefined');
                 }
@@ -3017,7 +3102,6 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 			var instance = this.glinstances[i];
 			var tab = this.project(instance.panel._axes, false);
             if (tab.every(function(col) { return col.data.isValid; })) {
-                console.log('othing to see here');
                 return this;
             }
             
@@ -3027,10 +3111,11 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
             
             resizeBuffer(instance.normals, tab[0].data.value().length * 3);
             instance.object.children[2].geometry.computeVertexNormals();
+            instance.normals.needsUpdate = true;
             
             var hasEdges = tab[0].edges.value().length > 0;
             var hasFaces = tab[0].faces.value().length > 0;
-			instance.object.children[0].visible = !(hasEdges || hasFaces);
+			//instance.object.children[0].visible = true; // !(hasEdges || hasFaces);
 			//instance.object.children[1].visible = true;
 			//instance.object.children[2].visible = true;
 		}
@@ -3253,6 +3338,9 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 		var pointLight = new THREE.PointLight(0xFFFFFF);
 		pointLight.position.set( 0, 5, 7 );
 		this.scene.add( pointLight );
+		pointLight = new THREE.PointLight(0xFFFFFF);
+		pointLight.position.set( 0, -5, -7 );
+		this.scene.add( pointLight );
 		
 		this.renderer = new Renderer();
 		this.renderer.antialias = config.antialias;
@@ -3287,70 +3375,58 @@ a+"px",m=b,r=0);return b},update:function(){l=this.end()}}};
 	};
 
 	Panel.prototype.drawAxes = function (len) {
-		if (!isExisty(this.axisObject)) {
-			this.axisObject = new THREE.Object3D();
-						
+		if (!isExisty(this.axisObject)) {				
 			var axisGeometry = new THREE.BufferGeometry();
 			axisGeometry.addAttribute('position', new THREE.BufferAttribute(pool.get(Float32Array, 18), 3));
-			this.axisObject.add(new THREE.Line(
+			this.axisObject = new THREE.Line(
 				axisGeometry, 
 				new THREE.LineBasicMaterial({color: 0x888888}), 
 				THREE.LinePieces
-			));
-			
-			for (var i = 0; i < 3; i++) {
-				var geometry = new THREE.BufferGeometry();
-				geometry.addAttribute('position', new THREE.BufferAttribute(axisGeometry.getAttribute('position').array.subarray(i * 6 + 3, i * 6 + 6), 3));
-				this.axisObject.add(new THREE.PointCloud(geometry, new THREE.PointCloudMaterial()));
-			}
-			
+			);			
 			this.scene.add(this.axisObject);
-		}		
+		}
+		setAxisGeometry(this.axisObject.geometry.getAttribute('position').array, len, this._axes.length);
 		
-		if (isExisty(len))
-			setAxisGeometry(this.axisObject.children[0].geometry.getAttribute('position').array, len);
-		this._axes.forEach(function(axisId, i) {
-			drawTextLabel(this.axisObject.children[i + 1].material, axisId || '');
+        if (!isExisty(this.axisLabels)) {
+			this.axisLabels = new THREE.Object3D();
+			for (var i = 0; i < 3; i++) {
+				var labelPos = new THREE.BufferGeometry();
+				labelPos.addAttribute('position', new THREE.BufferAttribute(this.axisObject.geometry.getAttribute('position').array.subarray(i * 6 + 3, i * 6 + 6), 3));
+				this.axisLabels.add(new THREE.PointCloud(labelPos, new THREE.PointCloudMaterial()));
+			}
+            this.scene.add(this.axisLabels);
+        }
+        this.axisLabels.children.forEach(function(child, i) {
+			drawTextLabel(child.material, this._axes[i] || '');
 		}.bind(this));
 		
 		return this;
 	};
 		
-	Panel.prototype.setAxes = function(axisNames) {
-		axisNames = axisNames.filter(function(n) {
-				return typeof(n) === 'string';
-			})
-			.slice(0, 3);
-		
-		this._axes = [axisNames[1], axisNames[2], axisNames[0]];
+	Panel.prototype.setAxes = function(axisNames) {		
+		this._axes = [axisNames[1], axisNames[2], axisNames[0]].filter(isExisty);
 		if (axisNames.length === 3) {
 			this.controls.noRotate = false;
-			this.controls.noPan = false;
 			this.camera.up.set(0, 1, 0);
 		} else if (axisNames.length === 2) {
 			this.controls.noRotate = true;
-			this.controls.noPan = true;
-			this.camera.position.set(0, 5); // preserve distance or something, maybe smooth rotation
+			this.camera.position.set(0, 0, -5);
 			this.camera.up.set(1, 0, 0);
 		} else {
-			// 1 or >3 axes leads to what?
-		}
-			
+            throw new Error('wrong amount of axes specified');
+		}			
 		this.drawAxes(2);
-		// Object.getOwnPropertyNames(_G.graphs).forEach(function(graphName) {
-			// var graph = _G.graphs[graphName];
-			// if (graph.panel === this)
-				// graph.setPanel(this);
-		// }.bind(this));
 		
 		return this;
 	};
 		
 	
-	function setAxisGeometry(posArray, length) {
+	function setAxisGeometry(posArray, length, dim) {
+        dim = dim || 3;
 		for (var i = 0; i < 3; i++) {
-			posArray[7 * i] = -length;
-			posArray[7 * i + 3] = length;
+            var len = i < dim? length: 0;
+			posArray[7 * i] = -len;
+			posArray[7 * i + 3] = len;
 		}
 		return posArray;
 	}
