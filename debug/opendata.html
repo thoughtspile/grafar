@@ -105,7 +105,7 @@
             }, {maxlen: tripData.length, discrete: true}) //tripData.length
             .constrain('offset', function(data, l) {
                 for (var j = 0; j < l; j++)
-                    data.offset[j] = Math.floor(Math.random() * tripData.length);
+                    data.offset[j] = Math.random() * tripData.length;
             }, {maxlen: 5, discrete: true})
             .constrain('x, y, dir: pos, tripStart, tripCount, offset', function(data, l) {
                 for (var  i = 0; i < l; i++) {
@@ -129,8 +129,9 @@
                 }
             })
             .refresh();
+        var s = Date.now();
         function up() {
-            stopId += .1;
+            stopId = .003 * (Date.now() - s);
             buses.constrain('pos', grafar.constant(stopId, 'pos'), {maxlen: 1})
                 .refresh();
             window.requestAnimationFrame(up);
