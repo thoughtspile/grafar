@@ -125,6 +125,9 @@
                     var start = data.tripStart[i];
                     var tripLen = darr[start + count - 1];
                     var pos = (data.pos[i] + data.offset[i]) % tripLen;
+                    //var back = Math.floor((data.pos[i] + data.offset[i]) / tripLen) % 2 === 1;
+                    //if (back)
+                    //    pos = tripLen - pos;
                     
                     var prevPosId = start;
                     while (prevPosId <= start + count && darr[prevPosId + 1] < pos)
