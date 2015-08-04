@@ -73,6 +73,7 @@
             .bind(cols.map(function(col) {
                 return col.base;
             }));
+            
         var baseEdges = new Reactive([])
             .lift(function(src, targ) {
                 return src[0].struct.map(function(base) {
@@ -80,6 +81,7 @@
                 });
             })
             .bind([targetBase]);
+            
         var targetEdges = new Reactive({
                 array: new Uint32Array(0),
                 length: 0
@@ -88,6 +90,7 @@
                 cartesianGraphProd(arr[0], targ);
             })
             .bind([baseEdges]);
+            
         var targetFaces = new Reactive({
                 array: new Uint32Array(0),
                 length: 0
@@ -96,6 +99,7 @@
                 makeFaces(arr[0], targ);
             })
             .bind([baseEdges]);
+            
         return cols.map(function(col) {
             var unified = Graph.contextify(col, targetBase);
             unified.edges = targetEdges;

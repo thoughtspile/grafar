@@ -38,22 +38,37 @@
         return seq;
     };
         
-    var rprod = function(factors) {
-        return factors.map(function(col) {
-            var unified = Graph.contextify(col, targetBase);
+    var rprod = function(factors) {        
+        var targetBase = new Reactive([])
+            .lift(function(src, targ) {
+                nunion(src, targ);
+                targ.sort(function(a, b) { return a < b; });
+            })
+            .bind(factors.map(function(p) {
+                return p.data.base || new Reactive([]);
+            }));
+            
+        var prod = factors.map(function(col) {
+            if (!col.data.hasOwnProperty('array'))
+                col = new Reactive(new Buffer())
+                    .lift(function(src, buff) {
+                        resizeBuffer(buff, 1);
+                        buff[0] = src[0];
+                    })
+                    .bind([col]);
+            var unified = new Reactive(col.data);
+            unified.base = targetBase;
             return unified;
         });
+        
+        return prod;
     };
         
     var rmap = function(params, fn) {
         var seq = new Reactive(new Buffer())
             .lift(wrapFn(fn))
             .bind(params);
-        seq.data.base = new Reactive([])
-            .lift(nunion)
-            .bind(params.map(function(p) {
-                return p.data.base;
-            }));
+        seq.data.base = params[0].base;
         return seq;
     };
     
