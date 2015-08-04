@@ -3,7 +3,11 @@
 	var Reactive = grafar.Reactive;
     var Buffer = grafar.Buffer;
     var resizeBuffer = grafar.resizeBuffer;
+    var wrapFn = grafar.wrapFn;
+    var nunion = grafar.nunion;
     
+    
+    var counter = 0;
     
     var rnum = function(value) {
         return new Reactive(Number(value));
@@ -17,7 +21,7 @@
         if (!Reactive.isReactive(n))
             n = rnum(n);
              
-        return new Reactive(new Buffer())
+        var seq = new Reactive(new Buffer())
             .lift(function(param, buff) {
                 var a = param[0];
                 var b = param[1];
@@ -30,31 +34,32 @@
                     arr[i] = a + i * step;
             })
             .bind([a, b, n]);
+        seq.data.base = new Reactive([counter++]);
+        return seq;
     };
         
     var rprod = function(factors) {
-        return factors;
+        return factors.map(function(col) {
+            var unified = Graph.contextify(col, targetBase);
+            return unified;
+        });
     };
         
     var rmap = function(params, fn) {
-        if (params.length > 1)
-            throw new Error('fuckup');
-            
-        return new Reactive(new Buffer())
-            .lift(function(param, buff) {
-                var inputBuff = param[0];
-                var n = inputBuff.length;
-                resizeBuffer(buff, n);
-                var arrFrom = inputBuff.array;
-                var arrTo = buff.array;
-                for (var i = 0; i < n; i++)
-                    arrTo[i] = fn(arrFrom[i]);
-            })
+        var seq = new Reactive(new Buffer())
+            .lift(wrapFn(fn))
             .bind(params);
+        seq.data.base = new Reactive([])
+            .lift(nunion)
+            .bind(params.map(function(p) {
+                return p.data.base;
+            }));
+        return seq;
     };
     
     
     grafar.rseq = rseq;
+    grafar.rprod = rprod;
     grafar.rnum = rnum;
     grafar.rmap = rmap;
 }(this));

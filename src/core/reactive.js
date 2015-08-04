@@ -22,6 +22,17 @@
 		return obj instanceof Reactive;
 	};
     
+    Reactive.flatten = function(obj) {
+        if (Reactive.isReactive(obj))
+            obj = obj.value();
+        if (typeof obj !== 'object')
+            return obj;
+        var snapshot = new obj.constructor();
+        for (var key in obj)
+            snapshot[key] = Reactive.flatten(obj[key]);
+        return snapshot;
+    };
+    
     
     Reactive.prototype.push = function(val) {
         this.data = val;

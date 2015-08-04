@@ -45,19 +45,20 @@
 	<script type="text/javascript">
         var upper = new grafar.Reactive(1);
         var nseg = new grafar.Reactive(10);
+        
         var x = grafar.rseq(0, upper, nseg);
-        console.log(x.value());
+        var p = grafar.rseq(10, 10, nseg);
         var y = grafar.rmap([x], function(x) { return 2 * x + 1; });
-        console.log(y.value());
+        var z = grafar.rmap([x, y], function(x, y) { return x + y; });
+        var w = grafar.rmap([x, p], function(x, p) { return x * p; });
         
-        var f = function(x, y) { return x + y; };
-        var w = grafar.wrapFn(f);
-        var rw = new grafar.Reactive(new grafar.Buffer())
-            .lift(w)
-            .bind([x, y]);
-        console.log(rw.value());
-        
-        
+        var logAll = function() {
+            console.log(x.value());
+            console.log(y.value());
+            console.log(z.value());
+            console.log(w.value());
+        };
+        logAll();
 	</script>
 
 	</body>
