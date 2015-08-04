@@ -31,7 +31,11 @@
             })
             .bind([a, b, n]);
     };
-            
+        
+    var rprod = function(factors) {
+        return factors;
+    };
+        
     var rmap = function(params, fn) {
         if (params.length > 1)
             throw new Error('fuckup');

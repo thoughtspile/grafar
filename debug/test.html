@@ -49,8 +49,13 @@
         console.log(x.value());
         var y = grafar.rmap([x], function(x) { return 2 * x + 1; });
         console.log(y.value());
-        //var p = grafar.rnum(0);
-        //var y = grafar.rmap([x, p], function(x, p) { return x + p; });
+        
+        var f = function(x, y) { return x + y; };
+        var w = grafar.wrapFn(f);
+        var rw = new grafar.Reactive(new grafar.Buffer())
+            .lift(w)
+            .bind([x, y]);
+        console.log(rw.value());
         
         
 	</script>
