@@ -1,0 +1,59 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<title>testbox</title>
+	
+	<link rel="stylesheet" type="text/css" href="stylesheets/testbox_style.css" media="screen" />
+	
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+</head>
+
+<body>
+	<div id = "render">
+	
+	<script src="../libs/three.min.js"></script>
+	<script src="../libs/stats.min.js"></script>
+	<script src="../libs/Detector.js"></script>
+	<script src="../libs/OrbitControls.js"></script>
+	<script src="../libs/i-color.min.js"></script>    
+	<script src="../src/grafar.js"></script>
+	<script src="../src/core/fn_utils.js"></script>
+	<script src="../src/math/polyfills.js"></script>
+	<script src="../src/math/misc.js"></script>
+	<script src="../src/core/pool.js"></script>    
+	<script src="../src/math/set.js"></script>
+	<script src="../src/math/vector.js"></script>
+	<script src="../src/math/numerics.js"></script>
+	<script src="../src/math/array_utils.js"></script>
+	<script src="../src/core/style.js"></script>
+	<script src="../src/math/graphdata.js"></script>
+	<script src="../src/core/parser_alt.js"></script>    
+	<script src="../src/core/reactive.js"></script>
+	<script src="../src/core/glutils.js"></script>
+	<script src="../src/core/reactive_blocks.js"></script>
+	<script src="../src/core/reactive_topo.js"></script>
+	<script src="../src/core/reactive_graph.js"></script>
+	<script src="../src/core/reactive_object.js"></script>    
+	<script src="../src/core/parser_.js"></script>
+	<script src="../src/core/panel.js"></script>    
+	<script src="../src/legacy/observer.js"></script>
+	<script src="../src/legacy/animation.js"></script>
+	<script src="../src/legacy/grafar_samples.js"></script>
+	<script src="../src/legacy/grafar_ui.js"></script>
+    
+	<script type="text/javascript">
+        var upper = new grafar.Reactive(1);
+        var nseg = new grafar.Reactive(10);
+        var x = grafar.rseq(0, upper, nseg);
+        console.log(x.value());
+        var y = grafar.rmap([x], function(x) { return 2 * x + 1; });
+        console.log(y.value());
+        //var p = grafar.rnum(0);
+        //var y = grafar.rmap([x, p], function(x, p) { return x + p; });
+        
+        
+	</script>
+
+	</body>
+</html>

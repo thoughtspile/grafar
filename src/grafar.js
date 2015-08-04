@@ -1,8 +1,8 @@
 'use strict';
 
 (function(global) {
-	var _G = (global.grafar = {
-            version: '4.01r'
+	var _G = (global.grafar = function(value) {
+            return new global.grafar.Reactive(function() { return value; });
         }),
 		panels = [];
 				
@@ -58,6 +58,7 @@
 	
 	// export
 	
+    _G.version = '4.02a';
 	_G.config = config;
 	_G.panels = panels;
 	_G.update = update;

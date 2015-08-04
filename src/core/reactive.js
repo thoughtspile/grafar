@@ -23,7 +23,9 @@
 	};
     
     
-    Reactive.prototype.push = function() {
+    Reactive.prototype.push = function(val) {
+        this.data = val;
+        this.invalidate();
         return this;
     };
     
