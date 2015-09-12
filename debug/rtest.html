@@ -14,12 +14,48 @@
 	<script src="../src/math/misc.js"></script>
 	<script src="../src/core/reactive.js"></script>
     
-	<script type="text/javascript">        
-        var runTests = function() {
-            console.log('start tests');
-            console.log('end tests');
-        };
-        runTests();
+	<script>
+        console.log('start tests');
+        
+        // basic tests
+        var x = new grafar.Reactive();
+        console.assert(x, 'Constructor worked');
+        console.assert(x.isValid() === false, 'Invalid state');
+        x.validate();
+        console.assert(x.isValid() === true, 'Validation worked');
+        
+        // immutable tests
+        x.lift(function() { return 5; });
+        console.assert(x.isValid() === false, 'Lift invalidates');
+        console.assert(x.value() === 5, 'Lifted function works');
+        x.lift(function() { return 'a'; });
+        console.assert(x.isValid() === false, 'Re-lift invalidates');
+        console.assert(x.value() === 'a', 'Re-lifted function works');
+        
+        // mutable tests
+        var data = { item: 4 };
+        var y = new grafar.Reactive(data);
+        console.assert(y.data === data, 'Data stored by reference');
+        console.assert(y.value() === data, 'Id function has no effect');
+        y.lift(function(dummy, data) { data.item = 89; });
+        console.assert(y.value().item === 89, 'Lifted function mutates data');
+        console.assert(data.item === 89, 'Origin mutates by ref');
+        y.lift(function(dummy, data) { return { item: 34} });
+        console.assert(
+            data.item === 89 && y.value() !== data, 
+            'Return replaces object');
+        
+        // argument tests
+        var c = new grafar.Reactive()
+            .lift(function(arr) { return arr[0] * arr[1]; })
+            .bind([new grafar.Reactive(5), new grafar.Reactive(10)]);
+        console.assert(c.value() === 50, 'Args bound');
+        c.bind([new grafar.Reactive(-1), new grafar.Reactive(4)]);
+        console.assert(c.value() === -4, 'Args rebound');
+        c.unbind();
+        console.assert(isNaN(c.value()), 'Args unbound');
+                
+        console.log('end tests');
 	</script>
 
 	</body>
