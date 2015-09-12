@@ -20,7 +20,6 @@
         
         return new Function('fn', 'src', 'target',
             'var len = src[0].length;\n' +
-            'grafar.resizeBuffer(target, len);\n' + // !!!!
             'for (var i = 0; i < len; i++)\n' + 
             '  target.array[i] = fn(' + application + ');');
     };

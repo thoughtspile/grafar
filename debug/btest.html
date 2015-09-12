@@ -1,0 +1,42 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<title>Grafar.js Buffer test suite</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+
+<body>
+	<script src="../src/grafar.js"></script>
+	<script src="../src/core/fn_utils.js"></script>
+	<script src="../src/core/buffer.js"></script>
+    
+	<script>
+        console.log('start tests');
+        
+        // basics
+        var x = new grafar.Buffer2();
+        console.assert(x.length === 0, 'Len init');
+        console.assert(x.id === 0, 'Has id');
+        console.assert(new grafar.Buffer2().id > x.id, 'New id created');
+        console.assert(x.array instanceof Float32Array && x.array.length === 0, 
+            'Data is an empty F32A');
+        x.resize(10);
+        console.assert(x.array instanceof Float32Array && x.array.length === 10, 
+            'Resized');
+        console.assert(x.array.length === x.length, 'Length in sync');
+            
+        // map
+        var y = new grafar.Buffer2().resize(10);
+        grafar.Buffer2.map([x], y, function(x) {return Math.random(); });
+        console.assert(y.array[3] !== 0, 'Random map ');
+        y = grafar.Buffer2.map([x], y, function(x) {return Math.random(); });
+        console.assert(y instanceof grafar.Buffer2, 'Map is chainable');
+        
+        //times
+                
+        
+        console.log('end tests');
+	</script>
+</body>
+</html>

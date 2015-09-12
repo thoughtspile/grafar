@@ -15,7 +15,7 @@
 	Reactive.isReactive = function(obj) {
 		return obj instanceof Reactive;
 	};
-        
+    
     
     Reactive.prototype.isValid = function() {
         return this._isValid && this.sources.reduce(function(state, src) {
