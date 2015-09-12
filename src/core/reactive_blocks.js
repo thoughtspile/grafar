@@ -1,8 +1,13 @@
 (function(global){
+    // from grafar.js
     var grafar = global.grafar;
+    // from reactive.js
 	var Reactive = grafar.Reactive;
+    // array_utils.js
     var Buffer = grafar.Buffer;
+    // glutils.js
     var resizeBuffer = grafar.resizeBuffer;
+    // fn_utils
     var wrapFn = grafar.wrapFn;
     var nunion = grafar.nunion;
     

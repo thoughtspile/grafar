@@ -3,6 +3,7 @@
 (function(global) {
 	var _G = global.grafar;
 	
+    var counter = 0;
 			
 	function makeID(obj) {
 		while (true) {

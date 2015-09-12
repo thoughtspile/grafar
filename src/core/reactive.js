@@ -1,45 +1,28 @@
 (function(global){
+    // from grafar.js
     var grafar = global.grafar;
+    // from misc.js
     var isExisty = grafar.isExisty;
-    var setPop = grafar.setpop;
-    var setPush = grafar.setpush;
-    var union = grafar.union;
-    var repeatArray = grafar.repeatArray;
-    var stretchArray = grafar.repeatPoints;
-    var blockRepeat = grafar.blockRepeat;
     
    
 	var Reactive = function(data) {
-        this.sources = [];
-        this.targets = [];
-        
+        this.sources = [];        
 		this.data = isExisty(data)? data: {};
 		this.fn = function() {};
-		this.isValid = false;
+		this._isValid = false;
 	};
 	
 	Reactive.isReactive = function(obj) {
 		return obj instanceof Reactive;
 	};
+        
     
-    Reactive.flatten = function(obj) {
-        if (Reactive.isReactive(obj))
-            obj = obj.value();
-        if (typeof obj !== 'object')
-            return obj;
-        var snapshot = new obj.constructor();
-        for (var key in obj)
-            snapshot[key] = Reactive.flatten(obj[key]);
-        return snapshot;
+    Reactive.prototype.isValid = function() {
+        return this._isValid && this.sources.reduce(function(state, src) {
+            return state && src.isValid();
+        }, true);
     };
-    
-    
-    Reactive.prototype.push = function(val) {
-        this.data = val;
-        this.invalidate();
-        return this;
-    };
-    
+
     Reactive.prototype.lift = function(fn) {
         this.fn = fn;
         this.invalidate();
@@ -48,39 +31,30 @@
     
 	Reactive.prototype.bind = function(newArgs) {        
         this.unbind();
-        for (var i = 0; i < newArgs.length; i++)
-            setPush(newArgs[i].targets, this);
         this.sources = newArgs.slice();
         return this;
     };
     
     Reactive.prototype.unbind = function() {
-        for (var i = 0; i < this.sources.length; i++)
-            setPop(this.sources[i].targets, this);      
         this.sources.length = 0;
         this.invalidate();
         return this;
     };
-            	    	
+    
 	Reactive.prototype.validate = function() {
-		if (!this.isValid) {
-            var sourceData = [];
-            for (var i = 0; i < this.sources.length; i++) {
-                sourceData[i] = this.sources[i].value();
-            }
-            var res = this.fn(sourceData, this.data);
+		if (!this.isValid()) {
+            var res = this.fn(this.sources.map(function(src) {
+                return src.value();
+            }), this.data);
             if (isExisty(res))
                 this.data = res;
-			this.isValid = true;
+			this._isValid = true;
 		}
 		return this;
 	};
 	
 	Reactive.prototype.invalidate = function() {
-		this.isValid = false;
-        for (var i = 0; i < this.targets.length; i++)
-            if (this.targets[i].isValid)
-                this.targets[i].invalidate();
+		this._isValid = false;
 		return this;
 	};
     
