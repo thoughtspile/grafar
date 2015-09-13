@@ -5,13 +5,12 @@
     var wrapFn = grafar.wrapFn;
     // array_utils
     var blockRepeat = grafar.blockRepeat;
+    // set
+    var union = grafar.union;
 
-
-    var counter = 0;
 
     function Buffer() {
-        this.id = counter;
-        counter++;
+        this.sources = [];
         this.array = new Float32Array(0);
         this.length = 0;
     }
@@ -23,19 +22,18 @@
 
     // olny works for disjoint sum
     Buffer.prod = function(factors) {
-        var targetBase = factors.slice();
-        var targetIds = targetBase.map(function(col) { return col.id; });
-        var totalLength = targetBase.reduce(function(pv, col) {
+        var targetSpace = new Buffer().depend(factors).getSpace();
+        var totalLength = targetSpace.reduce(function(pv, col) {
             return pv * col.length;
         }, 1);
         return factors.map(function(col) {
-            var out = new Buffer().resize(totalLength);
+            var out = new Buffer().resize(totalLength).depend(factors);
             var blockSize = 1;
             var len = col.length;
             var res = out.array;
             res.set(col.array);
-            targetBase.forEach(function(targ) {
-                if (col.id !== targ.id) {
+            targetSpace.forEach(function(targ) {
+                if (col.getSpace().indexOf(targ) === -1) {
                     blockRepeat(
                         res,
                         blockSize,
@@ -51,6 +49,21 @@
         });
     };
 
+    Buffer.prototype.getSpace = function() {
+        if (this.sources.length === 0)
+            return [this];
+        else
+            return this.sources.map(function(src) {
+                return src.getSpace();
+            }).reduce(function(pv, spc) {
+                return union(pv, spc);
+            }, []);
+    };
+
+    Buffer.prototype.depend = function(param) {
+        this.sources = param.slice();
+        return this;
+    };
 
     Buffer.prototype.resize = function (size) {
         var type = this.array.constructor;

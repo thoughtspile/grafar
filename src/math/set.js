@@ -2,7 +2,7 @@
 
 (function(global) {
 	var _G = global.grafar;
-	
+
 
 	function firstMatch(set, callback) {
 		for (var i = 0; i < set.length; i++)
@@ -24,7 +24,7 @@
 			return cv.indexOf(e) !== -1;
 		});
 	}
-	
+
 	function interPower(arr1, arr2) {
 		var commonCount = 0;
 		for (var i = 0; i < arr1.length; i++)
@@ -42,7 +42,7 @@
         b.reduce(setpush, out);
 		return out;
 	}
-    
+
     function nunion(sets, out) {
         out = out || [];
         if (sets.indexOf(out) === -1)
@@ -54,7 +54,7 @@
     };
 
 	function unique(pv, cv) {
-		if (pv.indexOf(cv) === -1) 
+		if (pv.indexOf(cv) === -1)
 			pv.push(cv);
 		return pv;
 	}
@@ -62,20 +62,20 @@
 	function setMinus(arrLeft, arrRight, out) {
 		return l.filter(function(el) {return r.indexOf(el) === -1;});
 	}
-	
+
 	function setpush(arr, el) {
 		if (arr.indexOf(el) === -1)
 			arr.push(el);
 		return arr;
 	}
-	
+
 	function setpop(arr, el) {
 		var i = arr.indexOf(el);
 		if (el !== -1)
 			arr.splice(i, 1);
 		return arr;
 	}
-	
+
 	
 	_G.firstMatch = firstMatch;
 	_G.interPower = interPower;

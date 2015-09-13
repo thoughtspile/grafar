@@ -9,6 +9,7 @@
 <body>
 	<script src="../src/grafar.js"></script>
 	<script src="../src/math/array_utils.js"></script>
+	<script src="../src/math/set.js"></script>
 	<script src="../src/core/fn_utils.js"></script>
 	<script src="../src/core/buffer.js"></script>
 
@@ -33,8 +34,7 @@
         // basics
         var x = new grafar.Buffer2();
         console.assert(x.length === 0, 'Len init');
-        console.assert(x.id === 0, 'Has id');
-        console.assert(new grafar.Buffer2().id > x.id, 'New id created');
+        console.assert(Array.isArray(x.sources) && x.sources.length === 0, 'Has id');
         console.assert(x.array instanceof Float32Array && x.array.length === 0,
             'Data is an empty F32A');
         x.resize(10);
@@ -81,7 +81,29 @@
 				return d === src[2].array[Math.floor(i / (l[0] * l[1]))];
 			}),	'third is stretched');
 
-		// deep 2-prod
+		// depend
+		var l = 5;
+		var src = tstBuff(l);
+		var dep = [tstBuff(l), tstBuff(l)];
+		dep[0].depend([src]);
+		dep[1].depend([src]);
+		console.assert(
+				dep[1].sources.length === 1 &&
+				dep[1].sources[0] === src &&
+				dep[0].sources.length === 1 &&
+				dep[0].sources[0] === src,
+			'Proper sources matched');
+
+		// deep prod 1->2
+		var t = grafar.Buffer2.prod(dep);
+		console.assert(t[0].length === l && t[1].length === l, 'length not changed')
+		console.assert(t[0].array.every(function(d, i) {
+				return d === dep[0].array[i];
+			}),	'first is id');
+		console.assert(t[1].array.every(function(d, i) {
+				return d === dep[1].array[i];
+			}),	'second is id');
+
 
         console.log('end tests');
 	</script>
