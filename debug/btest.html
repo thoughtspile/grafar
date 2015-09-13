@@ -96,7 +96,7 @@
 
 		// deep prod 1->2
 		var t = grafar.Buffer2.prod(dep);
-		console.assert(t[0].length === l && t[1].length === l, 'length not changed')
+		console.assert(t[0].length === l && t[1].length === l, 'length not changed');
 		console.assert(t[0].array.every(function(d, i) {
 				return d === dep[0].array[i];
 			}),	'first is id');
@@ -104,6 +104,15 @@
 				return d === dep[1].array[i];
 			}),	'second is id');
 
+		// deep prod 3->2
+		// beware of order
+		var l = [2, 2, 2];
+		var p = l.map(tstBuff);
+		var q1 = tstBuff(l[0] * l[1]).depend([p[0], p[1]]);
+		var q2 = tstBuff(l[1] * l[2]).depend([p[2], p[0]]);
+		var qpr = grafar.Buffer2.prod([q1, q2]);
+		// how the fuck would i unit-test this?
+		console.log(qpr);
 
         console.log('end tests');
 	</script>
