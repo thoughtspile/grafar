@@ -13,6 +13,21 @@
 	<script src="../src/core/buffer.js"></script>
 
 	<script>
+		var tstarr = (function() {
+			var c = 0;
+			return function(n) {
+				var arr = [];
+				for (var i = 0; i < n; i++)
+					arr[i] = c++;
+				return arr;
+			};
+		}());
+		var tstBuff = function(l) {
+			var buff = new grafar.Buffer2().resize(l);
+	        buff.array.set(tstarr(l));
+			return buff;
+		};
+
         console.log('start tests');
 
         // basics
@@ -34,13 +49,39 @@
         y = grafar.Buffer2.map([x], y, function(x) {return Math.random(); });
         console.assert(y instanceof grafar.Buffer2, 'Map is chainable');
 
-        //times
-		var x = new grafar.Buffer2().resize(3);
-		var y = new grafar.Buffer2().resize(4);
-        x.array.set([1, 2, 3]);
-        y.array.set([10, 11, 12, 13]);
-		var xy = grafar.Buffer2.prod([x, y]);
-		console.log(xy);
+        // 2-prod
+		var l = [3, 4];
+		var src = l.map(tstBuff);
+		var xy = grafar.Buffer2.prod(src);
+		console.assert(Array.isArray(xy) && xy.length === l.length, 'prod is array')
+		console.assert(xy.every(function(buf) {
+				return buf.length === l[0] * l[1];
+			}),	'len is times');
+		console.assert(xy[0].array.every(function(d, i) {
+				return d === src[0].array[Math.floor(i % l[0])];
+			}),	'first is repeated');
+		console.assert(xy[1].array.every(function(d, i) {
+				return d === src[1].array[Math.floor(i / l[0])];
+			}),	'second is stretched');
+
+		// 3-prod
+		var l = [13, 4, 2];
+		var src = l.map(tstBuff);
+		var xyz = grafar.Buffer2.prod(src);
+		console.assert(xyz.every(function(buf) {
+				return buf.length === l[0] * l[1] * l[2];
+			}), 'len is times');
+		console.assert(xyz[0].array.every(function(d, i) {
+				return d === src[0].array[i % l[0]];
+			}),	'first is repeated');
+		console.assert(xyz[1].array.every(function(d, i) {
+				return d === src[1].array[Math.floor(i / l[0]) % l[1]];
+			}),	'second is stretched + repeated');
+		console.assert(xyz[2].array.every(function(d, i) {
+				return d === src[2].array[Math.floor(i / (l[0] * l[1]))];
+			}),	'third is stretched');
+
+		// deep 2-prod
 
         console.log('end tests');
 	</script>
