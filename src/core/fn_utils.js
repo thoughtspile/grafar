@@ -19,8 +19,8 @@
         }
 
         return new Function('fn', 'src', 'target',
-            'var len = src[0].length;\n' +
-            'for (var i = 0; i < len; i++)\n' + 
+            'var len = (src[0] || target).length;\n' +
+            'for (var i = 0; i < len; i++)\n' +
             '  target.array[i] = fn(' + application + ');');
     };
 

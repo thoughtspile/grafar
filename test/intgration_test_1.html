@@ -25,28 +25,26 @@
 	<script src="../src/core/non_reactive_graph_stub.js"></script>
 
 	<script>
-		var tstarr = (function() {
-			var c = 0;
-			return function(n) {
-				var arr = [];
-				for (var i = 0; i < n; i++)
-					arr[i] = Math.random();
-				return arr;
-			};
-		}());
 		var tstBuff = function(l) {
-			var buff = new grafar.Buffer2().resize(l);
-	        buff.array.set(tstarr(l));
-			return buff;
+			return grafar.Buffer2.map(
+                [],
+                new grafar.Buffer2().resize(l),
+                function() { return 2 * Math.random() - 1; }
+            );
 		};
 
-        var p = new grafar.Panel(document.getElementById('d'));
-		var l = [13, 4, 2];
+        var p = grafar.panel('d');
+		var l = [130, 140];
 		var src = l.map(tstBuff);
-		var xyz = grafar.Buffer2.prod(src);
+		var xy = grafar.Buffer2.prod(src);
+        var z = new grafar.Buffer2().resize(l[0] * l[1]);
+        grafar.Buffer2.map(xy, z, function(x, y) {
+            return Math.sin(x) + Math.cos(y);
+        });
 
         console.log('start tests');
-        grafar.display(p, xyz);
+
+        grafar.display(p, xy.concat(z));
 
         console.log('end tests');
 	</script>

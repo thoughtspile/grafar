@@ -167,5 +167,13 @@
 	}
 
 
+	function panelWrapper(container, opts) {
+		if (typeof container === 'string')
+			container = document.getElementById(container);
+		return new Panel(container, opts);
+	}
+
+
 	_G.Panel = Panel;
+	_G.panel = panelWrapper;
 }(this));
