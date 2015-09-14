@@ -1,0 +1,54 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<title>Grafar.js Buffer test suite</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+
+<body>
+    <div id = 'd' style='width:300px; height:300px;'></div>
+    <script src="../libs/three.min.js"></script>
+    <script src="../libs/OrbitControls.js"></script>
+    <script src="../libs/Detector.js"></script>
+
+	<script src="../src/grafar.js"></script>
+	<script src="../src/math/array_utils.js"></script>
+	<script src="../src/math/set.js"></script>
+	<script src="../src/core/fn_utils.js"></script>
+	<script src="../src/core/buffer.js"></script>
+
+    <script src="../src/math/misc.js"></script>
+	<script src="../src/core/pool.js"></script>
+    <script src="../src/core/panel.js"></script>
+	<script src="../src/core/glutils.js"></script>
+	<script src="../src/core/non_reactive_graph_stub.js"></script>
+
+	<script>
+		var tstarr = (function() {
+			var c = 0;
+			return function(n) {
+				var arr = [];
+				for (var i = 0; i < n; i++)
+					arr[i] = Math.random();
+				return arr;
+			};
+		}());
+		var tstBuff = function(l) {
+			var buff = new grafar.Buffer2().resize(l);
+	        buff.array.set(tstarr(l));
+			return buff;
+		};
+
+        var p = new grafar.Panel(document.getElementById('d'));
+		var l = [13, 4, 2];
+		var src = l.map(tstBuff);
+		var xyz = grafar.Buffer2.prod(src);
+
+        console.log('start tests');
+        grafar.display(p, xyz);
+
+        console.log('end tests');
+	</script>
+</body>
+</html>

@@ -2,14 +2,10 @@
 
 (function(global) {
 	var _G = global.grafar,
-		pool = _G.pool,
-        isExisty = _G.isExisty,
         asArray = _G.asArray,
-        nunion = _G.nunion,
         baseTranslate = _G.baseTranslate,
         pathGraph = _G.pathGraph,
         emptyGraph = _G.emptyGraph,
-        cartesianGraphProd = _G.cartesianGraphProd,
 
         Graph = _G.GraphR,
         Reactive = _G.Reactive,

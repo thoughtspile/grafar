@@ -3,14 +3,11 @@
 (function(global) {
 	var _G = global.grafar,
 		Detector = global.Detector,
-		pool = _G.pool,
 		THREE = global.THREE,
 		Stats = global.Stats,
 		config = _G.config,
-		makeID = _G.makeID,
-		Observable = _G.Observable,
 		isExisty = _G.isExisty;
-	
+
 	var panels = _G.panels,
 		renderMode = Detector.webgl? 'webgl': Detector.canvas? 'canvas': 'none',
 		Renderer = {
@@ -18,11 +15,12 @@
 			canvas: THREE.CanvasRenderer,
 			none: Error.bind(null, 'no 3D support')
 		}[renderMode];
-			
-	function Panel(container, opts) {	
-		opts = opts || {};		
+
+
+	function Panel(container, opts) {
+		opts = opts || {};
 		panels.push(this);
-		
+
 		container = container || config.container;
 		var containerStyle = window.getComputedStyle(container),
 			bgcolor = containerStyle.backgroundColor,
@@ -31,7 +29,7 @@
 
 		this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 500);
 		this.camera.position.set(-4, 4, 5);
-		
+
 		this.scene = new THREE.Scene();
 		var pointLight = new THREE.PointLight(0xFFFFFF);
 		pointLight.position.set( 0, 5, 7 );
@@ -39,18 +37,18 @@
 		pointLight = new THREE.PointLight(0xFFFFFF);
 		pointLight.position.set( 0, -5, -7 );
 		this.scene.add( pointLight );
-		
+
 		this.renderer = new Renderer();
 		this.renderer.antialias = config.antialias;
 		this.renderer.setSize(width, height);
 		this.renderer.setClearColor(bgcolor, 1);
-		
+
 		this.controls = new THREE.OrbitControls(this.camera, container);
-		
+
 		this.setAxes(config.axes);
-		
+
 		this.setContainer(container);
-		
+
 		if (config.debug) {
 			this.stats = new Stats();
 			this.stats.domElement.style.position = 'absolute';
@@ -60,12 +58,12 @@
 			this.stats = {update: function() {}};
 		}
 	};
-	
+
 	Panel.prototype.setContainer = function(container) {
 		container.appendChild(this.renderer.domElement);
 		return this;
 	};
-	
+
 	Panel.prototype.update = function() {
 		this.controls.update();
 		this.renderer.render(this.scene, this.camera);
@@ -73,18 +71,18 @@
 	};
 
 	Panel.prototype.drawAxes = function (len) {
-		if (!isExisty(this.axisObject)) {				
+		if (!isExisty(this.axisObject)) {
 			var axisGeometry = new THREE.BufferGeometry();
-			axisGeometry.addAttribute('position', new THREE.BufferAttribute(pool.get(Float32Array, 18), 3));
+			axisGeometry.addAttribute('position', new THREE.BufferAttribute(new Float32Array(18), 3));
 			this.axisObject = new THREE.Line(
-				axisGeometry, 
-				new THREE.LineBasicMaterial({color: 0x888888}), 
+				axisGeometry,
+				new THREE.LineBasicMaterial({color: 0x888888}),
 				THREE.LinePieces
-			);			
+			);
 			this.scene.add(this.axisObject);
 		}
 		setAxisGeometry(this.axisObject.geometry.getAttribute('position').array, len, this._axes.length);
-		
+
         if (!isExisty(this.axisLabels)) {
 			this.axisLabels = new THREE.Object3D();
 			for (var i = 0; i < 3; i++) {
@@ -97,11 +95,11 @@
         this.axisLabels.children.forEach(function(child, i) {
 			drawTextLabel(child.material, this._axes[i] || '');
 		}.bind(this));
-		
+
 		return this;
 	};
-		
-	Panel.prototype.setAxes = function(axisNames) {		
+
+	Panel.prototype.setAxes = function(axisNames) {
 		this._axes = [axisNames[1], axisNames[2], axisNames[0]].filter(isExisty);
 		if (axisNames.length === 3) {
 			this.controls.noRotate = false;
@@ -112,13 +110,13 @@
 			this.camera.up.set(1, 0, 0);
 		} else {
             throw new Error('wrong amount of axes specified');
-		}			
+		}
 		this.drawAxes(2);
-		
+
 		return this;
 	};
-		
-	
+
+
 	function setAxisGeometry(posArray, length, dim) {
         dim = dim || 3;
 		for (var i = 0; i < 3; i++) {
@@ -128,46 +126,46 @@
 		}
 		return posArray;
 	}
-	
+
 	function drawTextLabel(mat, str) {
 		var memo = {},
 			fontSizePx = 21,
 			baselineOffsetPx = 0.15 * fontSizePx;
-		
+
 		drawTextLabel = function(mat, str) {
 			if (!memo.hasOwnProperty(str)) {
 				var canvas = document.createElement('canvas'),
 					context = canvas.getContext('2d');
-				
+
 				context.font = 'Lighter ' + fontSizePx + 'px Helvetica';
-				
+
 				var computedSize = Math.ceil(Math.max(2 * (fontSizePx + baselineOffsetPx), context.measureText(str).width));
 				canvas.width = computedSize;
 				canvas.height = computedSize;
-				
+
 				context.font = 'Lighter ' + fontSizePx + 'px Helvetica';
 				context.fillStyle = '#444444';
 				context.textAlign = 'center';
 				context.fillText(str, Math.floor(computedSize / 2), Math.ceil(computedSize / 2) - baselineOffsetPx);
-				 
+
 				memo[str] = {
 					size: computedSize, /*config.labelSize / fontSizePx * */
 					map: new THREE.Texture(canvas)
 				};
 			}
-			 
-			var memoEntry = memo[str]; 
+
+			var memoEntry = memo[str];
 			mat.size = memoEntry.size;
 			mat.transparent = true;
 			mat.sizeAttenuation = false;
 			mat.map = memoEntry.map.clone();
 			mat.map.needsUpdate = true;
-			
+
 			return mat;
 		};
 		return drawTextLabel(mat, str);
 	}
-	
-	
+
+
 	_G.Panel = Panel;
 }(this));
