@@ -2,7 +2,7 @@
 
 (function(global) {
 	var _G = global.grafar;
-    
+
 
 	function arraySum(a, b, out) {
 		var l = a.length;
@@ -15,7 +15,7 @@
 		for (var i = 0; i < l; i++)
 			out[i] = n * b[i];
 	}
-    
+
 	function repeatArray(arr, len, times) {
 		var buff = arr.subarray(0, len),
 			newlen = times * len;
@@ -32,7 +32,7 @@
 		}
 		return arr;
 	}
-	
+
     function blockRepeat(source, blockSize, blockCount, repCount, target) {
         if (blockCount > 50) {
             for (var i = blockCount - 1; i >= 0; i--) {
@@ -63,25 +63,26 @@
             }
         }
     };
-    
+
 	function incArray (arr, by) {
 		for (var i = 0; i < arr.length; i++)
 			arr[i] += by;
 		return arr;
 	}
-	
+
 	function timesArray (n, arr) {
 		for (var i = 0; i < arr.length; i++)
 			arr[i] *= n;
 		return arr;
 	}
-    
-    function Buffer() {
-        this.array = new Float32Array(0);
-        this.length = 0;
+
+    function Buffer(toWrap) {
+        toWrap = toWrap || new Float32Array(0);
+        this.array = toWrap;
+        this.length = toWrap.length;
     }
-    
-    
+
+
     _G.Buffer = Buffer;
 	_G.arraySum = arraySum;
 	_G.arrayTimes = arrayTimes;

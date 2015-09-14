@@ -11,10 +11,10 @@
 
     var c = 0;
 
-    function Buffer() {
+    function Buffer(type) {
         this.sources = [];
         this.id = c++;
-        this.array = new Float32Array(0);
+        this.array = new (type || Float32Array)(0);
         this.length = 0;
     }
 
@@ -24,9 +24,12 @@
     };
 
     Buffer.prod = function(factors) {
-        var targetSpace = new Buffer().depend(factors).getSpace().sort(function(a, b) {
-            return a.id > b.id;
-        });
+        var targetSpace = new Buffer()
+            .depend(factors)
+            .getSpace()
+            .sort(function(a, b) {
+                return a.id > b.id;
+            });
         var totalLength = targetSpace.reduce(function(pv, col) {
             return pv * col.length;
         }, 1);
@@ -53,6 +56,7 @@
         });
     };
 
+
     Buffer.prototype.getSpace = function() {
         if (this.sources.length === 0)
             return [this];
@@ -71,7 +75,7 @@
 
     Buffer.prototype.resize = function (size) {
         var type = this.array.constructor;
-        this.array = new Float32Array(size);
+        this.array = new type(size);
         this.length = size;
         return this;
     };

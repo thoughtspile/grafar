@@ -1,8 +1,7 @@
 'use strict';
-	
+
 (function(global) {
 	var _G = global.grafar,
-		Style = _G.Style,
 		pool = _G.pool,
         isExisty = _G.isExisty,
         asArray = _G.asArray,
@@ -11,26 +10,26 @@
         pathGraph = _G.pathGraph,
         emptyGraph = _G.emptyGraph,
         cartesianGraphProd = _G.cartesianGraphProd,
-        
+
         Graph = _G.GraphR,
         Reactive = _G.Reactive,
         Buffer = _G.Buffer,
-        
+
         InstanceGL = _G.InstanceGL,
         interleave = _G.interleave,
         resizeBuffer = _G.resizeBuffer;
-	
-    
+
+
     function Object(opts) {
 		this.datasets = {};
         this.projections = {};
-        
+
 		this.glinstances = [];
         //this.graphs = [];
 		this.hidden = false;
-        this.col = Style.randColor();
+        this.col = new THREE.Color('lightblue');
 	}
-		
+
 	Object.prototype.pin = function(panel) {
         var instance = new InstanceGL(panel, this.col);
 		this.glinstances.push(instance);
@@ -39,9 +38,9 @@
         // }).bind(this.project()) // won't work because of undefined unification
         //this.graphs.push(graph);
 		return this;
-	
+
 	};
-    
+
 	Object.prototype.constrain = function(constraint, fn, opts) {
         if (typeof constraint === 'string') {
             opts = opts || {};
@@ -58,7 +57,7 @@
                 maxlen = constraint.maxlen || 40,
                 discrete = constraint.discrete || false;
         }
-            
+
         var sources = this.project(using, true);
         // I only do this shit because project forces product
         // however, if it doesn't (force), memo would have to go into unify
@@ -66,10 +65,10 @@
         for (var i = 0; i < names.length; i++)
             if (!this.datasets.hasOwnProperty(names[i]))
                 this.datasets[names[i]] = new Graph();
-        
+
         var computation = new Graph();
         computation.data = new Reactive({
-                buffers: names.map(function() { return new Buffer(); }), 
+                buffers: names.map(function() { return new Buffer(); }),
                 length: 0
             })
             .lift(function(par, out) {
@@ -106,13 +105,13 @@
             .bind(sources.map(function(src) {
                 return src.base;
             }));
-            
+
         for (var i = 0; i < names.length; i++) {
             var dataset = this.datasets[names[i]];
-            
+
             dataset.base = computation.base;
             dataset.edges = computation.edges;
-            
+
             (function(iLoc) {
                 dataset.data
                     .lift(function(src, target) {
@@ -120,12 +119,12 @@
                         target.array = src[0].buffers[iLoc].array;
                     })
                     .bind([computation.data]);
-            }(i));                
+            }(i));
         }
 
 		return this;
 	};
-	
+
     Object.prototype.project = function(names, proxy) {
         var names = asArray(names || []);
         var namesHash = names.slice().sort().toString();
@@ -144,7 +143,7 @@
         }
 		return this.projections[namesHash];
 	};
-    
+
 	Object.prototype.refresh = function() {
 		for (var i = 0; i < this.glinstances.length; i++) {
 			var instance = this.glinstances[i];
@@ -152,15 +151,15 @@
             if (tab.every(function(col) { return col.data.isValid; })) {
                 return this;
             }
-            
+
 			interleave(tab.map(function(c) {return c.data.value()}), instance.position, 3);
 			interleave([tab[0].edges.value()], instance.segments);
             interleave([tab[0].faces.value()], instance.faces);
-            
+
             resizeBuffer(instance.normals, tab[0].data.value().length * 3);
             instance.object.children[2].geometry.computeVertexNormals();
             instance.normals.needsUpdate = true;
-            
+
             var hasEdges = tab[0].edges.value().length > 0;
             var hasFaces = tab[0].faces.value().length > 0;
 			//instance.object.children[0].visible = true; // !(hasEdges || hasFaces);
@@ -169,21 +168,21 @@
 		}
 		return this;
 	};
-    
+
     Object.prototype.run = function() {
         this.refresh();
         window.requestAnimationFrame(this.run.bind(this));
         return this;
     };
-    
+
 	Object.prototype.hide = function(hide) {
 		for (var i = 0; i < this.glinstances.length; i++)
 			this.glinstances[i].object.visible = !hide;
 		return this;
 	};
-        
+
     Object.prototype.reset = function() {return this;};
-        
-        
+
+
 	_G.Object = Object;
 }(this));
