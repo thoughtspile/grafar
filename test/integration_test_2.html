@@ -1,0 +1,65 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<title>Grafar.js Buffer test suite</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+
+<body>
+    <div id = 'd' style='width:300px; height:300px;'></div>
+    <script src="../libs/three.min.js"></script>
+    <script src="../libs/OrbitControls.js"></script>
+    <script src="../libs/Detector.js"></script>
+
+	<script src="../src/grafar.js"></script>
+	<script src="../src/math/array_utils.js"></script>
+	<script src="../src/math/set.js"></script>
+	<script src="../src/core/fn_utils.js"></script>
+	<script src="../src/core/buffer.js"></script>
+
+    <script src="../src/math/misc.js"></script>
+	<script src="../src/core/pool.js"></script>
+    <script src="../src/core/panel.js"></script>
+	<script src="../src/core/glutils.js"></script>
+	<script src="../src/core/non_reactive_graph_stub.js"></script>
+
+	<script src="../src/math/array_utils.js"></script>
+	<script src="../src/core/topo2.js"></script>
+
+	<script>
+		var tstBuff = function(l) {
+			var i = 0;
+			return grafar.Buffer2.map(
+                [],
+                new grafar.Buffer2().resize(l),
+                function() { i++; return i / 20 - 1; }
+            );
+		};
+
+        var p = grafar.panel('d');
+		var l = [70, 80];
+		var src = l.map(tstBuff);
+		var xy = grafar.Buffer2.prod(src);
+        var z = new grafar.Buffer2().resize(l[0] * l[1]);
+        grafar.Buffer2.map(xy, z, function(x, y) {
+            return Math.sin(x) + Math.cos(y);
+        });
+
+        var xe = new grafar.Buffer(new Uint32Array(0));
+		xe.pointCount = l[0];
+		grafar.pathGraph(null, xe);
+        var ye = new grafar.Buffer(new Uint32Array(0));
+		ye.pointCount = l[1];
+        grafar.pathGraph(null, ye);
+		var edges = grafar.emptyGraph(null, new grafar.Buffer(new Uint32Array(0)));
+        grafar.cartesianGraphProd([xe, ye], edges);
+
+        console.log('start tests');
+
+        grafar.display(p, xy.concat(z), {edges: edges});
+
+        console.log('end tests');
+	</script>
+</body>
+</html>
