@@ -24,10 +24,10 @@
 		// duck typing tests
 		console.assert(grafar.Reactive.isReactive(grafar.Reactive()) === true,
 			'Validates Reactive');
-			console.assert(grafar.Reactive.isReactive({}) === false,
-				'Does not validate non-reactive');
-			console.assert(grafar.Reactive.isReactive() === false,
-				'Doesn\'t break on undefined');
+		console.assert(grafar.Reactive.isReactive({}) === false,
+			'Does not validate non-reactive');
+		console.assert(grafar.Reactive.isReactive() === false,
+			'Does not break on undefined');
 
         // immutable tests
         x.lift(function() { return 5; });
@@ -42,23 +42,42 @@
         var y = new grafar.Reactive(data);
         console.assert(y.data === data, 'Data stored by reference');
         console.assert(y() === data, 'Id function has no effect');
-        y.lift(function(dummy, data) { data.item = 89; });
+        y.lift(function(data) { data.item = 89; });
         console.assert(y().item === 89, 'Lifted function mutates data');
         console.assert(data.item === 89, 'Origin mutates by ref');
-        y.lift(function(dummy, data) { return { item: 34} });
+        y.lift(function(data) { return { item: 34} });
         console.assert(
             data.item === 89 && y.value() !== data,
             'Return replaces object');
 
         // argument tests
         var c = new grafar.Reactive()
-            .lift(function(arr) { return arr[0] * arr[1]; })
-            .bind([new grafar.Reactive(5), new grafar.Reactive(10)]);
+            .lift(function(x, y) { return x * y; })
+            .bind(5, 10);
         console.assert(c() === 50, 'Args bound');
-        c.bind([new grafar.Reactive(-1), new grafar.Reactive(4)]);
+        c.bind(-1, 4);
         console.assert(c() === -4, 'Args rebound');
         c.unbind();
         console.assert(isNaN(c.value()), 'Args unbound');
+
+		// argument + mutable
+		var o = {val: 5};
+        var c = new grafar.Reactive(o)
+            .lift(function(x, y, o) { o.val = x * y; })
+            .bind(5, 10);
+        console.assert(c().val === 50, 'Args bound');
+        console.assert(c() === o, 'Ref saved');
+
+		// actual reactivity test with several layers
+		var x = grafar.Reactive(5);
+		var y = grafar.Reactive().bind(x).lift(function(x) { return 2 * x; });
+		console.assert(y() === 10, 'computed');
+		x.lift(function() { return 7; });
+		console.assert(y() === 14, 're-computed');
+		x.lift(function() { return 9; });
+		x.validate();
+		console.assert(y() === 18, 're-computed after param validation');
+
 
         console.log('end tests');
 	</script>

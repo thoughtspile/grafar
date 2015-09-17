@@ -5,12 +5,15 @@
     var isExisty = grafar.isExisty;
 
 
+    var seqCounter = 0;
+
 	var Reactive = function(data) {
         var self = function() { return self.value(); };
         self.sources = [];
 		self.data = isExisty(data)? data: {};
 		self.fn = function() {};
 		self._isValid = false;
+        self.updated = seqCounter++;
 
         Object.keys(Reactive.prototype).forEach(function(prop) {
             self[prop] = Reactive.prototype[prop];
@@ -28,9 +31,10 @@
 
 
     Reactive.prototype.isValid = function() {
-        return this._isValid && this.sources.reduce(function(state, src) {
-            return state && src.isValid();
-        }, true);
+        var selfUpdated = this.updated;
+        return this._isValid && this.sources.every(function(src) {
+            return src.isValid() && src.updated < selfUpdated;
+        });
     };
 
     Reactive.prototype.lift = function(fn) {
@@ -39,9 +43,11 @@
         return this;
     };
 
-	Reactive.prototype.bind = function(newArgs) {
+	Reactive.prototype.bind = function() {
         this.unbind();
-        this.sources = newArgs.slice();
+        this.sources = Array.prototype.slice.call(arguments).map(function(arg) {
+            return Reactive.isReactive(arg)? arg: Reactive(arg);
+        });
         return this;
     };
 
@@ -53,12 +59,14 @@
 
 	Reactive.prototype.validate = function() {
 		if (!this.isValid()) {
-            var res = this.fn(this.sources.map(function(src) {
-                return src.value();
-            }), this.data);
+            // should traverse recursively
+            var res = this.fn.apply(this, this.sources.map(function(src) {
+                return src();
+            }).concat(this.data));
             if (isExisty(res))
                 this.data = res;
 			this._isValid = true;
+            this.updated = seqCounter++;
 		}
 		return this;
 	};
