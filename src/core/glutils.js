@@ -3,6 +3,7 @@
 (function(global) {
 	var _G = global.grafar,
 		pool = _G.pool,
+		isExisty = _G.isExisty,
         config = _G.config,
 
 		_T = global.THREE,
@@ -18,29 +19,6 @@
         MeshLambertMaterial = _T.MeshLambertMaterial,
         DoubleSide = _T.DoubleSide;
 
-
-    function circleSprite(col) {
-        var canvas = document.createElement('canvas'),
-            context = canvas.getContext('2d'),
-            size = 5;
-
-        canvas.width = 2 * size;
-        canvas.height = 2 * size;
-
-        context.beginPath();
-        context.arc(size, size, size, 0, 2 * Math.PI, false);
-        context.fillStyle = col || 'orange';
-        context.fill();
-
-        var mat = new THREE.PointCloudMaterial({
-            size: size,
-            transparent: true,
-            sizeAttenuation: false,
-            map: new THREE.Texture(canvas)
-        });
-        mat.map.needsUpdate = true;
-        return mat;
-    };
 
     function matHelper(type, col) {
         var mat = null;
@@ -123,9 +101,61 @@
         this.object = object;
     };
 
+	function textSprite(str, col) {
+		var fontSizePx = 21,
+			baselineOffsetPx = 0.15 * fontSizePx;
+
+		var canvas = document.createElement('canvas'),
+			context = canvas.getContext('2d');
+
+		context.font = 'Lighter ' + fontSizePx + 'px Helvetica';
+
+		var computedSize = Math.ceil(Math.max(2 * (fontSizePx + baselineOffsetPx), context.measureText(str).width));
+		canvas.width = computedSize;
+		canvas.height = computedSize;
+
+		context.font = 'Lighter ' + fontSizePx + 'px Helvetica';
+		context.fillStyle = isExisty(col)? col: '#444444';
+		context.textAlign = 'center';
+		context.fillText(str, Math.floor(computedSize / 2), Math.ceil(computedSize / 2) - baselineOffsetPx);
+
+		var mat = new THREE.PointCloudMaterial({
+            size: computedSize, //config.labelSize / fontSizePx
+            transparent: true,
+            sizeAttenuation: false,
+            map: new THREE.Texture(canvas)
+        });
+        mat.map.needsUpdate = true;
+        return mat;
+	}
+
+    function circleSprite(col) {
+        var canvas = document.createElement('canvas'),
+            context = canvas.getContext('2d'),
+            size = 5;
+
+        canvas.width = 2 * size;
+        canvas.height = 2 * size;
+
+        context.beginPath();
+        context.arc(size, size, size, 0, 2 * Math.PI, false);
+        context.fillStyle = col || 'orange';
+        context.fill();
+
+        var mat = new THREE.PointCloudMaterial({
+            size: size,
+            transparent: true,
+            sizeAttenuation: false,
+            map: new THREE.Texture(canvas)
+        });
+        mat.map.needsUpdate = true;
+        return mat;
+    }
+
 
 	_G.InstanceGL = InstanceGL;
 	_G.interleave = interleave;
 	_G.resizeBuffer = resizeBuffer;
     _G.circleSprite = circleSprite;
+	_G.textSprite = textSprite;
 }(this));
