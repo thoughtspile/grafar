@@ -30,6 +30,14 @@
         return target;
     };
 
+    Buffer.mapify = function(fn) {
+        var buffMap = wrapFn(fn);
+        return function(params, target) {
+            buffMap(params.map(function(p) { return p.snap(); }), target.snap());
+            return target;
+        };
+    };
+
     Buffer.prod = function(factors) {
         var targetSpace = new Buffer()
             .depend(factors)
@@ -94,7 +102,9 @@
         return {array: this.array, length: this.length()};
     };
 
+
     grafar.Buffer2 = Buffer;
     grafar.dir = Buffer.prod;
     grafar.map = Buffer.map;
+    grafar.mapify = Buffer.mapify;
 }(this));
