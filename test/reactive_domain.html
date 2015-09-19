@@ -32,20 +32,23 @@
 		grafar.config.debug = true;
         var p = grafar.panel('d');
 
-        var l = 1000;
-		var t = [grafar.range(-10, 10, l)];
-        var r = grafar.Reactive(Date.now);
-		var x = grafar.Reactive(grafar.mapify(Math.sin))
-			.cache(new grafar.Buffer2().resize(l))
-			.bind(null, t);
-		var y = grafar.Reactive(grafar.mapify(Math.cos))
-			.cache(new grafar.Buffer2().resize(l))
-			.bind(null, t);
-		var z = grafar.Reactive(function(t, r, z) {
-                grafar.mapify(function(t) { return Math.sin(r / 1000 + t / 5); })(t, z);
-            })
-			.cache(new grafar.Buffer2().resize(l))
-			.bind(null, t, r);
+        var l = 100;
+        var time = grafar.Reactive(Date.now);
+		var q = grafar.range(0, 3, l);
+		var r = grafar.range(0, 1, l);
+		var dom = grafar.dir([q, r]);
+
+		var x = grafar.Reactive(grafar.mapify(function(q, r) { return Math.sin(q) * r; }))
+			.cache(new grafar.Buffer2().resize(l * l))
+			.bind(null, dom);
+		var y = grafar.Reactive(grafar.mapify(function(q, r) { return Math.cos(q) * r; }))
+			.cache(new grafar.Buffer2().resize(l * l))
+			.bind(null, dom);
+
+		var z = grafar.Reactive(grafar.mapify(function(x, y) { return x * y; }))
+			.cache(new grafar.Buffer2().resize(l * l))
+			.bind(null, [x, y]);
+
 		var graph = grafar.Reactive(function(x, y, z, instance) {
 				return grafar.display(p, [x, y, z], {instance: instance});
 			})
@@ -53,7 +56,7 @@
 
         console.log('start tests');
 
-        grafar.animate(r.invalidate.bind(r));
+        grafar.animate(time.invalidate.bind(time));
 		grafar.animate(graph);
 
         console.log('end tests');

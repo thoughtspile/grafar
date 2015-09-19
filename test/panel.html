@@ -1,0 +1,30 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<title>Grafar.js Buffer test suite</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+
+<body>
+    <div id = 'd' style='width:300px; height:300px;'></div>
+    
+    <script src="../libs/three.min.js"></script>
+    <script src="../libs/OrbitControls.js"></script>
+    <script src="../libs/stats.min.js"></script>
+    <script src="../libs/Detector.js"></script>
+
+	<script src="../src/grafar.js"></script>
+    <script src="../src/math/misc.js"></script>
+    <script src="../src/core/panel.js"></script>
+
+	<script>
+        console.log('start tests');
+
+        var p = grafar.panel('d');
+        var p2 = new grafar.Panel(document.getElementById('d'));
+
+        console.log('end tests');
+	</script>
+</body>
+</html>
