@@ -40,7 +40,6 @@
         // mutable tests
         var data = { item: 4 };
         var y = new grafar.Reactive(data);
-        console.assert(y.data === data, 'Data stored by reference');
         console.assert(y() === data, 'Id function has no effect');
         y.lift(function(data) { data.item = 89; });
         console.assert(y().item === 89, 'Lifted function mutates data');
@@ -53,30 +52,38 @@
         // argument tests
         var c = new grafar.Reactive()
             .lift(function(x, y) { return x * y; })
-            .bind(5, 10);
+            .sbind(null, 5, 10);
         console.assert(c() === 50, 'Args bound');
-        c.bind(-1, 4);
+        c.sbind(null, -1, 4);
         console.assert(c() === -4, 'Args rebound');
-        c.unbind();
-        console.assert(isNaN(c.value()), 'Args unbound');
+        c.sbind();
+        console.assert(isNaN(c()), 'Args unbound');
 
 		// argument + mutable
 		var o = {val: 5};
-        var c = new grafar.Reactive(o)
+        var c = new grafar.Reactive()
+			.cache(o)
             .lift(function(x, y, o) { o.val = x * y; })
-            .bind(5, 10);
+            .sbind(null, 5, 10);
         console.assert(c().val === 50, 'Args bound');
         console.assert(c() === o, 'Ref saved');
 
 		// actual reactivity test with several layers
 		var x = grafar.Reactive(5);
-		var y = grafar.Reactive().bind(x).lift(function(x) { return 2 * x; });
+		var y = grafar.Reactive().sbind(null, x).lift(function(x) { return 2 * x; });
 		console.assert(y() === 10, 'computed');
 		x.lift(function() { return 7; });
 		console.assert(y() === 14, 're-computed');
 		x.lift(function() { return 9; });
 		x.validate();
 		console.assert(y() === 18, 're-computed after param validation');
+
+		// context setting
+		var op = {p: 5};
+		var t = grafar.Reactive()
+			.lift(function() { this.p = 500; })
+			.cache(op)
+			.sbind(op);
 
 
         console.log('end tests');

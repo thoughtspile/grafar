@@ -1,0 +1,26 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<title>Grafar.js Buffer test suite</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+
+<body>
+    <div id = 'd' style='width:300px; height:300px;'></div>
+    <script src="grafar.js"></script>
+
+	<script>
+		var p = grafar.panel('d');
+
+		var x = grafar.range(0, 1);
+		var y = grafar.range(-1, 1);
+		var z = grafar.dir([x, y]).map(function(x, y) { return x + x * y; });
+		p.display(grafar.dir([x, y, z]), {color: 'red'});
+
+		var t = grafar.clock();
+		var z2 = grafar.dir([x, y, t]).map(function(x, y, t) { return x + t * y; });
+		p.display(grafar.dir([x, y, z2]));
+	</script>
+</body>
+</html>

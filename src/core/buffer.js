@@ -11,15 +11,22 @@
 
     var c = 0;
 
-    function Buffer(type) {
+    var wrapVal = function(val) {
+        return val instanceof Function?
+            val:
+            function() { return val; };
+    };
+
+    function Buffer(type, length) {
+        length = wrapVal(length);
         this.sources = [];
         this.id = c++;
-        this.array = new (type || Float32Array)(0);
-        this.length = 0;
+        this.array = new (type || Float32Array)(length() || 0);
+        this.length = length;
     }
 
-    Buffer.map = function(params, target, fn) {
-        wrapFn(fn)(params, target);
+    Buffer.map = function(params, fn, target) {
+        wrapFn(fn)(params.map(function(p) { return p.snap(); }), target.snap());
         return target;
     };
 
@@ -31,12 +38,12 @@
                 return a.id > b.id;
             });
         var totalLength = targetSpace.reduce(function(pv, col) {
-            return pv * col.length;
+            return pv * col.length();
         }, 1);
         return factors.map(function(col) {
             var out = new Buffer().resize(totalLength).depend(factors);
             var blockSize = 1;
-            var len = col.length;
+            var len = col.length();
             var res = out.array;
             res.set(col.array);
             targetSpace.forEach(function(targ) {
@@ -45,12 +52,12 @@
                         res,
                         blockSize,
                         Math.floor(len / blockSize),
-                        targ.length,
+                        targ.length(),
                         res
                     );
-                    len *= targ.length;
+                    len *= targ.length();
                 }
-                blockSize *= targ.length;
+                blockSize *= targ.length();
             });
             return out;
         });
@@ -73,13 +80,21 @@
         return this;
     };
 
-    Buffer.prototype.resize = function (size) {
+    Buffer.prototype.resize = function (length) {
+        length = wrapVal(length);
         var type = this.array.constructor;
-        this.array = new type(size);
-        this.length = size;
+        if (this.array.length !== length())
+            this.array = new type(length());
+        this.length = length;
         return this;
     };
 
+    Buffer.prototype.snap = function() {
+        this.resize(this.length);
+        return {array: this.array, length: this.length()};
+    };
 
     grafar.Buffer2 = Buffer;
+    grafar.dir = Buffer.prod;
+    grafar.map = Buffer.map;
 }(this));

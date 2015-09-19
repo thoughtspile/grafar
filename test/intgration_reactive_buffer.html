@@ -7,9 +7,10 @@
 </head>
 
 <body>
-    <div id = 'd' style='width:300px; height:300px;'></div>
+    <div id = 'd' style='width:600px; height:600px;'></div>
     <script src="../libs/three.min.js"></script>
     <script src="../libs/OrbitControls.js"></script>
+    <script src="../libs/stats.min.js"></script>
     <script src="../libs/Detector.js"></script>
 
 	<script src="../src/grafar.js"></script>
@@ -19,25 +20,39 @@
 	<script src="../src/core/buffer.js"></script>
 	<script src="../src/core/buffer_blocks.js"></script>
 
-    <script src="../src/math/misc.js"></script>
+	<script src="../src/math/misc.js"></script>
+	<script src="../src/core/reactive.js"></script>
+
 	<script src="../src/core/pool.js"></script>
     <script src="../src/core/panel.js"></script>
 	<script src="../src/core/glutils.js"></script>
 	<script src="../src/core/non_reactive_graph_stub.js"></script>
 
 	<script>
+		grafar.config.debug = true;
         var p = grafar.panel('d');
+
 		var l = [130, 140];
 		var src = l.map(grafar.range.bind(null, -5, 5));
 		var xy = grafar.dir(src);
-        var z = new grafar.Buffer2().resize(l[0] * l[1]);
-        grafar.map(xy, function(x, y) {
-            return Math.sin(x) + Math.cos(y);
-        }, z);
+		var t = grafar.Reactive(Date.now);
+		var z = grafar.Reactive(function(grid, t, z) {
+				var ph = Math.sin(t / 1000);
+				grafar.map(grid, function(x, y) {
+					return Math.sin(ph * x) + Math.cos(y / (ph + 2));
+				}, z);
+			})
+			.cache(new grafar.Buffer2().resize(l[0] * l[1]))
+			.bind(null, xy, t);
+		var graph = grafar.Reactive(function(xy, z, instance) {
+				return grafar.display(p, xy.concat(z), {instance: instance});
+			})
+			.bind(null, xy, z);
 
         console.log('start tests');
 
-        grafar.display(p, xy.concat(z));
+		grafar.animate(t.invalidate.bind(t));
+		grafar.animate(graph);
 
         console.log('end tests');
 	</script>
