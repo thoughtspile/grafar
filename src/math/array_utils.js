@@ -4,18 +4,6 @@
 	var _G = global.grafar;
 
 
-	function arraySum(a, b, out) {
-		var l = a.length;
-		for (var i = 0; i < l; i++)
-			out[i] = a[i] + b[i];
-	}
-
-	function arrayTimes(n, b, out) {
-		var l = b.length;
-		for (var i = 0; i < l; i++)
-			out[i] = n * b[i];
-	}
-
 	function repeatArray(arr, len, times) {
 		var buff = arr.subarray(0, len),
 			newlen = times * len;
@@ -84,8 +72,6 @@
 
 
     _G.Buffer = Buffer;
-	_G.arraySum = arraySum;
-	_G.arrayTimes = arrayTimes;
 	_G.incArray = incArray;
 	_G.timesArray = timesArray;
 	_G.repeatArray = repeatArray;

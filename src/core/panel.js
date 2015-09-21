@@ -19,15 +19,12 @@
 	}());
 
 
-	function Panel(container, opts) {
-		opts = opts || {};
-		panels.push(this);
-
+	function Panel(container) {
 		container = container || config.container;
-		var containerStyle = window.getComputedStyle(container),
-			bgcolor = containerStyle.backgroundColor,
-		    width = parseInt(containerStyle.width),
-		    height = parseInt(containerStyle.height);
+		var containerStyle = window.getComputedStyle(container);
+		var bgcolor = containerStyle.backgroundColor;
+		var width = parseInt(containerStyle.width);
+		var height = parseInt(containerStyle.height);
 
 		this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 500);
 		this.camera.position.set(-4, 4, 5);
@@ -47,21 +44,21 @@
 
 		this.controls = new THREE.OrbitControls(this.camera, container);
 
-		this.setAxes(config.axes);
-
-		container.appendChild(this.renderer.domElement);
+		this.dim(3);
 
 		if (config.debug) {
 			this.stats = new Stats();
-			this.stats.domElement.style.position = 'absolute';
-			this.stats.domElement.style.top = '0px';
+			this.stats.domElement.style.position = 'fixed';
 			container.appendChild(this.stats.domElement);
 		} else {
 			this.stats = {update: function() {}};
 		}
+
+		container.appendChild(this.renderer.domElement);
+		panels.push(this);
 	};
 
-	function panelWrapper(container, opts) {
+	function panelFactory(container, opts) {
 		if (typeof container === 'string')
 			container = document.getElementById(container);
 		return new Panel(container, opts);
@@ -74,12 +71,12 @@
 		this.stats.update();
 	};
 
-	Panel.prototype.setAxes = function(axisNames) {
-		this._axes = [axisNames[1], axisNames[2], axisNames[0]].filter(isExisty);
-		if (axisNames.length === 3) {
+	Panel.prototype.dim = function(nDim) {
+		if (nDim === 3) {
 			this.controls.noRotate = false;
 			this.camera.up.set(0, 1, 0);
-		} else if (axisNames.length === 2) {
+		} else if (nDim === 2) {
+			// pan with LMB
 			this.controls.noRotate = true;
 			this.camera.position.set(0, 0, -5);
 			this.camera.up.set(1, 0, 0);
@@ -92,5 +89,5 @@
 
 
 	_G.Panel = Panel;
-	_G.panel = panelWrapper;
+	_G.panel = panelFactory;
 }(this));

@@ -5,7 +5,7 @@
 	var config = _G.config;
 	var isExisty = _G.isExisty;
     var Panel = _G.Panel;
-    var drawTextLabel = _G.drawTextLabel;
+    var textSprite = _G.textSprite;
 
 	var THREE = global.THREE;
 

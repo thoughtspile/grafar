@@ -1,23 +1,23 @@
 'use strict';
 
 (function(global) {
-	var _G = global.grafar,
-		pool = _G.pool,
-		isExisty = _G.isExisty,
-        config = _G.config,
+	var _G = global.grafar;
+    var config = _G.config;
+	var isExisty = _G.isExisty;
+	var pool = _G.pool;
 
-		_T = global.THREE,
-		Object3D = _T.Object3D,
-		PointCloud = _T.PointCloud,
-		Line = _T.Line,
-		LinePieces = _T.LinePieces,
-		BufferGeometry = _T.BufferGeometry,
-		BufferAttribute = _T.BufferAttribute,
+	var _T = global.THREE;
+	var Object3D = _T.Object3D;
+	var PointCloud = _T.PointCloud;
+	var Line = _T.Line;
+	var LinePieces = _T.LinePieces;
+	var BufferGeometry = _T.BufferGeometry;
+	var BufferAttribute = _T.BufferAttribute;
 
-        PointCloudMaterial = _T.PointCloudMaterial,
-        LineBasicMaterial = _T.LineBasicMaterial,
-        MeshLambertMaterial = _T.MeshLambertMaterial,
-        DoubleSide = _T.DoubleSide;
+    var PointCloudMaterial = _T.PointCloudMaterial;
+    var LineBasicMaterial = _T.LineBasicMaterial;
+    var MeshLambertMaterial = _T.MeshLambertMaterial;
+    var DoubleSide = _T.DoubleSide;
 
 
     function matHelper(type, col) {
