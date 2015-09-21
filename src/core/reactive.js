@@ -3,6 +3,17 @@
     var grafar = global.grafar;
     // from misc.js
     var isExisty = grafar.isExisty;
+    var deepFilter = grafar.deepFilter;
+    var deepForEach = grafar.deepForEach;
+    var deepMap = grafar.deepMap;
+    var deepKeyAssign = grafar.deepKeyAssign;
+
+
+    var isDeepLeaf = function(el) {
+        return !isExisty(el) ||
+            (isExisty(el.buffer) && el.buffer instanceof ArrayBuffer) ||
+            Reactive.isReactive(el);
+    };
 
 
     var seqCounter = 0;
@@ -14,6 +25,8 @@
         });
 
         self.sources = [];
+        self.args = [];
+        self.structuredSources = {};
 		self._isValid = false;
         self.computedOn = -Infinity;
         self.context = null;
@@ -52,15 +65,17 @@
     };
 
     // how does this react to rebinding to updated?
-    // should return clone perhaps
 
 	Reactive.prototype.sbind = function(/* args */) {
-        // why not reactive?
         this.context = arguments[0];
-        // traverse
-        this.sources = Array.prototype.slice.call(arguments, 1).map(function(arg) {
-            return Reactive.isReactive(arg)? arg: Reactive(arg);
-        });
+        this.args = Array.prototype.slice.call(arguments, 1);
+        this.sources = deepFilter(this.args, Reactive.isReactive, isDeepLeaf);
+        var structuredSources = {};
+        deepForEach(this.args, function(el, key) {
+            if (Reactive.isReactive(el))
+                structuredSources[key] = el;
+        }, isDeepLeaf)
+        this.structuredSources = structuredSources;
         this.invalidate();
         return this;
     };
@@ -78,9 +93,11 @@
 	Reactive.prototype.validate = function() {
 		if (!this.isValid()) {
             // should traverse recursively
-            var res = this.fn.apply(this.context || this.data, this.sources.map(function(src) {
-                return src();
-            }).concat(this.data));
+            this.args
+            Object.keys(this.structuredSources).forEach(function(key) {
+                deepKeyAssign(this.args, key, this.structuredSources[key]());
+            }.bind(this));
+            var res = this.fn.apply(this.context, this.args.concat(this.data));
             if (isExisty(res))
                 this.data = res;
 			this._isValid = true;

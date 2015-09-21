@@ -20,7 +20,7 @@
 	<script src="../src/core/buffer.js"></script>
 	<script src="../src/core/buffer_blocks.js"></script>
 
-	<script src="../src/math/misc.js"></script>
+	<script src="../src/core/misc.js"></script>
 	<script src="../src/core/reactive.js"></script>
 
 	<script src="../src/core/pool.js"></script>
@@ -32,18 +32,26 @@
 		grafar.config.debug = true;
         var p = grafar.panel('d');
 
-        var l = 100;
+        var l = 40;
         var time = grafar.Reactive(Date.now);
-		var q = grafar.range(0, 3, l);
+		var q = grafar.range(0, 2 * Math.PI, l);
 		var r = grafar.range(0, 1, l);
 		var dom = grafar.dir([q, r]);
 
-		var x = grafar.Reactive(grafar.mapify(function(q, r) { return Math.sin(q) * r; }))
+		var x = grafar.Reactive(grafar.mapify(function(q, r) {return Math.sin(q) * r; }))
 			.cache(new grafar.Buffer2().resize(l * l))
 			.bind(null, dom);
-		var y = grafar.Reactive(grafar.mapify(function(q, r) { return Math.cos(q) * r; }))
+		var y = grafar.Reactive(function(rdom, t, cache){
+				var ph = Math.sin(t / 1000);
+				return grafar.mapify(function(q, r) {
+					return Math.cos(q) * r * ph;
+				})(rdom, cache);
+			})
 			.cache(new grafar.Buffer2().resize(l * l))
-			.bind(null, dom);
+			.bind(null, dom, time);
+
+		var rxy = grafar.Reactive(function(q, r) {return [q, r]; })
+			.bind(null, x, y);
 
 		var z = grafar.Reactive(grafar.mapify(function(x, y) { return x * y; }))
 			.cache(new grafar.Buffer2().resize(l * l))
