@@ -7,6 +7,8 @@
     var blockRepeat = grafar.blockRepeat;
     // set
     var union = grafar.union;
+    // pool
+    var pool = grafar.pool;
 
 
     var c = 0;
@@ -14,7 +16,7 @@
     function Buffer(type, length) {
         this.sources = [];
         this.id = c++;
-        this.array = new (type || Float32Array)(length || 0);
+        this.array = pool.get(type || Float32Array, length || 0);
         this.length = length || 0;
     }
 

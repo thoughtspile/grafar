@@ -11,17 +11,21 @@
     };
 
     var nListMap = function(nargs) {
+		nListMap.cache = nListMap.cache || [];
+		if (nListMap.cache[nargs])
+			return nListMap.cache[nargs];
+
         var application = '';
         for (var i = 0; i < nargs; i++) {
             application += 'src[' + i + '].array[i]';
             if (i !== nargs - 1)
                 application += ', ';
         }
-
-        return new Function('fn', 'src', 'target',
+        nListMap.cache[nargs] = new Function('fn', 'src', 'target',
             'var len = (src[0] || target).length;\n' +
             'for (var i = 0; i < len; i++)\n' +
             '  target.array[i] = fn(' + application + ');');
+		return nListMap.cache[nargs];
     };
 
 
