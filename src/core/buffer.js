@@ -11,29 +11,22 @@
 
     var c = 0;
 
-    var wrapVal = function(val) {
-        return val instanceof Function?
-            val:
-            function() { return val; };
-    };
-
     function Buffer(type, length) {
-        length = wrapVal(length);
         this.sources = [];
         this.id = c++;
-        this.array = new (type || Float32Array)(length() || 0);
+        this.array = new (type || Float32Array)(length || 0);
         this.length = length;
     }
 
     Buffer.map = function(params, fn, target) {
-        wrapFn(fn)(params.map(function(p) { return p.snap(); }), target.snap());
+        wrapFn(fn)(params, target);
         return target;
     };
 
     Buffer.mapify = function(fn) {
         var buffMap = wrapFn(fn);
         return function(params, target) {
-            buffMap(params.map(function(p) { return p.snap(); }), target.snap());
+            buffMap(params, target);
             return target;
         };
     };
@@ -46,12 +39,12 @@
                 return a.id > b.id;
             });
         var totalLength = targetSpace.reduce(function(pv, col) {
-            return pv * col.length();
+            return pv * col.length;
         }, 1);
         return factors.map(function(col) {
             var out = new Buffer().resize(totalLength).depend(factors);
             var blockSize = 1;
-            var len = col.length();
+            var len = col.length;
             var res = out.array;
             res.set(col.array);
             targetSpace.forEach(function(targ) {
@@ -60,12 +53,12 @@
                         res,
                         blockSize,
                         Math.floor(len / blockSize),
-                        targ.length(),
+                        targ.length,
                         res
                     );
-                    len *= targ.length();
+                    len *= targ.length;
                 }
-                blockSize *= targ.length();
+                blockSize *= targ.length;
             });
             return out;
         });
@@ -89,17 +82,11 @@
     };
 
     Buffer.prototype.resize = function (length) {
-        length = wrapVal(length);
         var type = this.array.constructor;
-        if (this.array.length !== length())
-            this.array = new type(length());
+        if (this.array.length !== length)
+            this.array = new type(length);
         this.length = length;
         return this;
-    };
-
-    Buffer.prototype.snap = function() {
-        this.resize(this.length);
-        return {array: this.array, length: this.length()};
     };
 
 

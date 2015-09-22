@@ -13,7 +13,7 @@
 		var opts = opts || {};
 		var color = opts.color || {r: Math.random(), g: 1, b: 1};
         var instance = opts.instance || new InstanceGL(panel, color);
-        var tab = [coords[1].snap(), coords[2].snap(), coords[0].snap()];
+        var tab = [coords[1], coords[2], coords[0]];
 
         interleave(tab, instance.position, 3);
 		if (opts && opts.edges) {

@@ -5,7 +5,6 @@
     var isExisty = grafar.isExisty;
     var deepFilter = grafar.deepFilter;
     var deepForEach = grafar.deepForEach;
-    var deepMap = grafar.deepMap;
     var deepKeyAssign = grafar.deepKeyAssign;
 
 
@@ -63,8 +62,6 @@
         this.invalidate();
         return this;
     };
-
-    // how does this react to rebinding to updated?
 
 	Reactive.prototype.sbind = function(/* args */) {
         this.context = arguments[0];
