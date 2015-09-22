@@ -15,7 +15,7 @@
         this.sources = [];
         this.id = c++;
         this.array = new (type || Float32Array)(length || 0);
-        this.length = length;
+        this.length = length || 0;
     }
 
     Buffer.map = function(params, fn, target) {

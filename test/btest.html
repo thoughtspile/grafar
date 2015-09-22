@@ -8,6 +8,7 @@
 
 <body>
 	<script src="../src/grafar.js"></script>
+	<script src="../src/core/misc.js"></script>
 	<script src="../src/math/array_utils.js"></script>
 	<script src="../src/math/set.js"></script>
 	<script src="../src/core/fn_utils.js"></script>
@@ -44,9 +45,9 @@
 
         // map
         var y = new grafar.Buffer2().resize(10);
-        grafar.Buffer2.map([x], y, function(x) {return Math.random(); });
+        grafar.mapify(function(x) {return Math.random(); })([x], y);
         console.assert(y.array[3] !== 0, 'Random map ');
-        y = grafar.Buffer2.map([x], y, function(x) {return Math.random(); });
+        y = grafar.mapify(function(x) {return Math.random(); })([x], y);
         console.assert(y instanceof grafar.Buffer2, 'Map is chainable');
 
         // 2-prod
