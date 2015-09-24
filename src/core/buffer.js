@@ -83,10 +83,14 @@
         return this;
     };
 
+    Buffer.prototype.reserve = function(length) {
+        this.array = pool.swap(this.array, length);
+        return this;
+    };
+
     Buffer.prototype.resize = function (length) {
-        var type = this.array.constructor;
-        if (this.array.length !== length)
-            this.array = new type(length);
+        if (this.array.length < length)
+            this.array = pool.swap(this.array, length);
         this.length = length;
         return this;
     };
