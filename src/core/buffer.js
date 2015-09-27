@@ -1,6 +1,8 @@
 (function(global){
     // from grafar.js
     var grafar = global.grafar;
+    // misc
+    var isExisty = grafar.isExisty;
     // fn_utils
     var wrapFn = grafar.wrapFn;
     // array_utils
@@ -12,8 +14,12 @@
 
 
     function Buffer(type, length) {
+        if (typeof type === 'number' && !isExisty(length)) {
+            length = type;
+            type = Float32Array;
+        }
         this.array = pool.get(type || Float32Array, length || 0);
-        this.length = length || 0;
+        this.length = this.array.length;
     }
 
     function makeBuffer(type, length) {
