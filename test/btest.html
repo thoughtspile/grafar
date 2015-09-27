@@ -8,11 +8,13 @@
 
 <body>
 	<script src="../src/grafar.js"></script>
+	<script src="../src/core/pool.js"></script>
 	<script src="../src/core/misc.js"></script>
 	<script src="../src/math/array_utils.js"></script>
 	<script src="../src/math/set.js"></script>
 	<script src="../src/core/fn_utils.js"></script>
 	<script src="../src/core/buffer.js"></script>
+	<script src="../src/core/top_buffer.js"></script>
 
 	<script>
 		var tstarr = (function() {
@@ -25,7 +27,7 @@
 			};
 		}());
 		var tstBuff = function(l) {
-			var buff = new grafar.Buffer2().resize(l);
+			var buff = grafar.buffer().resize(l);
 	        buff.array.set(tstarr(l));
 			return buff;
 		};
@@ -33,7 +35,7 @@
         console.log('start tests');
 
         // basics
-        var x = new grafar.Buffer2();
+        var x = grafar.buffer();
         console.assert(x.length === 0, 'Len init');
         console.assert(Array.isArray(x.sources) && x.sources.length === 0, 'Has id');
         console.assert(x.array instanceof Float32Array && x.array.length === 0,
@@ -44,7 +46,7 @@
         console.assert(x.array.length === x.length, 'Length in sync');
 
         // map
-        var y = new grafar.Buffer2().resize(10);
+        var y = grafar.buffer().resize(10);
         grafar.mapify(function(x) {return Math.random(); })([x], y);
         console.assert(y.array[3] !== 0, 'Random map ');
         y = grafar.mapify(function(x) {return Math.random(); })([x], y);
@@ -53,7 +55,7 @@
         // 2-prod
 		var l = [3, 4];
 		var src = l.map(tstBuff);
-		var xy = grafar.Buffer2.prod(src);
+		var xy = grafar.dir(src);
 		console.assert(Array.isArray(xy) && xy.length === l.length, 'prod is array')
 		console.assert(xy.every(function(buf) {
 				return buf.length === l[0] * l[1];
@@ -68,7 +70,7 @@
 		// 3-prod
 		var l = [13, 4, 2];
 		var src = l.map(tstBuff);
-		var xyz = grafar.Buffer2.prod(src);
+		var xyz = grafar.dir(src);
 		console.assert(xyz.every(function(buf) {
 				return buf.length === l[0] * l[1] * l[2];
 			}), 'len is times');
@@ -96,7 +98,7 @@
 			'Proper sources matched');
 
 		// deep prod 1->2
-		var t = grafar.Buffer2.prod(dep);
+		var t = grafar.dir(dep);
 		console.assert(t[0].length === l && t[1].length === l, 'length not changed');
 		console.assert(t[0].array.every(function(d, i) {
 				return d === dep[0].array[i];
@@ -111,7 +113,7 @@
 		var p = l.map(tstBuff);
 		var q1 = tstBuff(l[0] * l[1]).depend([p[0], p[1]]);
 		var q2 = tstBuff(l[0] * l[2]).depend([p[2], p[0]]);
-		var qpr = grafar.Buffer2.prod([q1, q2]);
+		var qpr = grafar.dir([q1, q2]);
 		// how the fuck would i unit-test this?
 		console.log(qpr);
 
