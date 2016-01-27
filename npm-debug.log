@@ -1,0 +1,94 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files\\nodejs\\\\node.exe',
+1 verbose cli   'C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'install',
+1 verbose cli   'asm-js' ]
+2 info using npm@2.11.3
+3 info using node@v0.12.7
+4 verbose config Skipping project config: C:\Users\vladimir.klepov/.npmrc. (matches userconfig)
+5 verbose install initial load of C:\Users\vladimir.klepov\package.json
+6 verbose installManyTop reading scoped package data from C:\Users\vladimir.klepov\node_modules\bl\package.json
+7 verbose installManyTop reading scoped package data from C:\Users\vladimir.klepov\node_modules\cheerio\package.json
+8 verbose installManyTop reading scoped package data from C:\Users\vladimir.klepov\node_modules\concat-stream\package.json
+9 verbose installManyTop reading scoped package data from C:\Users\vladimir.klepov\node_modules\gulp\package.json
+10 verbose installManyTop reading scoped package data from C:\Users\vladimir.klepov\node_modules\split\package.json
+11 verbose installManyTop reading scoped package data from C:\Users\vladimir.klepov\node_modules\stream-adventure\package.json
+12 verbose installManyTop reading scoped package data from C:\Users\vladimir.klepov\node_modules\tape\package.json
+13 verbose installManyTop reading scoped package data from C:\Users\vladimir.klepov\node_modules\through2\package.json
+14 verbose installManyTop reading scoped package data from C:\Users\vladimir.klepov\node_modules\through2-map\package.json
+15 verbose installManyTop reading scoped package data from C:\Users\vladimir.klepov\node_modules\xml2js\package.json
+16 verbose readDependencies loading dependencies from C:\Users\vladimir.klepov\package.json
+17 silly cache add args [ 'asm-js', null ]
+18 verbose cache add spec asm-js
+19 silly cache add parsed spec { raw: 'asm-js',
+19 silly cache add   scope: null,
+19 silly cache add   name: 'asm-js',
+19 silly cache add   rawSpec: '',
+19 silly cache add   spec: '*',
+19 silly cache add   type: 'range' }
+20 silly addNamed asm-js@*
+21 verbose addNamed "*" is a valid semver range for asm-js
+22 silly addNameRange { name: 'asm-js', range: '*', hasData: false }
+23 silly mapToRegistry name asm-js
+24 silly mapToRegistry using default registry
+25 silly mapToRegistry registry https://registry.npmjs.org/
+26 silly mapToRegistry uri https://registry.npmjs.org/asm-js
+27 verbose addNameRange registry:https://registry.npmjs.org/asm-js not in flight; fetching
+28 verbose request uri https://registry.npmjs.org/asm-js
+29 verbose request no auth needed
+30 info attempt registry request try #1 at 22:55:51
+31 verbose request id c27855355ddc6b30
+32 http request GET https://registry.npmjs.org/asm-js
+33 http 404 https://registry.npmjs.org/asm-js
+34 verbose headers { 'content-type': 'application/json',
+34 verbose headers   'cache-control': 'max-age=0',
+34 verbose headers   'content-length': '2',
+34 verbose headers   'accept-ranges': 'bytes',
+34 verbose headers   date: 'Sun, 27 Sep 2015 19:55:49 GMT',
+34 verbose headers   via: '1.1 varnish',
+34 verbose headers   age: '0',
+34 verbose headers   connection: 'keep-alive',
+34 verbose headers   'x-served-by': 'cache-fra1225-FRA',
+34 verbose headers   'x-cache': 'MISS',
+34 verbose headers   'x-cache-hits': '0',
+34 verbose headers   'x-timer': 'S1443383749.276628,VS0,VE690' }
+35 silly get cb [ 404,
+35 silly get   { 'content-type': 'application/json',
+35 silly get     'cache-control': 'max-age=0',
+35 silly get     'content-length': '2',
+35 silly get     'accept-ranges': 'bytes',
+35 silly get     date: 'Sun, 27 Sep 2015 19:55:49 GMT',
+35 silly get     via: '1.1 varnish',
+35 silly get     age: '0',
+35 silly get     connection: 'keep-alive',
+35 silly get     'x-served-by': 'cache-fra1225-FRA',
+35 silly get     'x-cache': 'MISS',
+35 silly get     'x-cache-hits': '0',
+35 silly get     'x-timer': 'S1443383749.276628,VS0,VE690' } ]
+36 verbose stack Error: Registry returned 404 for GET on https://registry.npmjs.org/asm-js
+36 verbose stack     at CachingRegistryClient.<anonymous> (C:\Program Files\nodejs\node_modules\npm\node_modules\npm-registry-client\lib\request.js:239:14)
+36 verbose stack     at Request._callback (C:\Program Files\nodejs\node_modules\npm\node_modules\npm-registry-client\lib\request.js:170:14)
+36 verbose stack     at Request.self.callback (C:\Program Files\nodejs\node_modules\npm\node_modules\request\request.js:354:22)
+36 verbose stack     at Request.emit (events.js:110:17)
+36 verbose stack     at Request.<anonymous> (C:\Program Files\nodejs\node_modules\npm\node_modules\request\request.js:1207:14)
+36 verbose stack     at Request.emit (events.js:129:20)
+36 verbose stack     at IncomingMessage.<anonymous> (C:\Program Files\nodejs\node_modules\npm\node_modules\request\request.js:1153:12)
+36 verbose stack     at IncomingMessage.emit (events.js:129:20)
+36 verbose stack     at _stream_readable.js:908:16
+36 verbose stack     at process._tickCallback (node.js:355:11)
+37 verbose statusCode 404
+38 verbose pkgid asm-js
+39 verbose cwd C:\Users\vladimir.klepov\Documents\grafar
+40 error Windows_NT 6.3.9600
+41 error argv "C:\\Program Files\\nodejs\\\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "install" "asm-js"
+42 error node v0.12.7
+43 error npm  v2.11.3
+44 error code E404
+45 error 404 Registry returned 404 for GET on https://registry.npmjs.org/asm-js
+45 error 404
+45 error 404 'asm-js' is not in the npm registry.
+45 error 404 You should bug the author to publish it (or use the name yourself!)
+45 error 404
+45 error 404 Note that you can also install from a
+45 error 404 tarball, folder, http url, or git url.
+46 verbose exit [ 1, true ]
