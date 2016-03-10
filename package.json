@@ -1,0 +1,35 @@
+{
+  "name": "grafar",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/grafar.js",
+  "directories": {
+    "example": "examples",
+    "test": "test"
+  },
+  "scripts": {
+    "build": "browserify src/grafar.js --standalone grafar -o build/grafar.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thoughtspile/Grafar.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thoughtspile/Grafar/issues"
+  },
+  "browserify-shim": {
+    "three": "global:THREE",
+    "detector": "global:Detector",
+    "stats": "global:Stats"
+  },
+  "browserify": {
+    "transform": [
+      "browserify-shim"
+    ]
+  },
+  "devDependencies": {
+    "browserify-shim": "^3.2.2"
+  }
+}
