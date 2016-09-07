@@ -5,11 +5,17 @@
   "main": "server.js",
   "scripts": {
     "build": "browserify src/grafar.js -o build/grafar.js -t [ babelify --presets [ es2015 ] --sourceMaps true ]",
-    "watch": "watchify src/grafar.js -o build/grafar.js -v -t [ babelify --presets [ es2015 ] --sourceMaps true ]"
+    "watch": "watchify src/grafar.js -o build/grafar.js -v -t [ babelify --presets [ es2015 ] --sourceMaps true ]",
+    
+    "c-v3": "babel --presets es2015 src-v3 -d compiled",
+    "v3": "npm run c-v3 && browserify compiled/demo--canvas.js -o compiled/bundle.js"
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "microseconds": "^0.1.0",
+    "nanotimer": "^0.3.14"
+  },
   "devDependencies": {
     "babel-cli": "^6.14.0",
     "babel-preset-es2015": "^6.14.0",
