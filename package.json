@@ -1,0 +1,19 @@
+{
+  "name": "sheet-bld",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "build": "browserify src/grafar.js -o build/grafar.js -t [ babelify --presets [ es2015 ] --sourceMaps true ]",
+    "watch": "watchify src/grafar.js -o build/grafar.js -v -t [ babelify --presets [ es2015 ] --sourceMaps true ]"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "babel-cli": "^6.14.0",
+    "babel-preset-es2015": "^6.14.0",
+    "babelify": "^7.3.0",
+    "watchify": "^3.7.0"
+  }
+}

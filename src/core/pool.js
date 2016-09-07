@@ -1,13 +1,11 @@
-(function(global) {
-	var _G = global.grafar,
-		isExisty = _G.isExisty;
-	
-	
-	var arrayPool = {};
-	
-	arrayPool.pool = {};
-		
-	arrayPool.get = function(Constructor, length) {
+import { grafar } from '../grafar';
+import { isExisty } from './misc';
+
+// static array pool
+var arrayPool = {
+	pool: {},
+
+	get: function(Constructor, length) {
 		var classKey = Constructor.toString(),
 			constructorKey = length.toString(),
 			classPool = this.pool[classKey],
@@ -17,26 +15,23 @@
 		else
 			temp = new Constructor(length);
 		return temp;
-	};
-		
-	arrayPool.push = function(obj) {
+	},
+
+	push: function(obj) {
 		var classKey = obj.constructor.toString(),
 			constructorKey = obj.length.toString();
-			
+
 		if (!isExisty(this.pool[classKey]))
 			this.pool[classKey] = {};
 		if (!isExisty(this.pool[classKey][constructorKey]))
 			this.pool[classKey][constructorKey] = [];
-			
+
 		this.pool[classKey][constructorKey].push(obj);
-	};
-		
-	arrayPool.flush = function() {
+	},
+
+	flush: function() {
 		this.pool = {};
-	};
-	
-	
-	// export
-	
-	_G.pool = arrayPool;
-}(this));
+	}
+};
+
+export { pool }
