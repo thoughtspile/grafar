@@ -1,7 +1,7 @@
 import { global } from './contextBusterHack';
+import { isExisty } from './utils';
 
 var grafar = global.grafar;
-var isExisty = grafar.isExisty;
 var setPop = grafar.setpop;
 var setPush = grafar.setpush;
 var union = grafar.union;

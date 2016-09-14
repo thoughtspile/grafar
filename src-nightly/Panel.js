@@ -1,4 +1,5 @@
 import { global } from './contextBusterHack';
+import { isExisty, makeID } from './utils';
 
 var _G = global.grafar,
 	Detector = global.Detector,
@@ -6,9 +7,7 @@ var _G = global.grafar,
 	THREE = global.THREE,
 	Stats = global.Stats,
 	config = _G.config,
-	makeID = _G.makeID,
-	Observable = _G.Observable,
-	isExisty = _G.isExisty;
+	Observable = _G.Observable;
 
 var panels = _G.panels,
 	Renderer = THREE.WebGLRenderer.bind(null, {antialias: config.antialias});

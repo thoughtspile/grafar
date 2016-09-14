@@ -1,4 +1,5 @@
 import { global } from './contextBusterHack';
+import { makeID } from './utils';
 
 var _G = global.grafar || (global.grafar = {});
 
@@ -20,7 +21,7 @@ _G.ui = function(mockup, opts) {
 
 // methods
 _G.UI.push = function(mockup, parent) {
-	var id = mockup.id || _G.makeID(this),
+	var id = mockup.id || makeID(this),
 		type = mockup.type,
 		col = mockup.col,
 		init = mockup.init,

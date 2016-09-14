@@ -1,8 +1,3 @@
-import { global } from './contextBusterHack';
-
-var _G = global.grafar;
-
-
 function makeID(obj) {
 	while (true) {
 		var temp = Math.random().toString(36).substr(2, 9);
@@ -15,7 +10,7 @@ function isExisty(obj) {
 	return typeof(obj) !== 'undefined' && obj !== null;
 }
 
-function strToArray (str) {
+function asArray(str) {
 	if (typeof str === 'string')
 		return str.replace(/ /g, '').split(',');
 	else
@@ -23,6 +18,8 @@ function strToArray (str) {
 }
 
 
-_G.isExisty = isExisty;
-_G.makeID = makeID;
-_G.asArray = strToArray;
+export {
+	isExisty,
+	makeID,
+	asArray
+}

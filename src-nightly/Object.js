@@ -1,10 +1,9 @@
 import { global } from './contextBusterHack';
+import { isExisty, asArray } from './utils';
 
 var _G = global.grafar,
 	Style = _G.Style,
 	pool = _G.pool,
-    isExisty = _G.isExisty,
-    asArray = _G.asArray,
     nunion = _G.nunion,
     baseTranslate = _G.baseTranslate,
     pathGraph = _G.pathGraph,

@@ -1,4 +1,5 @@
 import { global } from './contextBusterHack';
+import { isExisty } from './utils';
 
 var _G = global.grafar,
 	parserConfig = _G.config.grafaryaz,
@@ -8,7 +9,6 @@ var _G = global.grafar,
 	traceZeroSet = _G.traceZeroSet,
 
 	haveCommon = _G.haveCommon,
-	isExisty = _G.isExisty,
 	firstMatch = _G.firstMatch,
 	union = _G.union,
 	unique = _G.unique,

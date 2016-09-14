@@ -1,7 +1,7 @@
 import { global } from './contextBusterHack';
+import { isExisty } from './utils';
 
-var _G = global.grafar,
-	isExisty = _G.isExisty;
+var _G = global.grafar;
 
 
 var arrayPool = {};

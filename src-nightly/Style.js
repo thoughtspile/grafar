@@ -1,11 +1,10 @@
 import { global } from './contextBusterHack';
+import { isExisty, makeID } from './utils';
 
 var _G = global.grafar,
 	Color = global.Color,
 	THREE = global.THREE,
-	isExisty = _G.isExisty,
-	config = _G.config,
-	makeID = _G.makeID;
+	config = _G.config;
 
 var styles = {};
 
