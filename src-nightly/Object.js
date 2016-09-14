@@ -5,9 +5,9 @@ import { InstanceGL, interleave, resizeBuffer } from './glUtils';
 import { Buffer } from './arrayUtils';
 import { pool } from './arrayPool';
 import { emptyGraph, pathGraph, cartesianGraphProd } from './topology';
+import { Style } from './Style';
 
 var _G = global.grafar,
-	Style = _G.Style,
     nunion = _G.nunion,
     baseTranslate = _G.baseTranslate,
 

@@ -9,7 +9,7 @@ import * as setUtils from './setUtils';
 import * as vectorUtils from './vectorUtils';
 import * as miscUtils from './miscUtils';
 import * as arrayUtils from './arrayUtils';
-import * as Style from './Style';
+import { Style } from './Style';
 import * as GraphData from './GraphData';
 import * as Parser from './Parser';
 import * as Reactive from './Reactive';
@@ -22,3 +22,5 @@ import * as Panel from './Panel';
 import * as Observable from './Observable';
 import * as demos from './demos';
 import * as UI from './UI';
+
+global.grafar.Style = Style;

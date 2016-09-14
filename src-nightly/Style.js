@@ -94,5 +94,4 @@ Style.prototype.update = function(styleChanges) {
 };
 
 
-_G.styles = styles;
-_G.Style = Style;
+export { Style }
