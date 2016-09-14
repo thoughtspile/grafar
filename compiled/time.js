@@ -8,8 +8,6 @@ var _buffer1d2 = _interopRequireDefault(_buffer1d);
 
 var _bufferNd = require('./buffer-nd');
 
-var _bufferNd2 = _interopRequireDefault(_bufferNd);
-
 var _transforms = require('./transforms');
 
 var _generators = require('./generators');

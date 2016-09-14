@@ -1,8 +1,6 @@
 'use strict';
 
-var _bufferNd = require('./buffer-nd');
-
-var _bufferNd2 = _interopRequireDefault(_bufferNd);
+var _Set = require('./Set');
 
 var _generators = require('./generators');
 

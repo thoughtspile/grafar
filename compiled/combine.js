@@ -9,9 +9,7 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _bufferNd = require('./buffer-nd');
-
-var _bufferNd2 = _interopRequireDefault(_bufferNd);
+var _Set = require('./Set');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22,7 +20,7 @@ function prod(arr) {
 }
 
 function cart(comps, targ) {
-    if (_lodash2.default.isUndefined(targ)) targ = new _bufferNd2.default((0, _lodash2.default)(comps).invokeMap('getDims').sum());
+    if (_lodash2.default.isUndefined(targ)) targ = new _Set.Set((0, _lodash2.default)(comps).invokeMap('getDims').sum());
     var srcData = _lodash2.default.invokeMap(comps, 'raw');
     var resSize = prod(_lodash2.default.invokeMap(comps, 'size'));
     targ.size(resSize);
@@ -64,7 +62,7 @@ function cart(comps, targ) {
 function zip(comps, targ) {
     var dims = _lodash2.default.sum(_lodash2.default.map(comps, 'dims'));
     var size = _lodash2.default.min(_lodash2.default.map(comps, 'size'));
-    if (!targ) targ = new _bufferNd2.default(dims);
+    if (!targ) targ = new _Set.Set(dims);
     targ._size = size;
     _lodash2.default.flatten(_lodash2.default.map(comps, '_cols')).forEach(function (col, i) {
         targ._cols[i] = col;

@@ -1,5 +1,5 @@
-import Buffer1d from './buffer-1d';
-import Set from './buffer-nd';
+import { Buffer1d } from './Buffer1d';
+import { Set } from './Set';
 import { map, each } from './transforms';
 import { ints, Generator } from './generators';
 import { cart, zip } from './combine';

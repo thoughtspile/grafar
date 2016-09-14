@@ -1,4 +1,4 @@
-import Set from './buffer-nd';
+import { Set } from './Set';
 import { ints, Generator } from './generators';
 import mus from 'microseconds';
 

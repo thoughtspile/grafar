@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import Set from './buffer-nd';
+import { Set } from './Set';
 
 
 // *** Helpers ***

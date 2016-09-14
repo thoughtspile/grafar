@@ -43,7 +43,6 @@ var Tick = exports.Tick = function () {
         key: 'execute',
         value: function execute() {
             _counter++;
-            console.log(Date.now() - last);
             last = Date.now();
             _actions.forEach(function (fn) {
                 return fn();
@@ -89,6 +88,8 @@ function volatile(arg) {
     return boundfn;
 }
 
+/*
+ */
 function bind(fn) {
     for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
         args[_key - 1] = arguments[_key];
@@ -99,7 +100,6 @@ function bind(fn) {
             throw new Error('Can\'t const-bind multiple args');
         }
         if (args[0]._isBound) {
-            console.log('skip rebind');
             return args[0];
         }
         return bindConst(args[0]);
@@ -134,6 +134,9 @@ function bind(fn) {
         return Math.max(parentUpdatedAt(), _updatedTick);
     };
     boundfn._isBound = true;
+    boundfn.invalidate = function () {
+        forceUpdate = true;
+    };
 
     return boundfn;
 }

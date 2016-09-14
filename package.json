@@ -6,7 +6,10 @@
   "scripts": {
     "build": "browserify src/grafar.js -o build/grafar.js -t [ babelify --presets [ es2015 ] --sourceMaps true ]",
     "watch": "watchify src/grafar.js -o build/grafar.js -v -t [ babelify --presets [ es2015 ] --sourceMaps true ]",
-    
+
+    "build-nightly": "browserify src-nightly/grafar.js -o build/grafar.js -t [ babelify --presets [ es2015 ] --sourceMaps true ]",
+    "watch-nightly": "watchify src-nightly/grafar.js -o build/grafar.js -v -t [ babelify --presets [ es2015 ] --sourceMaps true ]",
+
     "c-v3": "babel --presets es2015 src-v3 -d compiled",
     "v3": "npm run c-v3 && browserify compiled/demo--canvas.js -o compiled/bundle.js"
   },

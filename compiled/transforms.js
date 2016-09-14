@@ -11,9 +11,7 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _bufferNd = require('./buffer-nd');
-
-var _bufferNd2 = _interopRequireDefault(_bufferNd);
+var _Set = require('./Set');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -95,7 +93,7 @@ var Map = function () {
         key: 'exec',
         value: function exec() {
             if (!this._cache) {
-                this.cache(new _bufferNd2.default(this._dimOut, this._arg.size()));
+                this.cache(new _Set.Set(this._dimOut, this._arg.size()));
             }
             this._cache.size(this._arg.size());
 

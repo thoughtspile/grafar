@@ -4,6 +4,134 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.Buffer1d = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ctor = Float32Array;
+
+var Buffer1d = exports.Buffer1d = function () {
+    function Buffer1d() {
+        var size = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+
+        _classCallCheck(this, Buffer1d);
+
+        this._data = new ctor(size);
+        this._size = size;
+    }
+
+    _createClass(Buffer1d, [{
+        key: 'size',
+        value: function size(newSize) {
+            if (_lodash2.default.isUndefined(newSize)) {
+                return this._size;
+            }
+
+            if (newSize > this._size) {
+                this._data = new ctor(newSize);
+            }
+
+            this._size = newSize;
+
+            return this;
+        }
+    }, {
+        key: 'raw',
+        value: function raw() {
+            return this._data;
+        }
+    }]);
+
+    return Buffer1d;
+}();
+},{"lodash":9}],2:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.Set = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+var _Buffer1d = require('./Buffer1d');
+
+var _transforms = require('./transforms');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Set = function () {
+    function Set() {
+        var dims = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+        var size = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+
+        _classCallCheck(this, Set);
+
+        this._cols = _lodash2.default.range(dims).map(function () {
+            return new _Buffer1d.Buffer1d(size);
+        });
+        this._size = size;
+    }
+
+    _createClass(Set, [{
+        key: 'size',
+        value: function size(_size) {
+            if (_lodash2.default.isUndefined(_size)) return this._size;
+            this._cols.forEach(function (buff) {
+                return buff.size(_size);
+            });
+            this._size = _size;
+            return this;
+        }
+    }, {
+        key: 'getDims',
+        value: function getDims() {
+            return this._cols.length;
+        }
+    }, {
+        key: 'raw',
+        value: function raw() {
+            return this._cols.map(function (col) {
+                return col.raw();
+            });
+        }
+    }, {
+        key: 'map',
+        value: function map(fn, targ) {
+            return (0, _transforms.map)(this, fn, targ);
+        }
+    }, {
+        key: 'each',
+        value: function each(fn) {
+            (0, _transforms.each)(this, fn);
+            return this;
+        }
+    }]);
+
+    return Set;
+}();
+
+exports.Set = Set;
+},{"./Buffer1d":1,"./transforms":8,"lodash":9}],3:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 exports.Tick = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -44,7 +172,6 @@ var Tick = exports.Tick = function () {
         key: 'execute',
         value: function execute() {
             _counter++;
-            console.log(Date.now() - last);
             last = Date.now();
             _actions.forEach(function (fn) {
                 return fn();
@@ -90,6 +217,8 @@ function volatile(arg) {
     return boundfn;
 }
 
+/*
+ */
 function bind(fn) {
     for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
         args[_key - 1] = arguments[_key];
@@ -100,7 +229,6 @@ function bind(fn) {
             throw new Error('Can\'t const-bind multiple args');
         }
         if (args[0]._isBound) {
-            console.log('skip rebind');
             return args[0];
         }
         return bindConst(args[0]);
@@ -135,136 +263,13 @@ function bind(fn) {
         return Math.max(parentUpdatedAt(), _updatedTick);
     };
     boundfn._isBound = true;
+    boundfn.invalidate = function () {
+        forceUpdate = true;
+    };
 
     return boundfn;
 }
-},{"lodash":9}],2:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _lodash = require('lodash');
-
-var _lodash2 = _interopRequireDefault(_lodash);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var ctor = Float32Array;
-
-var Buffer1d = function () {
-    function Buffer1d() {
-        var size = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
-
-        _classCallCheck(this, Buffer1d);
-
-        this._data = new ctor(size);
-        this._size = size;
-    }
-
-    _createClass(Buffer1d, [{
-        key: 'size',
-        value: function size(newSize) {
-            if (_lodash2.default.isUndefined(newSize)) return this._size;
-
-            if (newSize > this._size) this._data = new ctor(newSize);
-
-            this._size = newSize;
-
-            return this;
-        }
-    }, {
-        key: 'raw',
-        value: function raw() {
-            return this._data;
-        }
-    }]);
-
-    return Buffer1d;
-}();
-
-exports.default = Buffer1d;
-},{"lodash":9}],3:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _lodash = require('lodash');
-
-var _lodash2 = _interopRequireDefault(_lodash);
-
-var _buffer1d = require('./buffer-1d');
-
-var _buffer1d2 = _interopRequireDefault(_buffer1d);
-
-var _transforms = require('./transforms');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Set = function () {
-    function Set() {
-        var dims = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
-        var size = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
-
-        _classCallCheck(this, Set);
-
-        this._cols = _lodash2.default.range(dims).map(function () {
-            return new _buffer1d2.default(size);
-        });
-        this._size = size;
-    }
-
-    _createClass(Set, [{
-        key: 'size',
-        value: function size(_size) {
-            if (_lodash2.default.isUndefined(_size)) return this._size;
-            this._cols.forEach(function (buff) {
-                return buff.size(_size);
-            });
-            this._size = _size;
-            return this;
-        }
-    }, {
-        key: 'getDims',
-        value: function getDims() {
-            return this._cols.length;
-        }
-    }, {
-        key: 'raw',
-        value: function raw() {
-            return this._cols.map(function (col) {
-                return col.raw();
-            });
-        }
-    }, {
-        key: 'map',
-        value: function map(fn, targ) {
-            return (0, _transforms.map)(this, fn, targ);
-        }
-    }, {
-        key: 'each',
-        value: function each(fn) {
-            (0, _transforms.each)(this, fn);
-            return this;
-        }
-    }]);
-
-    return Set;
-}();
-
-exports.default = Set;
-},{"./buffer-1d":2,"./transforms":8,"lodash":9}],4:[function(require,module,exports){
+},{"lodash":9}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -276,9 +281,7 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _bufferNd = require('./buffer-nd');
-
-var _bufferNd2 = _interopRequireDefault(_bufferNd);
+var _Set = require('./Set');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -289,7 +292,7 @@ function prod(arr) {
 }
 
 function cart(comps, targ) {
-    if (_lodash2.default.isUndefined(targ)) targ = new _bufferNd2.default((0, _lodash2.default)(comps).invokeMap('getDims').sum());
+    if (_lodash2.default.isUndefined(targ)) targ = new _Set.Set((0, _lodash2.default)(comps).invokeMap('getDims').sum());
     var srcData = _lodash2.default.invokeMap(comps, 'raw');
     var resSize = prod(_lodash2.default.invokeMap(comps, 'size'));
     targ.size(resSize);
@@ -331,7 +334,7 @@ function cart(comps, targ) {
 function zip(comps, targ) {
     var dims = _lodash2.default.sum(_lodash2.default.map(comps, 'dims'));
     var size = _lodash2.default.min(_lodash2.default.map(comps, 'size'));
-    if (!targ) targ = new _bufferNd2.default(dims);
+    if (!targ) targ = new _Set.Set(dims);
     targ._size = size;
     _lodash2.default.flatten(_lodash2.default.map(comps, '_cols')).forEach(function (col, i) {
         targ._cols[i] = col;
@@ -341,62 +344,23 @@ function zip(comps, targ) {
 
 exports.cart = cart;
 exports.zip = zip;
-},{"./buffer-nd":3,"lodash":9}],5:[function(require,module,exports){
+},{"./Set":2,"lodash":9}],5:[function(require,module,exports){
 'use strict';
 
 var _grafar = require('./grafar');
 
 var grafar = _interopRequireWildcard(_grafar);
 
-var _transforms = require('./transforms');
-
-var _combine = require('./combine');
-
-var _bindMixin = require('./bind-mixin');
-
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-var N = 1000;
+var x = grafar.range(0, 1, 10);
+console.log(x().raw());
 
-var ctx = {
-    clearRect: function clearRect() {},
-    fillRect: function fillRect() {}
-};
-var canvas = {};
-if (typeof document !== 'undefined') {
-    canvas = document.createElement('canvas');
-    canvas.width = 500;
-    canvas.height = 500;
-    document.body.appendChild(canvas);
-    ctx = canvas.getContext('2d');
-}
-
-var t = 0;
-var x = grafar.range(0, 500, N);
-var i = grafar.ints(-2, 2);
-var colors = ['#0000ff', '#000088', '#000000', '#880000', '#ff0000'];
-
-var ix = grafar.cart([i, x]);
-var itemMap = function itemMap(i, x) {
-    return 200 + 200 * Math.sin(Math.sin(t * i) + Math.cos(i + x / 20));
-};
-var fn = (0, _bindMixin.volatile)(new _transforms.Map([itemMap]).cache(new grafar.Set(1)));
-var y = (0, _bindMixin.bind)(function (fn, arg) {
-    return fn.arg(arg).exec();
-}, fn, ix); // poor design with conext change
-var draw = (0, _bindMixin.bind)(function (ix, y) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    // very bad, can't bind zip for deep arg
-    (0, _combine.zip)([ix, y]).each(function (i, x, y) {
-        ctx.fillStyle = colors[i + 2];
-        ctx.fillRect(x, y, 1, 1);
-    });
-}, ix, y);
-
-[function () {
-    return t += .01;
-}, draw].forEach(_bindMixin.Tick.on);
-},{"./bind-mixin":1,"./combine":4,"./grafar":7,"./transforms":8}],6:[function(require,module,exports){
+var y = grafar.map(x, function (x) {
+  return 2 * x;
+});
+console.log(y().raw());
+},{"./grafar":7}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -406,11 +370,7 @@ exports.Generator = exports.ints = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _bufferNd = require('./buffer-nd');
-
-var _bufferNd2 = _interopRequireDefault(_bufferNd);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _Set = require('./Set');
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -467,19 +427,17 @@ var gens = {
 function ints(startLoc, end, targ) {
     var start = Math.ceil(startLoc);
     var size = Math.abs(Math.floor(end) + 1 - start);
-    targ = targ ? targ.size(size) : new _bufferNd2.default(1, size);
+    targ = targ ? targ.size(size) : new _Set.Set(1, size);
 
     return gens.int.setup({ start: start }).into(targ);
 }
 
 exports.ints = ints;
 exports.Generator = Generator;
-},{"./buffer-nd":3}],7:[function(require,module,exports){
+},{"./Set":2}],7:[function(require,module,exports){
 'use strict';
 
-var _bufferNd = require('./buffer-nd');
-
-var _bufferNd2 = _interopRequireDefault(_bufferNd);
+var _Set = require('./Set');
 
 var _generators = require('./generators');
 
@@ -495,44 +453,60 @@ var _microseconds2 = _interopRequireDefault(_microseconds);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var grafar = {
+var grafar = Object.freeze({
     version: '3.0.0',
 
     ints: _generators.ints,
 
     set: function set(arr) {
-        var immutable = arr.slice();
-        var size = arr.length;
-        return new _generators.Generator(function (i) {
-            return immutable[i];
-        }).into(new _bufferNd2.default(1, size));
+        var clone = arr.slice();
+        var size = clone.length;
+        return (0, _bindMixin.bind)(function (x) {
+            return x;
+        }, new _generators.Generator(function (i) {
+            return clone[i];
+        }).into(new _Set.Set(1, size)));
     },
 
     range: function range(start, end, size) {
         var step = (end - start) / (size - 1);
-        return new _generators.Generator(function (i) {
+        return (0, _bindMixin.bind)(function (x) {
+            return x;
+        }, new _generators.Generator(function (i) {
             return start + step * i;
-        }).into(new _bufferNd2.default(1, size));
+        }).into(new _Set.Set(1, size)));
     },
 
-    map: function map(sources, fn) {
-        throw new Error('map not ready');
+    point: function point(data) {
+        var wrapper = new _Set.Set(1, 1);
+        wrapper.raw()[0][0] = data;
+
+        return (0, _bindMixin.bind)(function (x) {
+            return x;
+        }, wrapper);
+    },
+
+    map: function map(source, fn) {
+        var compiledMap = new _transforms.Map(fn).arg(source()).cache(new _Set.Set(1));
+        return (0, _bindMixin.bind)(function () {
+            return compiledMap.exec();
+        }, source);
     },
 
     cart: function cart(comps) {
         var dim = comps.length;
-        return (0, _bindMixin.bind)(_combine.cart, comps, new _bufferNd2.default(dim)); // autocache
+        return (0, _bindMixin.bind)(_combine.cart, comps, new _Set.Set(dim));
     },
 
-    Set: _bufferNd2.default
-};
+    zip: _combine.zip
+});
 
 if (typeof window !== 'undefined') {
     window.grafar = grafar;
 }
 
 module.exports = grafar;
-},{"./bind-mixin":1,"./buffer-nd":3,"./combine":4,"./generators":6,"./transforms":8,"microseconds":10}],8:[function(require,module,exports){
+},{"./Set":2,"./bind-mixin":3,"./combine":4,"./generators":6,"./transforms":8,"microseconds":10}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -546,9 +520,7 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _bufferNd = require('./buffer-nd');
-
-var _bufferNd2 = _interopRequireDefault(_bufferNd);
+var _Set = require('./Set');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -630,7 +602,7 @@ var Map = function () {
         key: 'exec',
         value: function exec() {
             if (!this._cache) {
-                this.cache(new _bufferNd2.default(this._dimOut, this._arg.size()));
+                this.cache(new _Set.Set(this._dimOut, this._arg.size()));
             }
             this._cache.size(this._arg.size());
 
@@ -660,7 +632,7 @@ function each(src, fn) {
 exports.Map = Map;
 exports.map = map;
 exports.each = each;
-},{"./buffer-nd":3,"lodash":9}],9:[function(require,module,exports){
+},{"./Set":2,"lodash":9}],9:[function(require,module,exports){
 (function (global){
 /**
  * @license

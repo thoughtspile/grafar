@@ -1,4 +1,4 @@
-import Set from './buffer-nd';
+import { Set } from './Set';
 
 function mkGen() {
     // seed prevents premature inlining
@@ -12,10 +12,12 @@ class Generator  {
         this.gen = mkGen();
         this.fn = fn;
     }
+
     into(set) {
         this.gen(this.fn, set.raw()[0], set.size());
         return set;
     }
+    
     static into(fn, set) {
         mkGen()(fn, set.raw()[0], set.size());
         return set;

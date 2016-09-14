@@ -1,12 +1,8 @@
 'use strict';
 
-var _buffer1d = require('./buffer-1d');
+var _Buffer1d = require('./Buffer1d');
 
-var _buffer1d2 = _interopRequireDefault(_buffer1d);
-
-var _bufferNd = require('./buffer-nd');
-
-var _bufferNd2 = _interopRequireDefault(_bufferNd);
+var _Set = require('./Set');
 
 var _transforms = require('./transforms');
 
@@ -22,35 +18,35 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var log = console.log.bind(console);
 
-var buff = new _buffer1d2.default();
+var buff = new _Buffer1d.Buffer1d();
 console.log(buff, buff.size());
 buff.size(3);
 console.log(buff, buff.size());
 
-var set0d = new _bufferNd2.default();
+var set0d = new _Set.Set();
 console.log(set0d, set0d.size());
 
-var set2d = new _bufferNd2.default(2);
+var set2d = new _Set.Set(2);
 console.log(set2d, set2d.size());
 set2d.size(3);
 console.log(set2d, set2d.size());
 
 var comp1 = _generators.Generator.into(function (i) {
   return i + 1;
-}, new _bufferNd2.default(1, 3));
+}, new _Set.Set(1, 3));
 var comp2 = _generators.Generator.into(function (i) {
   return 10 * (i + 1);
-}, new _bufferNd2.default(1, 3));
+}, new _Set.Set(1, 3));
 (0, _combine.zip)([comp1, comp2], set2d);
 console.log('zip: ', comp1.raw(), comp2.raw(), set2d.raw());
 
-var set1d = new _bufferNd2.default(1, 3);
+var set1d = new _Set.Set(1, 3);
 (0, _transforms.map)(set2d, function (x, y) {
   return x + y;
 }, set1d);
 console.log('sum:', set1d.raw());
 
-var targ2d = new _bufferNd2.default(2, 3);
+var targ2d = new _Set.Set(2, 3);
 (0, _transforms.map)(set2d, [function (x, y) {
   return x + y;
 }, function (x, y) {
@@ -67,16 +63,16 @@ console.log('\n\t{0, 1}');
 (0, _transforms.each)(int2, log);
 
 console.log('\n\tdouble cube');
-(0, _transforms.each)((0, _combine.cart)([int2, int2], new _bufferNd2.default(2, 4)), log);
+(0, _transforms.each)((0, _combine.cart)([int2, int2], new _Set.Set(2, 4)), log);
 
 console.log('\n\ttriple cube');
-var sqr3 = (0, _combine.cart)([int2, int2, int2], new _bufferNd2.default(3, 8));
+var sqr3 = (0, _combine.cart)([int2, int2, int2], new _Set.Set(3, 8));
 (0, _transforms.each)(sqr3, log);
 
 console.log('\n\titerative triple cube');
-var step1 = (0, _combine.cart)([int2, int2], new _bufferNd2.default(2));
+var step1 = (0, _combine.cart)([int2, int2], new _Set.Set(2));
 console.log('\nstep 1');
 (0, _transforms.each)(step1, log);
-var step2 = (0, _combine.cart)([step1, int2], new _bufferNd2.default(3));
+var step2 = (0, _combine.cart)([step1, int2], new _Set.Set(3));
 console.log('\nstep 2');
 (0, _transforms.each)(step2, log);

@@ -7,11 +7,7 @@ exports.Generator = exports.ints = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _bufferNd = require('./buffer-nd');
-
-var _bufferNd2 = _interopRequireDefault(_bufferNd);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _Set = require('./Set');
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -68,7 +64,7 @@ var gens = {
 function ints(startLoc, end, targ) {
     var start = Math.ceil(startLoc);
     var size = Math.abs(Math.floor(end) + 1 - start);
-    targ = targ ? targ.size(size) : new _bufferNd2.default(1, size);
+    targ = targ ? targ.size(size) : new _Set.Set(1, size);
 
     return gens.int.setup({ start: start }).into(targ);
 }

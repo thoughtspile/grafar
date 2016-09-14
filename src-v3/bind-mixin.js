@@ -16,7 +16,6 @@ export class Tick {
 
     static execute() {
         _counter++;
-        console.log(Date.now() - last);
         last = Date.now();
         _actions.forEach(fn => fn());
     }
@@ -47,13 +46,15 @@ export function volatile(arg) {
     return boundfn;
 }
 
+
+/*
+ */
 export function bind(fn, ...args) {
     if (!fn) {
         if (args.length > 1) {
             throw new Error('Can\'t const-bind multiple args');
         }
         if (args[0]._isBound) {
-            console.log('skip rebind');
             return args[0];
         }
         return bindConst(args[0]);
@@ -76,6 +77,7 @@ export function bind(fn, ...args) {
     };
     boundfn.updatedAt = () => Math.max(parentUpdatedAt(), _updatedTick);
     boundfn._isBound = true;
+    boundfn.invalidate = () => { forceUpdate = true; };
 
     return boundfn;
 }
