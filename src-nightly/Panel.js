@@ -209,5 +209,4 @@ function drawTextLabel(mat, str) {
 	return drawTextLabel(mat, str);
 }
 
-
-_G.Panel = Panel;
+export { Panel }

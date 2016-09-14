@@ -1,8 +1,8 @@
 import { global } from './contextBusterHack';
 import { pool } from './arrayPool';
+import { Panel } from './Panel';
 
 var _G = global.grafar,
-    Panel = _G.Panel,
     config = _G.config,
 
 	_T = global.THREE,
