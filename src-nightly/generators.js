@@ -207,12 +207,11 @@ function newton(pt, f, gradf, acceptNeg, maxIter) {
 	return pt;
 }
 
-
-// exports
-
-_G.constant = constant;
-_G.ints = ints;
-_G.seq = seq;
-_G.logseq = logseq;
-_G.traceZeroSet = traceZeroSet;
-_G.pow = pow;
+export {
+	constant,
+	ints,
+	seq,
+	logseq,
+	traceZeroSet,
+	pow
+}

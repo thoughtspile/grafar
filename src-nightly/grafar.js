@@ -7,7 +7,6 @@ import * as utils from './utils';
 import * as arrayPool from './arrayPool';
 import * as setUtils from './setUtils';
 import * as vectorUtils from './vectorUtils';
-import * as miscUtils from './miscUtils';
 import * as arrayUtils from './arrayUtils';
 import * as GraphData from './GraphData';
 import * as Parser from './Parser';
@@ -23,7 +22,13 @@ import * as UI from './UI';
 import { Style } from './Style';
 import { Panel } from './Panel';
 import { GrafarObject } from './GrafarObject';
+import * as generators from './generators';
+
 
 global.grafar.Style = Style;
 global.grafar.Panel = Panel;
 global.grafar.Object = GrafarObject;
+
+Object.keys(generators).forEach(key => {
+	global.grafar[key] = generators[key];
+});
