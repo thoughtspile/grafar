@@ -3,9 +3,9 @@ import { resizeBuffer } from './glUtils';
 import { incArray, timesArray } from './arrayUtils';
 import { pool } from './arrayPool';
 import { firstMatch } from './setUtils';
+import { Reactive } from './Reactive';
 
 var _G = global.grafar;
-var Reactive = _G.Reactive;
 
 
 function pathGraph(srcDummy, target) {

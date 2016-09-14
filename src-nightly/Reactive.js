@@ -73,4 +73,4 @@ Reactive.prototype.value = function() {
 };
 
 
-grafar.Reactive = Reactive;
+export { Reactive }

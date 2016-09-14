@@ -7,12 +7,12 @@ import { pool } from './arrayPool';
 import { emptyGraph, pathGraph, cartesianGraphProd } from './topology';
 import { Style } from './Style';
 import { nunion } from './setUtils';
+import { Reactive } from './Reactive';
 
 var _G = global.grafar,
     baseTranslate = _G.baseTranslate,
 
-    Graph = _G.GraphR,
-    Reactive = _G.Reactive;
+    Graph = _G.GraphR;
 
 
 function Object(opts) {
