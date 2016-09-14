@@ -204,8 +204,9 @@ function makeFaces(src, target) {
     target.pointCount = accum.pointCount;
 };
 
-
-_G.emptyGraph = emptyGraph;
-_G.pathGraph = pathGraph;
-_G.cartesianGraphProd = cartesianGraphProd;
-_G.makeFaces = makeFaces;
+export {
+	emptyGraph,
+	pathGraph,
+	cartesianGraphProd,
+	makeFaces
+}

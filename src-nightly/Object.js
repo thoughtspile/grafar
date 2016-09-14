@@ -1,16 +1,15 @@
 import { global } from './contextBusterHack';
+
 import { isExisty, asArray } from './utils';
 import { InstanceGL, interleave, resizeBuffer } from './glUtils';
 import { Buffer } from './arrayUtils';
 import { pool } from './arrayPool';
+import { emptyGraph, pathGraph, cartesianGraphProd } from './topology';
 
 var _G = global.grafar,
 	Style = _G.Style,
     nunion = _G.nunion,
     baseTranslate = _G.baseTranslate,
-    pathGraph = _G.pathGraph,
-    emptyGraph = _G.emptyGraph,
-    cartesianGraphProd = _G.cartesianGraphProd,
 
     Graph = _G.GraphR,
     Reactive = _G.Reactive;

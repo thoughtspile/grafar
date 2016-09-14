@@ -1,13 +1,10 @@
 import { global } from './contextBusterHack';
 import { resizeBuffer } from './glUtils';
 import { Buffer, blockRepeat } from './arrayUtils';
+import { emptyGraph, pathGraph, cartesianGraphProd, makeFaces } from './topology';
 
 var _G = global.grafar;
 var Reactive = _G.Reactive;
-var emptyGraph = _G.emptyGraph;
-var pathGraph = _G.pathGraph;
-var cartesianGraphProd = _G.cartesianGraphProd;
-var makeFaces = _G.makeFaces;
 var nunion = _G.nunion;
 
 
