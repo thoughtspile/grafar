@@ -15,7 +15,7 @@ var _G = global.grafar,
     Graph = _G.GraphR;
 
 
-function Object(opts) {
+function GrafarObject(opts) {
 	this.datasets = {};
     this.projections = {};
 
@@ -25,7 +25,7 @@ function Object(opts) {
     this.col = Style.randColor();
 }
 
-Object.prototype.pin = function(panel) {
+GrafarObject.prototype.pin = function(panel) {
     var instance = new InstanceGL(panel, this.col);
 	this.glinstances.push(instance);
     // var graph = new Reactive().lift(function(proj){
@@ -36,7 +36,7 @@ Object.prototype.pin = function(panel) {
 
 };
 
-Object.prototype.constrain = function(constraint) {
+GrafarObject.prototype.constrain = function(constraint) {
 	var names = asArray(constraint.what || []),
 		using = asArray(constraint.using || []),
 		as = constraint.as || function() {},
@@ -111,7 +111,7 @@ Object.prototype.constrain = function(constraint) {
 	return this;
 };
 
-Object.prototype.colorize = function(args) {
+GrafarObject.prototype.colorize = function(args) {
 	var using = asArray(args.using || []),
 		as = args.as || function() {};
 
@@ -128,7 +128,7 @@ Object.prototype.colorize = function(args) {
 	return this;
 };
 
-Object.prototype.project = function(names, proxy) {
+GrafarObject.prototype.project = function(names, proxy) {
     var names = asArray(names || []);
     var namesHash = names.slice().sort().toString();
     if (!this.projections.hasOwnProperty(namesHash)) {
@@ -147,7 +147,7 @@ Object.prototype.project = function(names, proxy) {
 	return this.projections[namesHash];
 };
 
-Object.prototype.refresh = function() {
+GrafarObject.prototype.refresh = function() {
 	for (var i = 0; i < this.glinstances.length; i++) {
 		var instance = this.glinstances[i];
 		var tab = this.project(instance.panel._axes, false);
@@ -177,19 +177,18 @@ Object.prototype.refresh = function() {
 	return this;
 };
 
-Object.prototype.run = function() {
+GrafarObject.prototype.run = function() {
     this.refresh();
     window.requestAnimationFrame(this.run.bind(this));
     return this;
 };
 
-Object.prototype.hide = function(hide) {
+GrafarObject.prototype.hide = function(hide) {
 	for (var i = 0; i < this.glinstances.length; i++)
 		this.glinstances[i].object.visible = !hide;
 	return this;
 };
 
-Object.prototype.reset = function() {return this;};
+GrafarObject.prototype.reset = function() {return this;};
 
-
-_G.Object = Object;
+export { GrafarObject }

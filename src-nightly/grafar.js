@@ -15,7 +15,6 @@ import * as Reactive from './Reactive';
 import * as glUtils from './glUtils';
 import * as topology from './topology';
 import * as Graph from './Graph';
-import * as Object from './Object';
 import * as MathSystem from './MathSystem';
 import * as Observable from './Observable';
 import * as demos from './demos';
@@ -23,6 +22,8 @@ import * as UI from './UI';
 
 import { Style } from './Style';
 import { Panel } from './Panel';
+import { GrafarObject } from './GrafarObject';
 
 global.grafar.Style = Style;
 global.grafar.Panel = Panel;
+global.grafar.Object = GrafarObject;
