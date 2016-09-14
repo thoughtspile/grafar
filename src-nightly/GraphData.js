@@ -62,4 +62,4 @@ GraphData.prototype.down = function(sinks) {
 	return closed;
 };
 
-_G.GraphData = GraphData;
+export { GraphData }
