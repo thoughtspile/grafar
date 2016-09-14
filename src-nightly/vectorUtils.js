@@ -1,8 +1,3 @@
-import { global } from './contextBusterHack';
-
-var _G = global.grafar;
-
-
 function zeroVector(len) {
 	var zero = [];
 	for (var i = 0; i < len; i++)
@@ -43,9 +38,10 @@ function dist(a, b) {
 	return abDist;
 }
 
-
-_G.zeroVector = zeroVector;
-_G.dot = dot;
-_G.norm = norm;
-_G.norm2 = norm2;
-_G.dist = dist;
+export {
+	zeroVector,
+	dot,
+	norm,
+	norm2,
+	dist
+}

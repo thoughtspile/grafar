@@ -1,8 +1,7 @@
 import { global } from './contextBusterHack';
+import { dot, norm } from './vectorUtils';
 
 var _G = global.grafar,
-	dot = _G.dot,
-	norm = _G.norm,
 	arraySum = _G.arraySum,
 	arrayTimes = _G.arrayTimes,
 	config = _G.config.grafaryaz;
