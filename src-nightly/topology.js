@@ -1,11 +1,11 @@
 import { global } from './contextBusterHack';
+import { resizeBuffer } from './glUtils';
 
 var _G = global.grafar;
 var Reactive = _G.Reactive;
 var pool = _G.pool;
 var incArray = _G.incArray;
 var timesArray = _G.timesArray;
-var resizeBuffer = _G.resizeBuffer;
 var firstMatch = _G.firstMathch;
 
 

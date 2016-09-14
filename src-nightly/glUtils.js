@@ -110,6 +110,8 @@ function InstanceGL(panel, col) {
 };
 
 
-_G.InstanceGL = InstanceGL;
-_G.interleave = interleave;
-_G.resizeBuffer = resizeBuffer;
+export {
+	InstanceGL,
+	interleave,
+	resizeBuffer
+}
