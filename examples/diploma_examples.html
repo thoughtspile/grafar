@@ -3,39 +3,36 @@
 <html lang="en">
 <head>
 	<title>testbox</title>
-	
+
 	<link rel="stylesheet" type="text/css" href="stylesheets/testbox_style.css" media="screen" />
-	
+
     <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 </head>
 
 <body>
 	<div id = "render">
-	
-	<script type="text/javascript" src="../loader.js"></script>
+
+	<script type="text/javascript" src="../build/grafar.js"></script>
 	<script type="text/javascript">
-		runGrafar(function() {
-			var pan3d = new grafar.Panel(document.getElementById('render')),//.setAxes(['x','y']),
-				graph = new grafar.ObjectR().pin(pan3d);
-							
-			graph.constrain({what: 'ang', maxlen: 40, as: grafar.seq(-Math.PI, Math.PI, 'ang')})
-                .constrain({what: 'dist', maxlen: 40, as: grafar.seq(0, Math.atan(60), 'dist')})
-                .constrain({what: 'x,y', using: 'ang, dist', as: function(data, l) {
-                    for (var i = 0; i < l; i++) {
-                        data.x[i] = Math.sin(data.ang[i]) * Math.tan(data.dist[i]);
-                        data.y[i] = Math.cos(data.ang[i]) * Math.tan(data.dist[i]);
-                    }
-                }})
-                .constrain({what: 'z', using: 'x,y', as: function(data, l) {
-                    for (var i = 0; i < l; i++)
-                        data.z[i] = Math.sin(data.x[i]) * Math.cos(data.y[i]) * Math.exp(-(Math.pow(data.x[i], 2) + Math.pow(data.x[i], 2))/600);
-                }})
-                .refresh();
-            
-			pan3d.camera.position.set(0, 250, 0);
-            pan3d.axisObject.visible = false;
-            
-		}, '../');
+		var pan3d = new grafar.Panel(document.getElementById('render')),//.setAxes(['x','y']),
+			graph = new grafar.ObjectR().pin(pan3d);
+
+		graph.constrain({what: 'ang', maxlen: 40, as: grafar.seq(-Math.PI, Math.PI, 'ang')})
+            .constrain({what: 'dist', maxlen: 40, as: grafar.seq(0, Math.atan(60), 'dist')})
+            .constrain({what: 'x,y', using: 'ang, dist', as: function(data, l) {
+                for (var i = 0; i < l; i++) {
+                    data.x[i] = Math.sin(data.ang[i]) * Math.tan(data.dist[i]);
+                    data.y[i] = Math.cos(data.ang[i]) * Math.tan(data.dist[i]);
+                }
+            }})
+            .constrain({what: 'z', using: 'x,y', as: function(data, l) {
+                for (var i = 0; i < l; i++)
+                    data.z[i] = Math.sin(data.x[i]) * Math.cos(data.y[i]) * Math.exp(-(Math.pow(data.x[i], 2) + Math.pow(data.x[i], 2))/600);
+            }})
+            .refresh();
+
+		pan3d.camera.position.set(0, 250, 0);
+        pan3d.axisObject.visible = false;
 	</script>
 
 	</body>

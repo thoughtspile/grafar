@@ -3,37 +3,34 @@
 <html lang="en">
 <head>
 	<title>testbox</title>
-	
+
 	<link rel="stylesheet" type="text/css" href="stylesheets/testbox_style.css" media="screen" />
-	
+
     <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 </head>
 
 <body>
 	<div id = "render">
-	
-	<script type="text/javascript" src="../loader.js"></script>
+
+	<script type="text/javascript" src="../build/grafar.js"></script>
 	<script type="text/javascript">
-		runGrafar(function() {
-			var pan3d = new grafar.Panel(document.getElementById('render')).setAxes(['x','y']),
-				graph = new grafar.Object().pin(pan3d);
-							
-            var eps = .00001;
-			graph.constrain({what: 'i', maxlen: 11, as: grafar.seq(-5, 5, 'i', false, true)})
-                .constrain({what: 't', maxlen: 30, as: grafar.seq(-Math.PI / 2 + eps, Math.PI / 2 - eps, 't')})
-                .constrain({what: 'x', using: 'i, t', as: function(data, l) {
-                    for (var i = 0; i < l; i++)
-                        data.x[i] = Math.PI * data.i[i] + data.t[i];
-                }})
-                .constrain({what: 'y', using: 'x', as: function(data, l) {
-                    for (var i = 0; i < l; i++)
-                        data.y[i] = Math.tan(data.x[i]);
-                }})
-                .refresh();
-            
-			pan3d.camera.position.set(0, 250, 0);
-            
-		}, '../');
+		var pan3d = new grafar.Panel(document.getElementById('render')).setAxes(['x','y']),
+			graph = new grafar.Object().pin(pan3d);
+
+        var eps = .00001;
+		graph.constrain({what: 'i', maxlen: 11, as: grafar.seq(-5, 5, 'i', false, true)})
+            .constrain({what: 't', maxlen: 30, as: grafar.seq(-Math.PI / 2 + eps, Math.PI / 2 - eps, 't')})
+            .constrain({what: 'x', using: 'i, t', as: function(data, l) {
+                for (var i = 0; i < l; i++)
+                    data.x[i] = Math.PI * data.i[i] + data.t[i];
+            }})
+            .constrain({what: 'y', using: 'x', as: function(data, l) {
+                for (var i = 0; i < l; i++)
+                    data.y[i] = Math.tan(data.x[i]);
+            }})
+            .refresh();
+
+		pan3d.camera.position.set(0, 250, 0);
 	</script>
 
 	</body>

@@ -3,56 +3,53 @@
 <html lang="en">
 <head>
 	<title>testbox</title>
-	
+
 	<link rel="stylesheet" type="text/css" href="stylesheets/testbox_style.css" media="screen" />
-	
+
     <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 </head>
 
 <body>
 	<div id = "render">
-	
-	<script type="text/javascript" src="../loader.js"></script>
+
+	<script type="text/javascript" src="../build/grafar.js"></script>
 	<script type="text/javascript">
-		runGrafar(function() {
-            grafar.config.debug = false;
-			var pan3d = new grafar.Panel(document.getElementById('render')).setAxes(['x','y']),
-				graph = new grafar.Object().pin(pan3d),
-                len = .05;
-							
-			graph.constrain({what: 'q', maxlen: 30, as: grafar.seq(-2.1, 2.1, 'q'), discrete: true})
-                .constrain({what: 'p', maxlen: 30, as: grafar.seq(-2.1, 2.1, 'p'), discrete: true})
-                .constrain({what: 'e', maxlen: 2, as: grafar.seq(-len, len, 'e')})
-                .constrain({what: 't', maxlen: 1, as: function(data) {
-                    data.t[0] = 0;
-                }})
-                .constrain({what: 'x,y', using: 'p,q,e,t', as: function(data, l) {
+        grafar.config.debug = false;
+		var pan3d = new grafar.Panel(document.getElementById('render')).setAxes(['x','y']),
+			graph = new grafar.Object().pin(pan3d),
+            len = .05;
+
+		graph.constrain({what: 'q', maxlen: 30, as: grafar.seq(-2.1, 2.1, 'q'), discrete: true})
+            .constrain({what: 'p', maxlen: 30, as: grafar.seq(-2.1, 2.1, 'p'), discrete: true})
+            .constrain({what: 'e', maxlen: 2, as: grafar.seq(-len, len, 'e')})
+            .constrain({what: 't', maxlen: 1, as: function(data) {
+                data.t[0] = 0;
+            }})
+            .constrain({what: 'x,y', using: 'p,q,e,t', as: function(data, l) {
+                for (var i = 0; i < l; i++) {
+                    var n = Math.sqrt(1 + Math.pow(data.q[i], 2));
+                    data.x[i] = data.q[i] + data.e[i] / n;
+                    data.y[i] = data.p[i] + data.e[i] * data.q[i] / n;
+                }
+            }})
+            .refresh();
+
+		pan3d.camera.position.set(0, 5, 0);
+        var t = 0;
+        (function up() {
+            console.log(t);
+            var ang = 2.7 * Math.pow(Math.sin(t / 50), 3);
+            graph.constrain({what: 'x,y', using: 'p,q,e,t', as: function(data, l) {
                     for (var i = 0; i < l; i++) {
-                        var n = Math.sqrt(1 + Math.pow(data.q[i], 2));
+                        var n = Math.sqrt(1 + Math.pow(ang * data.p[i], 2));
                         data.x[i] = data.q[i] + data.e[i] / n;
-                        data.y[i] = data.p[i] + data.e[i] * data.q[i] / n;
+                        data.y[i] = data.p[i] + ang * data.e[i] * data.p[i] / n;
                     }
                 }})
                 .refresh();
-            
-			pan3d.camera.position.set(0, 5, 0);
-            var t = 0;
-            (function up() {
-                console.log(t);
-                var ang = 2.7 * Math.pow(Math.sin(t / 50), 3);
-                graph.constrain({what: 'x,y', using: 'p,q,e,t', as: function(data, l) {
-                        for (var i = 0; i < l; i++) {
-                            var n = Math.sqrt(1 + Math.pow(ang * data.p[i], 2));
-                            data.x[i] = data.q[i] + data.e[i] / n;
-                            data.y[i] = data.p[i] + ang * data.e[i] * data.p[i] / n;
-                        }
-                    }})
-                    .refresh();
-                t++;
-                window.requestAnimationFrame(up);
-            }())
-            
-		}, '../');
+            t++;
+            window.requestAnimationFrame(up);
+        }())
 	</script>
 
 	</body>

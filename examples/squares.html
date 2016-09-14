@@ -19,39 +19,37 @@
 
 <body>
 	<figure class="panel" id="plot_area"></figure>
-	
-	<script type="text/javascript" src = "../loader.js"></script>
+
+	<script type="text/javascript" src="../build/grafar.js"></script>
 	<script type="text/javascript">
-		runGrafar(function() {
-			var pan = new grafar.Panel(document.getElementById('plot_area')).setAxes(['x', 'y']),
-				sides = [];
-				
-			for (var i = 0; i < 4; i++) {
-				sides.push(new grafar.Object()
-					.constrain({what: 't', maxlen: 30, as: grafar.seq(-2, 2, 't')})
-					.pin(pan)
-				);
-			}
-			
-			sides[0].constrain(grafar.ductConstraint('x == t * sin(ang) + 1'))
-				.constrain(grafar.ductConstraint('y == t * cos(ang)'));
-			sides[1].constrain({what: 'x', using: 't, ang', as: grafar.ductGenerator('t * cos(ang)', 'x')})
-				.constrain({what: 'y', using: 't, ang', as: grafar.ductGenerator('t * sin(-ang) + 1', 'y')});
-			sides[2].constrain({what: 'x', using: 't, ang', as: grafar.ductGenerator('t * sin(ang) - 1', 'x')})
-				.constrain({what: 'y', using: 't, ang', as: grafar.ductGenerator('t * cos(ang)', 'y')});
-			sides[3].constrain({what: 'x', using: 't, ang', as: grafar.ductGenerator('t * cos(ang)', 'x')})
-				.constrain({what: 'y', using: 't, ang', as: grafar.ductGenerator('t * sin(-ang) - 1', 'y')});
-			
-			
-			var anim = new grafar.Process(new grafar.Timer(1400), function (t) {
-				for (var i = 0; i < 4; i++)
-					sides[i].constrain({what: 'ang', maxlen: 1, as: grafar.constant(t, 'ang')}).refresh();
-			}).start();
-			
-			document.getElementById('plot_area').addEventListener('click', function() {
-				anim.active? anim.stop(): anim.start();
-			});
-		}, '../');
+		var pan = new grafar.Panel(document.getElementById('plot_area')).setAxes(['x', 'y']),
+			sides = [];
+
+		for (var i = 0; i < 4; i++) {
+			sides.push(new grafar.Object()
+				.constrain({what: 't', maxlen: 30, as: grafar.seq(-2, 2, 't')})
+				.pin(pan)
+			);
+		}
+
+		sides[0].constrain(grafar.ductConstraint('x == t * sin(ang) + 1'))
+			.constrain(grafar.ductConstraint('y == t * cos(ang)'));
+		sides[1].constrain({what: 'x', using: 't, ang', as: grafar.ductGenerator('t * cos(ang)', 'x')})
+			.constrain({what: 'y', using: 't, ang', as: grafar.ductGenerator('t * sin(-ang) + 1', 'y')});
+		sides[2].constrain({what: 'x', using: 't, ang', as: grafar.ductGenerator('t * sin(ang) - 1', 'x')})
+			.constrain({what: 'y', using: 't, ang', as: grafar.ductGenerator('t * cos(ang)', 'y')});
+		sides[3].constrain({what: 'x', using: 't, ang', as: grafar.ductGenerator('t * cos(ang)', 'x')})
+			.constrain({what: 'y', using: 't, ang', as: grafar.ductGenerator('t * sin(-ang) - 1', 'y')});
+
+
+		var anim = new grafar.Process(new grafar.Timer(1400), function (t) {
+			for (var i = 0; i < 4; i++)
+				sides[i].constrain({what: 'ang', maxlen: 1, as: grafar.constant(t, 'ang')}).refresh();
+		}).start();
+
+		document.getElementById('plot_area').addEventListener('click', function() {
+			anim.active? anim.stop(): anim.start();
+		});
 	</script>
 </body>
 </html>

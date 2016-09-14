@@ -19,34 +19,32 @@
 
 <body>
 	<figure class="panel" id="plot_area"></figure>
-	
-	<script type="text/javascript" src="../loader.js"></script>
+
+	<script type="text/javascript" src="../build/grafar.js"></script>
 	<script type="text/javascript">
-		runGrafar(function() {
-			var pan = new grafar.Panel(document.getElementById('plot_area')).drawAxes(0),
-                outr = 2, inr = .6;
-                
-            var graph = new grafar.Object()
-                .constrain({what: 'a', maxlen: 100, as: grafar.seq(0, 2 * Math.PI, 'a')})
-                .constrain({what: 'b', maxlen: 100, as: grafar.seq(0, 2 * Math.PI, 'b')})
-                .constrain({what: 'x', using: 'a, b', as: function(data, l) {
-                    var a = data.a, b = data.b;
-                    for (var i = 0; i < l; i++)
-                        data.x[i] = outr * Math.sin(3 * a[i]) / (2 + Math.cos(b[i]));
-                }})
-                .constrain({what: 'y', using: 'a, b', as: function(data, l) {
-                    var a = data.a, b = data.b;
-                    for (var i = 0; i < l; i++)
-                        data.y[i] = outr * (Math.sin(a[i]) + 2 * Math.sin(2 * a[i])) / (2 + Math.cos(b[i] + Math.PI * 2 / 3));
-                }})
-                .constrain({what: 'z', using: 'a, b', as: function(data, l) {
-                    var a = data.a, b = data.b;
-                    for (var i = 0; i < l; i++)
-                        data.z[i] = outr / 2 * (Math.cos(a[i]) - 2 * Math.sin(2 * a[i])) * (2 + Math.cos(b[i])) * (2 + Math.cos(b[i] + Math.PI * 2 / 3)) / 4;
-                }})
-                .pin(pan)
-                .refresh();
-		}, '../');
+		var pan = new grafar.Panel(document.getElementById('plot_area')).drawAxes(0),
+            outr = 2, inr = .6;
+
+        var graph = new grafar.Object()
+            .constrain({what: 'a', maxlen: 100, as: grafar.seq(0, 2 * Math.PI, 'a')})
+            .constrain({what: 'b', maxlen: 100, as: grafar.seq(0, 2 * Math.PI, 'b')})
+            .constrain({what: 'x', using: 'a, b', as: function(data, l) {
+                var a = data.a, b = data.b;
+                for (var i = 0; i < l; i++)
+                    data.x[i] = outr * Math.sin(3 * a[i]) / (2 + Math.cos(b[i]));
+            }})
+            .constrain({what: 'y', using: 'a, b', as: function(data, l) {
+                var a = data.a, b = data.b;
+                for (var i = 0; i < l; i++)
+                    data.y[i] = outr * (Math.sin(a[i]) + 2 * Math.sin(2 * a[i])) / (2 + Math.cos(b[i] + Math.PI * 2 / 3));
+            }})
+            .constrain({what: 'z', using: 'a, b', as: function(data, l) {
+                var a = data.a, b = data.b;
+                for (var i = 0; i < l; i++)
+                    data.z[i] = outr / 2 * (Math.cos(a[i]) - 2 * Math.sin(2 * a[i])) * (2 + Math.cos(b[i])) * (2 + Math.cos(b[i] + Math.PI * 2 / 3)) / 4;
+            }})
+            .pin(pan)
+            .refresh();
 	</script>
 </body>
 </html>
