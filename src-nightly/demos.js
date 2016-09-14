@@ -1,8 +1,4 @@
-import { global } from './contextBusterHack';
-
-var _G = global.grafar || (global.grafar = {});
-
-var demos = {
+export const demos = {
 	explicit: [
 		'sqrt(x^2+y^2)',
 		'exp(x*y)',
@@ -45,8 +41,3 @@ var demos = {
 	complex: [
 	]
 };
-
-
-// export
-
-_G.demos = demos;
