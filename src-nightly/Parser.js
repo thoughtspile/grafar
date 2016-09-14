@@ -1,8 +1,4 @@
-import { global } from './contextBusterHack';
 import { unique } from './setUtils';
-
-var _G = global.grafar;
-
 
 var prefixes = {
 	sin: 'Math.sin',
@@ -122,4 +118,4 @@ Parser.parse = function(str) {
 };
 
 
-_G.ParserAlt = Parser;
+export { Parser as ParserAlt }

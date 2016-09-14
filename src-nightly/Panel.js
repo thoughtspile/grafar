@@ -2,12 +2,12 @@ import { global } from './contextBusterHack';
 import { isExisty, makeID } from './utils';
 import { pool } from './arrayPool';
 import { Observable } from './Observable';
+import { config } from './config';
 
 var _G = global.grafar,
 	Detector = global.Detector,
 	THREE = global.THREE,
-	Stats = global.Stats,
-	config = _G.config;
+	Stats = global.Stats;
 
 var panels = _G.panels,
 	Renderer = THREE.WebGLRenderer.bind(null, {antialias: config.antialias});

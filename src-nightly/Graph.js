@@ -1,11 +1,8 @@
-import { global } from './contextBusterHack';
 import { resizeBuffer } from './glUtils';
 import { Buffer, blockRepeat } from './arrayUtils';
 import { emptyGraph, pathGraph, cartesianGraphProd, makeFaces } from './topology';
 import { nunion } from './setUtils';
 import { Reactive } from './Reactive';
-
-var _G = global.grafar;
 
 function Graph() {
     this.data = new Reactive(new Buffer());

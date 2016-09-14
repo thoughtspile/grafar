@@ -1,7 +1,4 @@
-import { global } from './contextBusterHack';
-
-var _G = global.grafar;
-
+const global = window;
 
 global.Float32Array = global.Float32Array || Array;
 global.Uint32Array = global.Uint32Array || Array;

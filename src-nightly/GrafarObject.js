@@ -1,5 +1,3 @@
-import { global } from './contextBusterHack';
-
 import { isExisty, asArray } from './utils';
 import { InstanceGL, interleave, resizeBuffer } from './glUtils';
 import { Buffer } from './arrayUtils';
@@ -9,10 +7,6 @@ import { Style } from './Style';
 import { nunion } from './setUtils';
 import { Reactive } from './Reactive';
 import { Graph } from './Graph';
-
-var _G = global.grafar,
-    baseTranslate = _G.baseTranslate;
-
 
 function GrafarObject(opts) {
 	this.datasets = {};

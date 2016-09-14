@@ -2,9 +2,10 @@ import { global } from './contextBusterHack';
 import { isExisty } from './utils';
 import { firstMatch, haveCommon, union, unique, setMinus } from './setUtils';
 import { seq, traceZeroSet } from './generators';
+import { config } from './config';
 
 var _G = global.grafar,
-	parserConfig = _G.config.grafaryaz,
+	parserConfig = config.grafaryaz,
 	stats = _G.stats,
 
 	Plan = _G.Plan;

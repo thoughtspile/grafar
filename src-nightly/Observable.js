@@ -1,7 +1,4 @@
-import { global } from './contextBusterHack';
 import { isExisty, makeID } from './utils';
-
-var _G = global.grafar;
 
 var objects = {};
 

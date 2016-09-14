@@ -1,10 +1,6 @@
-import { global } from './contextBusterHack';
 import { isExisty } from './utils';
 import { repeatArray, blockRepeat, repeatPoints } from './arrayUtils';
 import { union, setpush as setPush, setpop as setPop } from './setUtils';
-
-var grafar = global.grafar;
-
 
 var Reactive = function(data) {
     this.sources = [];

@@ -1,12 +1,8 @@
-import { global } from './contextBusterHack';
 import { resizeBuffer } from './glUtils';
 import { incArray, timesArray } from './arrayUtils';
 import { pool } from './arrayPool';
 import { firstMatch } from './setUtils';
 import { Reactive } from './Reactive';
-
-var _G = global.grafar;
-
 
 function pathGraph(srcDummy, target) {
 	var edgeCount = target.pointCount - 1;

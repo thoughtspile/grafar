@@ -1,10 +1,8 @@
-import { global } from './contextBusterHack';
 import { dot, norm } from './vectorUtils';
 import { arraySum, arrayTimes } from './arrayUtils';
+import { config as fullConfig } from './config';
 
-var _G = global.grafar,
-	config = _G.config.grafaryaz;
-
+const config = fullConfig.grafaryaz;
 
 function zeros(arr, l) {
 	for (var i = 0; i < l; i++)
