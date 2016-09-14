@@ -1,0 +1,119 @@
+﻿<!doctype html>
+
+<html>
+
+<head>
+	<meta charset = 'utf-8'/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>VisualMath: Производная по направлению</title>
+	<style>
+	.clear{
+		clear: both;
+	}
+	</style>
+	<link rel='stylesheet' href='../../css/eulerface_layout.css' media='screen' />
+	<link rel='stylesheet' href='../../css/eulerface_inline.css' media='screen' />
+	<link rel='stylesheet' href='../../css/eulerface_select.css' media='screen' />
+	<link rel='stylesheet' href='../lagrange_style.css' media='screen' />
+</head>
+
+<body lang = 'ru'>
+	<header id = 'mainBar'>
+		<nav id = 'siteNav'>
+			<h1 id = 'logo'></h1>
+		</nav>
+		<nav id = 'lessonNav'>
+		</nav>
+	</header>
+
+	<article class = 'articleContent'>
+		<div id = 'articleHeader'>
+
+		<h1 id = 'articleTitle' class="clear">Центр масс</h1>
+	</div>
+
+		<div style="width:100%; float:left;">
+			<p>
+			<strong>Центр масс изображенной системы находится по формуле:  &nbsp &nbsp  $R = \frac{m_1r_1 + m_2r_2}{m_1+m_2}$ </strong>
+			<!-- </p>
+			где $m_1,m_2$ - массы шаров, $r_1,r_2$ - радиус-вектор
+			</p> -->
+
+         </p>
+
+		Для синего шара:
+		&nbsp &nbsp &nbsp  $m_1$:
+		<input id = "m_blue" type = "number" min = "1" max = "1000" step = "0.5" value = "15" style = "width:40px">
+	    ,&nbsp &nbsp $r_1$:
+		<input id = "sl_b" type = "number" min = "0" max = "10" step = "0.1" value = "5" style = "width:40px">
+
+        </p>
+
+	    Для зеленого шара:
+		&nbsp &nbsp$m_2$:
+		<input id = "m_green" type = "number" min = "1" max = "1000" step = "0.5" value = "30" style = "width:40px">
+		,&nbsp &nbsp$r_2$:
+		<input id = "sl_g" type = "number" min = "-10" max = "0" step = "0.1" value = "-5" style = "width:40px">
+	    </p>
+
+		<strong> приведенная масса :</strong>
+		 <input id = "res" type = "text" min = "-1000" max = "1000" style = "width:40px">
+
+		</p>
+
+		<strong> Центр масс  :</strong>
+		 <input id = "cent" type = "text" min = "-1000" max = "1000" style = "width:40px">
+
+		</p>
+
+		</div>
+		<div style="width:80%; float:left;border: solid 1px black;">
+		<figure class = 'visual'>
+
+				<figure class = 'visualFlex' style="width: 100%;">
+
+					<div class = 'aspect'>
+						<div class = 'aspectHolder'></div>
+						<figure id = 'plot3d_main' class = 'subVisual'></figure>
+						<div id = 'control_Y'></div>
+						<figcaption class = 'visualDesc'>
+
+						</figcaption>
+					</div>
+
+
+				</figure>
+			 </figure>
+		</div>
+			 <section class = 'articlePage'>
+				<div class = 'dynamicBlock'>
+					<div class = 'control' id = 'controlBlock1'>
+						<div id = "options"></div>
+					</div>
+			  </div>
+			</section>
+
+
+	</article>
+
+    <script src='http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+	<script type='text/x-mathjax-config'>
+		MathJax.Hub.Config({
+			skipStartupTypeset: true,
+			tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+			'HTML-CSS': { linebreaks: { automatic: true} }
+		});
+    </script>
+
+	<script src = '../../js/eulerface.js'></script>
+
+
+	<script src="../deriv_prob.js"></script>
+	<script src="../../../../build/grafar.js"></script>
+	<script src="derivative.js"></script>
+
+</body>
+
+</html>

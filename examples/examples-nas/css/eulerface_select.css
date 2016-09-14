@@ -1,0 +1,71 @@
+.dropDown {
+	position: absolute;
+	width: 100%;
+	top: 100%;
+	left: -1px;
+	visibility: hidden;
+	background: white;
+	margin-top: -.6em;
+	border-radius: 0 0 1em 1em;
+	border: solid .1em #909080;
+	border-top: none;
+	overflow-y: scroll;
+	z-index: 999;
+}
+
+.selectContainer {
+	display: table;
+	position: relative;
+	border: solid .1em #909080;
+	border-radius: .1em;
+	width: 100%;
+	
+}
+
+.selectActive {
+	display: table-cell;
+	width: 90%;
+}
+
+.dropper {
+	display: table-cell;
+	width: 1.2em;
+	height: 100%;
+	border-left: .1em solid rgba(144, 144, 128, .4);
+}
+
+.dropper:hover .arrow-down {
+	border-top-color: orangered;
+}
+
+.arrow-down {
+	width: 0; 
+	height: 0; 
+	border-left: .4em solid transparent;
+	border-right: .4em solid transparent;
+	margin-left: auto;
+	margin-right: auto;
+	border-top: .6em solid #909080;
+	user-select: none;
+}
+
+.option {
+	padding-top: 0.7em;
+	padding-bottom: 0.7em;
+}
+
+.option:last-child {	
+	
+}
+
+.option:only-child {	
+	
+}
+
+.option:hover {
+	background: rgba(144, 144, 128, .4);
+}
+
+html {
+	height: 100%;
+}

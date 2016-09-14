@@ -1,0 +1,121 @@
+body {
+	font-size: 1.2em;
+}
+
+
+#mainBar {
+	top: 0;
+	position: fixed;
+	left: 0;
+	width: 100%;
+	height: 2em;
+}
+
+#logo {
+	color: blue;
+	font-size: 3em;
+	width: 100%;
+	text-align: center;
+	padding-top: 1em;
+}
+
+#articleTitle {
+	display: inline-block;
+	font-size: 2em;
+	font-weight: 10;
+	padding-top: 1em;
+	padding-bottom: .3em;
+	padding-left: 0em;
+}
+
+#sectionTitle {
+	padding-left: 2em;
+	display: inline-block;
+	font-size: 3em;
+	font-weight: 400;
+}
+
+
+.articleContent {
+	width: 54em;
+	margin-top: 2rem;
+	max-width: none;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+
+.visual {
+	padding-top: .6em;
+	padding-bottom: .6em;
+	width: 40em;//54
+	padding-left: 10em;
+	padding-right: 100em;
+	position: relative;//relative
+}
+
+.visualFlex {
+	display: flex;
+	width: 40;//54
+}
+
+.subVisual {
+	flex: 1;
+	margin-right: 2ex;
+}
+
+.visualDesc::before {
+	width: 9em;
+	height: 1em;
+	border-top: 1px dotted rgba(0, 0, 0, .6);
+}
+
+.visualDesc {
+	position: absolute;
+	color: rgba(0, 0, 0, .6);
+	left: 0;/* -11rem; */
+	top: -2rem;/*0;*/
+	width: 9rem;
+	font-size: 1rem;/*.8rem Edited by Alex*/
+	text-align: right;
+	padding-top: .6rem;
+	padding-left: 1rem;
+	padding-right: 1rem;	
+}
+
+
+.sideNote {	
+	position: absolute;
+	color: rgba(0, 0, 0, .6);
+	top: 0;
+	left: 37rem;
+	width: 16rem;
+	font-size: .8rem;
+	padding-top: .6rem;
+	padding-left: 0;
+	padding-right: 0;	
+}
+
+
+.bodyText {
+	position: relative;
+	padding-top: 0;
+	margin-top: 0;
+	border-top: none;
+	width: 34em;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+.dynamicBlock {
+	display: table;
+	width: 54em;
+}
+
+
+
+
+p {
+	padding-top: .6em;
+	padding-bottom: .6em;
+}

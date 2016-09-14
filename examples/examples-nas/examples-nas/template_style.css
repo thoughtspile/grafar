@@ -1,0 +1,8 @@
+#control_X , #control_Y {
+	position: absolute;
+	bottom: 500px;
+	height: 3em;
+	left: -15pt;
+	right: 36pt;
+	background: rgba(255,255,255,0);
+}

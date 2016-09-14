@@ -1,0 +1,33 @@
+@import url(http://fonts.googleapis.com/css?family=Averia+Sans+Libre:400,300italic,700);
+
+@import url(eulerface_layout_s.css);
+@import url(eulerface_layout_m.css) (min-width: 47em) and (max-width: 83.99em);
+@import url(eulerface_layout_l.css) (min-width: 84em);
+
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: 'PT Serif', serif;
+	color: #111;
+	height: 100%;
+}
+
+#mainBar {
+	background: #6888BB;
+	*border-right: 1px solid #909080;
+}
+
+.articleHeader: {
+	 font-size: small;
+}
+
+.visualDesc {
+	color: rgba(0, 0, 0, .6);
+}
+
+.dynamicBlock {
+}
+

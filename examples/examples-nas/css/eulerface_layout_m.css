@@ -1,0 +1,112 @@
+body {
+	*font-size: 12pt;
+}
+
+
+#mainBar {
+	top: 0;
+	position: fixed;
+	left: 0;
+	width: 100%;
+	height: 2em;
+}
+
+#logo {
+	color: white;
+	text-align: left;
+	font-size: 1em;
+	padding-top: .5em;
+	padding-left: 1em;
+}
+
+#articleTitle {
+	
+	display: inline-block;
+	font-size: 30px;
+	font-weight: 200;
+	padding-top: 1rem;
+	padding-bottom: .6rem;
+	padding-left: 12rem;
+}
+
+#sectionTitle {
+	padding-left: 2vw;
+	display: inline-block;
+	font-size: 3vw;
+	font-weight: 400;
+}
+
+
+.articleContent {
+	margin-top: 2em;
+	width: 45em;
+	max-width: none;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+
+.visual {
+	padding-top: .6em;
+	padding-bottom: .6em;
+	width: 45em;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+.visualFlex {
+	display: flex;
+	width: 43em;
+}
+
+.aspect {
+	min-width: 13.5em;
+}
+
+.subVisual {
+	flex: 1;
+}
+
+.visualDesc {
+	width: 100%;
+	text-align: center;
+	padding-left: 1em;
+	padding-right: 1em;	
+}
+
+
+.sideNote {	
+	position: absolute;
+	color: rgba(0, 0, 0, .6);
+	top: 0;
+	left: 29rem;
+	width: 15rem;
+	font-size: .8rem;
+	padding-top: .6rem;
+	padding-left: 0;
+	padding-right: 0rem;	
+}
+
+
+.bodyText {
+	position: relative;
+	padding-top: 0;
+	margin-top: 0;
+	border-top: none;
+	width: 27em;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+.dynamicBlock {
+	display: table;
+	width: 60em;
+}
+
+
+
+
+p {
+	padding-top: .6em;
+	padding-bottom: .6em;
+}
