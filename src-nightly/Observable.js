@@ -39,8 +39,4 @@ Observable.prototype.dispatch = function(event) {
 	return this;
 };
 
-
-// export
-
-_G.objects = objects;
-_G.Observable = Observable;
+export { Observable }
