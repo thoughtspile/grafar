@@ -8,11 +8,10 @@ import { emptyGraph, pathGraph, cartesianGraphProd } from './topology';
 import { Style } from './Style';
 import { nunion } from './setUtils';
 import { Reactive } from './Reactive';
+import { Graph } from './Graph';
 
 var _G = global.grafar,
-    baseTranslate = _G.baseTranslate,
-
-    Graph = _G.GraphR;
+    baseTranslate = _G.baseTranslate;
 
 
 function GrafarObject(opts) {

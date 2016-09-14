@@ -115,4 +115,4 @@ Graph.baseTranslate = function(src, self) {
 };
 
 
-_G.GraphR = Graph;
+export { Graph }
