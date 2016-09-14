@@ -1,7 +1,7 @@
 import { global } from './contextBusterHack';
+import { unique } from './setUtils';
 
-var _G = global.grafar,
-	unique = _G.unique;
+var _G = global.grafar;
 
 
 var prefixes = {

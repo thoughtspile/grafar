@@ -1,7 +1,7 @@
 import { global } from './contextBusterHack';
+import { union } from './setUtils';
 
-var _G = global.grafar,
-	union = _G.union;
+var _G = global.grafar;
 
 function GraphData() {
 	this.names = {};

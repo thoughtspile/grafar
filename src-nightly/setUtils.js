@@ -1,8 +1,3 @@
-import { global } from './contextBusterHack';
-
-var _G = global.grafar;
-
-
 function firstMatch(set, callback) {
 	for (var i = 0; i <= set.length && !callback(set[i]); i++);
 	return set[i];
@@ -68,14 +63,15 @@ function setpop(arr, el) {
 	return arr;
 }
 
-
-_G.firstMatch = firstMatch;
-_G.interPower = interPower;
-_G.haveCommon = haveCommon;
-_G.intersection = intersection;
-_G.union = union;
-_G.nunion = nunion;
-_G.unique = unique;
-_G.setMinus = setMinus;
-_G.setpush = setpush;
-_G.setpop = setpop;
+export {
+	firstMatch,
+	interPower,
+	haveCommon,
+	intersection,
+	union,
+	nunion,
+	unique,
+	setMinus,
+	setpush,
+	setpop
+}

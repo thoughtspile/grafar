@@ -2,10 +2,10 @@ import { global } from './contextBusterHack';
 import { resizeBuffer } from './glUtils';
 import { incArray, timesArray } from './arrayUtils';
 import { pool } from './arrayPool';
+import { firstMatch } from './setUtils';
 
 var _G = global.grafar;
 var Reactive = _G.Reactive;
-var firstMatch = _G.firstMathch;
 
 
 function pathGraph(srcDummy, target) {

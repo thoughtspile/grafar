@@ -6,9 +6,9 @@ import { Buffer } from './arrayUtils';
 import { pool } from './arrayPool';
 import { emptyGraph, pathGraph, cartesianGraphProd } from './topology';
 import { Style } from './Style';
+import { nunion } from './setUtils';
 
 var _G = global.grafar,
-    nunion = _G.nunion,
     baseTranslate = _G.baseTranslate,
 
     Graph = _G.GraphR,

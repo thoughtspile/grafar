@@ -2,10 +2,10 @@ import { global } from './contextBusterHack';
 import { resizeBuffer } from './glUtils';
 import { Buffer, blockRepeat } from './arrayUtils';
 import { emptyGraph, pathGraph, cartesianGraphProd, makeFaces } from './topology';
+import { nunion } from './setUtils';
 
 var _G = global.grafar;
 var Reactive = _G.Reactive;
-var nunion = _G.nunion;
 
 
 function Graph() {
