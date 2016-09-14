@@ -1,8 +1,4 @@
-import { global } from './contextBusterHack';
 import { isExisty } from './utils';
-
-var _G = global.grafar;
-
 
 var arrayPool = {};
 
@@ -36,7 +32,4 @@ arrayPool.flush = function() {
 	this.pool = {};
 };
 
-
-// export
-
-_G.pool = arrayPool;
+export { arrayPool as pool }

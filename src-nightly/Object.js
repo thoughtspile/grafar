@@ -2,10 +2,10 @@ import { global } from './contextBusterHack';
 import { isExisty, asArray } from './utils';
 import { InstanceGL, interleave, resizeBuffer } from './glUtils';
 import { Buffer } from './arrayUtils';
+import { pool } from './arrayPool';
 
 var _G = global.grafar,
 	Style = _G.Style,
-	pool = _G.pool,
     nunion = _G.nunion,
     baseTranslate = _G.baseTranslate,
     pathGraph = _G.pathGraph,

@@ -1,7 +1,7 @@
 import { global } from './contextBusterHack';
+import { pool } from './arrayPool';
 
 var _G = global.grafar,
-	pool = _G.pool,
     Panel = _G.Panel,
     config = _G.config,
 
