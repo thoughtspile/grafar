@@ -1,13 +1,11 @@
-import { global } from './contextBusterHack';
+import { grafar as _G } from './api';
 import { isExisty } from './utils';
 import { firstMatch, haveCommon, union, unique, setMinus } from './setUtils';
 import { seq, traceZeroSet } from './generators';
 import { config } from './config';
 
-var _G = global.grafar,
-	parserConfig = config.grafaryaz,
+var parserConfig = config.grafaryaz,
 	stats = _G.stats,
-
 	Plan = _G.Plan;
 // locals
 

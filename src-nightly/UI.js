@@ -1,7 +1,5 @@
-import { global } from './contextBusterHack';
+import { grafar as _G } from './api';
 import { makeID } from './utils';
-
-var _G = global.grafar || (global.grafar = {});
 
 _G.UI = {};
 

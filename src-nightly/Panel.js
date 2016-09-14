@@ -1,12 +1,13 @@
-import { global } from './contextBusterHack';
+import * as THREE from '../libs/three.min';
+import Detector from '../libs/Detector';
+import * as Stats from '../libs/stats.min';
+import { OrbitControls } from '../libs/OrbitControls'; // FIXME non-standard
+THREE.OrbitControls = OrbitControls;
+
 import { isExisty, makeID } from './utils';
 import { pool } from './arrayPool';
 import { Observable } from './Observable';
 import { config } from './config';
-
-var Detector = global.Detector,
-	THREE = global.THREE,
-	Stats = global.Stats;
 
 var panels = [],
 	Renderer = THREE.WebGLRenderer.bind(null, {antialias: config.antialias});

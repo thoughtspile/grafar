@@ -1,10 +1,9 @@
-import { global } from './contextBusterHack';
+import * as _T from '../libs/three.min';
 import { pool } from './arrayPool';
 import { Panel } from './Panel';
 import { config } from './config';
 
-var _T = global.THREE,
-	Object3D = _T.Object3D,
+var Object3D = _T.Object3D,
 	PointCloud = _T.PointCloud,
 	Line = _T.Line,
 	LinePieces = _T.LinePieces,
@@ -31,7 +30,7 @@ function matHelper(type, col) {
 			vertexColors: _T.VertexColors
         });
     else if (type === 'mesh')
-        mat = new THREE.MeshPhongMaterial({
+        mat = new _T.MeshPhongMaterial({
             side: DoubleSide,
             transparent: true,
             opacity: .7,
@@ -95,7 +94,7 @@ function InstanceGL(panel, col) {
 	var object = new Object3D();
     object.add(new PointCloud(pointGeometry, matHelper('point', col)))
         .add(new Line(lineGeometry, matHelper('line', col), LinePieces))
-        .add(new THREE.Mesh(meshGeometry, matHelper('mesh', col)));
+        .add(new _T.Mesh(meshGeometry, matHelper('mesh', col)));
 	panel.scene.add(object);
 
     this.panel = panel;

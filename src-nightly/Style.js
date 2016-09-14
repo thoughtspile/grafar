@@ -1,10 +1,10 @@
-import { global } from './contextBusterHack';
+import * as THREE from '../libs/three.min';
+import * as ColorDummy from '../libs/i-color.min';
+const Color = window.Color;
+
 import { isExisty, makeID } from './utils';
 import { config } from './config';
 
-var _G = global.grafar,
-	Color = global.Color,
-	THREE = global.THREE;
 
 var styles = {};
 

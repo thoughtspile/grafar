@@ -1,8 +1,6 @@
 import { config } from './config';
 import { panels } from './Panel';
 
-const global = window;
-
 var grafar = {
     version: '4.01r'
 };
@@ -12,7 +10,7 @@ var update = function() {
 	for (var i = 0; i < len; i++)
 		panels[i].update();
 	grafar.frameId++;
-	global.requestAnimationFrame(update);
+	window.requestAnimationFrame(update);
 };
 
 function setup(changes, target) {
