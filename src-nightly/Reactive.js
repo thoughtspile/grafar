@@ -1,13 +1,11 @@
 import { global } from './contextBusterHack';
 import { isExisty } from './utils';
+import { repeatArray, blockRepeat, repeatPoints } from './arrayUtils';
 
 var grafar = global.grafar;
 var setPop = grafar.setpop;
 var setPush = grafar.setpush;
 var union = grafar.union;
-var repeatArray = grafar.repeatArray;
-var stretchArray = grafar.repeatPoints;
-var blockRepeat = grafar.blockRepeat;
 
 
 var Reactive = function(data) {

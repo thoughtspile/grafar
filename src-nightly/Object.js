@@ -1,6 +1,7 @@
 import { global } from './contextBusterHack';
 import { isExisty, asArray } from './utils';
 import { InstanceGL, interleave, resizeBuffer } from './glUtils';
+import { Buffer } from './arrayUtils';
 
 var _G = global.grafar,
 	Style = _G.Style,
@@ -12,8 +13,7 @@ var _G = global.grafar,
     cartesianGraphProd = _G.cartesianGraphProd,
 
     Graph = _G.GraphR,
-    Reactive = _G.Reactive,
-    Buffer = _G.Buffer;
+    Reactive = _G.Reactive;
 
 
 function Object(opts) {

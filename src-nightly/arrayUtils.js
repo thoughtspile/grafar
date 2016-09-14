@@ -1,8 +1,3 @@
-import { global } from './contextBusterHack';
-
-var _G = global.grafar;
-
-
 function arraySum(a, b, out) {
 	var l = a.length;
 	for (var i = 0; i < l; i++)
@@ -81,11 +76,13 @@ function Buffer() {
 }
 
 
-_G.Buffer = Buffer;
-_G.arraySum = arraySum;
-_G.arrayTimes = arrayTimes;
-_G.incArray = incArray;
-_G.timesArray = timesArray;
-_G.repeatArray = repeatArray;
-_G.blockRepeat = blockRepeat;
-_G.repeatPoints = repeatPoints;
+export {
+	Buffer,
+	arraySum,
+	arrayTimes,
+	incArray,
+	timesArray,
+	repeatArray,
+	blockRepeat,
+	repeatPoints
+}

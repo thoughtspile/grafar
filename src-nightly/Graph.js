@@ -1,5 +1,6 @@
 import { global } from './contextBusterHack';
 import { resizeBuffer } from './glUtils';
+import { Buffer, blockRepeat } from './arrayUtils';
 
 var _G = global.grafar;
 var Reactive = _G.Reactive;
@@ -7,9 +8,7 @@ var emptyGraph = _G.emptyGraph;
 var pathGraph = _G.pathGraph;
 var cartesianGraphProd = _G.cartesianGraphProd;
 var makeFaces = _G.makeFaces;
-var Buffer = _G.Buffer;
 var nunion = _G.nunion;
-var blockRepeat = _G.blockRepeat;
 
 
 function Graph() {
