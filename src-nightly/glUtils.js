@@ -1,11 +1,9 @@
 import { global } from './contextBusterHack';
 import { pool } from './arrayPool';
 import { Panel } from './Panel';
+import { config } from './config';
 
-var _G = global.grafar,
-    config = _G.config,
-
-	_T = global.THREE,
+var _T = global.THREE,
 	Object3D = _T.Object3D,
 	PointCloud = _T.PointCloud,
 	Line = _T.Line,

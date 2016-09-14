@@ -4,12 +4,11 @@ import { pool } from './arrayPool';
 import { Observable } from './Observable';
 import { config } from './config';
 
-var _G = global.grafar,
-	Detector = global.Detector,
+var Detector = global.Detector,
 	THREE = global.THREE,
 	Stats = global.Stats;
 
-var panels = _G.panels,
+var panels = [],
 	Renderer = THREE.WebGLRenderer.bind(null, {antialias: config.antialias});
 // FIXME detect
 	// renderMode = Detector.webgl? 'webgl': Detector.canvas? 'canvas': 'none',
@@ -209,4 +208,4 @@ function drawTextLabel(mat, str) {
 	return drawTextLabel(mat, str);
 }
 
-export { Panel }
+export { Panel, panels }

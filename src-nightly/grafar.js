@@ -1,7 +1,7 @@
 // FIXME duct-tape
 import { global } from './contextBusterHack';
+import { grafar } from './api'
 
-import * as API from './api';
 import * as UI from './UI';
 
 import { Style } from './Style';

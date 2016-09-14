@@ -1,17 +1,17 @@
-import { global } from './contextBusterHack';
 import { config } from './config';
+import { panels } from './Panel';
 
-var _G = (global.grafar = {
-        version: '4.01r'
-    });
-var panels = [];
+const global = window;
 
+var grafar = {
+    version: '4.01r'
+};
 
 var update = function() {
 	var len = panels.length;
 	for (var i = 0; i < len; i++)
 		panels[i].update();
-	_G.frameId++;
+	grafar.frameId++;
 	global.requestAnimationFrame(update);
 };
 
@@ -24,16 +24,15 @@ function setup(changes, target) {
 			else
 				setup(changes[name], config.grafaryaz);
 	});
-	return _G;
+	return grafar;
 }
 
-
-// export
-
-_G.config = config;
-_G.panels = panels;
-_G.update = update;
-_G.setup = setup;
-_G.frameId = 0;
+grafar.config = config;
+grafar.panels = panels;
+grafar.update = update;
+grafar.setup = setup;
+grafar.frameId = 0;
 
 update();
+
+export { grafar };
