@@ -1,31 +1,28 @@
-import { config } from './config';
-import { panels } from './Panel';
-
-export const grafar = {
+"use strict";
+var config_1 = require('./config');
+var Panel_1 = require('./Panel');
+exports.grafar = {
     version: '4.01r',
-
-    update() {
-		panels.forEach(panel => panel.update());
-    	grafar.frameId++;
-    	window.requestAnimationFrame(grafar.update);
+    update: function () {
+        Panel_1.panels.forEach(function (panel) { return panel.update(); });
+        exports.grafar.frameId++;
+        window.requestAnimationFrame(exports.grafar.update);
     },
-
-    setup(changes, target) {
-    	target = target || config;
-    	Object.keys(changes).forEach(name => {
-    		if (!target.hasOwnProperty(name)) {
+    setup: function (changes, target) {
+        target = target || config_1.config;
+        Object.keys(changes).forEach(function (name) {
+            if (!target.hasOwnProperty(name)) {
                 return;
             }
-			if (name === 'grafaryaz') {
-                grafar.setup(changes[name], config.grafaryaz);
+            if (name === 'grafaryaz') {
+                exports.grafar.setup(changes[name], config_1.config.grafaryaz);
                 return;
-			}
+            }
             target[name] = changes[name];
-    	});
-    	return grafar;
+        });
+        return exports.grafar;
     },
-
-    config,
-    panels,
+    config: config_1.config,
+    panels: Panel_1.panels,
     frameId: 0
-}
+};

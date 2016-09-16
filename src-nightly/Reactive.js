@@ -1,66 +1,61 @@
-import { isExisty } from './utils';
-import { repeatArray, blockRepeat, repeatPoints } from './arrayUtils';
-import { union, setpush as setPush, setpop as setPop } from './setUtils';
-
-export class Reactive {
-    constructor(data) {
+"use strict";
+var utils_1 = require('./utils');
+var setUtils_1 = require('./setUtils');
+var Reactive = (function () {
+    function Reactive(data) {
+        if (data === void 0) { data = {}; }
+        this.data = data;
+        this.fn = function () { };
+        this.isValid = false;
         this.sources = [];
         this.targets = [];
-
-    	this.data = isExisty(data)? data: {};
-    	this.fn = function() {};
-    	this.isValid = false;
     }
-
-    isReactive(obj) {
-    	return obj instanceof Reactive;
-    }
-
-    push() {
+    Reactive.prototype.isReactive = function (obj) {
+        return obj instanceof Reactive;
+    };
+    Reactive.prototype.push = function () {
         return this;
-    }
-
-    lift(fn) {
+    };
+    Reactive.prototype.lift = function (fn) {
         this.fn = fn;
         this.invalidate();
         return this;
-    }
-
-    bind(newArgs) {
+    };
+    Reactive.prototype.bind = function (newArgs) {
+        var _this = this;
         this.unbind();
-        newArgs.forEach(arg => setPush(arg.targets, this));
+        newArgs.forEach(function (arg) { return setUtils_1.setpush(arg.targets, _this); });
         this.sources = newArgs.slice();
         return this;
-    }
-
-    unbind() {
-        this.sources.forEach(src => setPop(src.targets, this));
+    };
+    Reactive.prototype.unbind = function () {
+        var _this = this;
+        this.sources.forEach(function (src) { return setUtils_1.setpop(src.targets, _this); });
         this.sources.length = 0;
         this.invalidate();
         return this;
-    }
-
-    validate() {
-    	if (!this.isValid) {
-            const sourceData = this.sources.map(src => src.value());
-            const res = this.fn(sourceData, this.data);
-            if (isExisty(res)) {
+    };
+    Reactive.prototype.validate = function () {
+        if (!this.isValid) {
+            var sourceData = this.sources.map(function (src) { return src.value(); });
+            var res = this.fn(sourceData, this.data);
+            if (utils_1.isExisty(res)) {
                 this.data = res;
             }
-    		this.isValid = true;
-    	}
-    	return this;
-    }
-
-    invalidate() {
-    	this.isValid = false;
+            this.isValid = true;
+        }
+        return this;
+    };
+    Reactive.prototype.invalidate = function () {
+        this.isValid = false;
         this.targets
-            .filter(targ => targ.isValid)
-            .forEach(targ => targ.invalidate());
-    	return this;
-    }
-
-    value() {
+            .filter(function (targ) { return targ.isValid; })
+            .forEach(function (targ) { return targ.invalidate(); });
+        return this;
+    };
+    Reactive.prototype.value = function () {
         return this.validate().data;
-    }
-}
+    };
+    return Reactive;
+}());
+exports.Reactive = Reactive;

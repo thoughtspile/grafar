@@ -1,73 +1,83 @@
-"use strict";
-var _T = require('../libs/three.min');
-var arrayPool_1 = require('./arrayPool');
-var config_1 = require('./config');
-var Object3D = _T.Object3D;
-var PointCloud = _T.PointCloud;
-var Line = _T.Line;
-var LinePieces = _T.LinePieces;
-var BufferGeometry = _T.BufferGeometry;
-var BufferAttribute = _T.BufferAttribute;
-var PointCloudMaterial = _T.PointCloudMaterial;
-var LineBasicMaterial = _T.LineBasicMaterial;
-var MeshLambertMaterial = _T.MeshLambertMaterial;
-var MeshPhongMaterial = _T.MeshPhongMaterial;
-var DoubleSide = _T.DoubleSide;
-function interleave(tab, buffer, itemsize) {
+import * as _T from '../libs/three.min';
+import { pool } from './arrayPool';
+import { Panel } from './Panel';
+import { config } from './config';
+
+const Object3D = _T.Object3D;
+const PointCloud = _T.PointCloud;
+const Line = _T.Line;
+const LinePieces = _T.LinePieces;
+const BufferGeometry = _T.BufferGeometry;
+const BufferAttribute = _T.BufferAttribute;
+
+const PointCloudMaterial = _T.PointCloudMaterial;
+const LineBasicMaterial = _T.LineBasicMaterial;
+const MeshLambertMaterial = _T.MeshLambertMaterial;
+const MeshPhongMaterial = _T.MeshPhongMaterial;
+const DoubleSide = _T.DoubleSide;
+
+export function interleave(tab, buffer, itemsize?: any) {
     itemsize = itemsize || tab.length;
     resizeBuffer(buffer, itemsize * tab[0].length);
-    var target = buffer.array;
+    const target = buffer.array;
     var j;
     for (j = 0; j < tab.length; j++) {
-        var colData = tab[j].array;
-        var len = tab[j].length;
+        const colData = tab[j].array;
+        const len = tab[j].length;
+        // explicit loop for perf
         for (var i = 0, k = j; i < len; i++, k += itemsize) {
             target[k] = colData[i];
         }
     }
     for (j = tab.length; j < itemsize; j++) {
+        // explicit loop for perf
         for (var i = 0, k = j; i < len; i++, k += itemsize) {
             target[k] = 0;
         }
     }
     buffer.needsUpdate = true;
 }
-exports.interleave = interleave;
-function resizeBuffer(buffer, size) {
-    var type = buffer.array.constructor;
+
+export function resizeBuffer(buffer, size) {
+    const type = buffer.array.constructor;
     if (size !== buffer.array.length) {
-        arrayPool_1.pool.push(buffer.array);
-        buffer.array = arrayPool_1.pool.get(type, size);
+        pool.push(buffer.array);
+        buffer.array = pool.get(type, size);
         if (buffer.hasOwnProperty('length')) {
             buffer.length = size;
         }
     }
-}
-exports.resizeBuffer = resizeBuffer;
-;
-function InstanceGL(panel, col) {
-    var pointGeometry = new BufferGeometry();
-    var lineGeometry = new BufferGeometry();
-    var meshGeometry = new BufferGeometry();
-    var position = new BufferAttribute(arrayPool_1.pool.get(Float32Array, 0), 3);
-    var lineIndex = new BufferAttribute(arrayPool_1.pool.get(Uint32Array, 0), 2);
-    var meshIndex = new BufferAttribute(arrayPool_1.pool.get(Uint32Array, 0), 3);
-    var normal = new BufferAttribute(arrayPool_1.pool.get(Float32Array, 0), 3);
-    var color = new BufferAttribute(arrayPool_1.pool.get(Float32Array, 0), 3);
+};
+
+export function InstanceGL(panel, col) {
+    const pointGeometry = new BufferGeometry();
+    const lineGeometry = new BufferGeometry();
+    const meshGeometry = new BufferGeometry();
+
+    const position = new BufferAttribute(pool.get(Float32Array, 0), 3);
+    const lineIndex = new BufferAttribute(pool.get(Uint32Array, 0), 2);
+    const meshIndex = new BufferAttribute(pool.get(Uint32Array, 0), 3);
+
+    const normal = new BufferAttribute(pool.get(Float32Array, 0), 3);
+    const color = new BufferAttribute(pool.get(Float32Array, 0), 3);
+
     pointGeometry.addAttribute('position', position);
     lineGeometry.addAttribute('position', position);
     meshGeometry.addAttribute('position', position);
     lineGeometry.addAttribute('index', lineIndex);
     meshGeometry.addAttribute('index', meshIndex);
     meshGeometry.addAttribute('normal', normal);
+
     pointGeometry.addAttribute('color', color);
     lineGeometry.addAttribute('color', color);
     meshGeometry.addAttribute('color', color);
-    var object = new Object3D();
+
+    const object = new Object3D();
     object.add(new PointCloud(pointGeometry, matHelper('point', col)))
         .add(new Line(lineGeometry, matHelper('line', col), LinePieces))
         .add(new _T.Mesh(meshGeometry, matHelper('mesh', col)));
     panel.scene.add(object);
+
     this.panel = panel;
     this.position = position;
     this.color = color;
@@ -75,13 +85,13 @@ function InstanceGL(panel, col) {
     this.faces = meshIndex;
     this.normals = normal;
     this.object = object;
-}
-exports.InstanceGL = InstanceGL;
-;
+};
+
+
 function matHelper(type, col) {
     if (type === 'point') {
         return new PointCloudMaterial({
-            size: config_1.config.particleRadius,
+            size: config.particleRadius,
             transparent: true,
             opacity: 0.5,
             sizeAttenuation: false
@@ -99,7 +109,8 @@ function matHelper(type, col) {
             opacity: .7,
             vertexColors: _T.VertexColors,
             normalScale: new _T.Vector2(1, 1)
+            // depthWrite: false
+            // depthTest: false
         });
     }
-}
-;
+};

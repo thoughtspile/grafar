@@ -1,22 +1,14 @@
-import { grafar } from './api'
-
-import * as UI from './UI';
-
-import { Style } from './Style';
-import { Panel } from './Panel';
-import { GrafarObject } from './GrafarObject';
-import * as generators from './generators';
-
-
-grafar.Style = Style;
-grafar.Panel = Panel;
-grafar.Object = GrafarObject;
-
-Object.keys(generators).forEach(key => {
-	grafar[key] = generators[key];
+"use strict";
+var api_1 = require('./api');
+var Style_1 = require('./Style');
+var Panel_1 = require('./Panel');
+var GrafarObject_1 = require('./GrafarObject');
+var generators = require('./generators');
+api_1.grafar['Style'] = Style_1.Style;
+api_1.grafar['Panel'] = Panel_1.Panel;
+api_1.grafar['Object'] = GrafarObject_1.GrafarObject;
+Object.keys(generators).forEach(function (key) {
+    api_1.grafar[key] = generators[key];
 });
-
-// bootstrap
-grafar.update();
-
-window.grafar = grafar;
+api_1.grafar.update();
+window['grafar'] = api_1.grafar;
