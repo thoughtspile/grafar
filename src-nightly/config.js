@@ -25,4 +25,4 @@ export const config = {
 		samplesPerDOF: 24,
 		diffStep: 0.001
 	}
-};
+}

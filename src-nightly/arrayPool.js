@@ -1,35 +1,33 @@
 import { isExisty } from './utils';
 
-var arrayPool = {};
+export const pool = {
+	pool: {},
 
-arrayPool.pool = {};
+	get: function(Constructor, length) {
+		var classKey = Constructor.toString(),
+			constructorKey = length.toString(),
+			classPool = this.pool[classKey],
+			temp = null;
+		if (isExisty(classPool) && isExisty(classPool[constructorKey]) && classPool[constructorKey].length !== 0)
+			temp = classPool[constructorKey].pop();
+		else
+			temp = new Constructor(length);
+		return temp;
+	},
 
-arrayPool.get = function(Constructor, length) {
-	var classKey = Constructor.toString(),
-		constructorKey = length.toString(),
-		classPool = this.pool[classKey],
-		temp = null;
-	if (isExisty(classPool) && isExisty(classPool[constructorKey]) && classPool[constructorKey].length !== 0)
-		temp = classPool[constructorKey].pop();
-	else
-		temp = new Constructor(length);
-	return temp;
-};
+	push: function(obj) {
+		var classKey = obj.constructor.toString(),
+			constructorKey = obj.length.toString();
 
-arrayPool.push = function(obj) {
-	var classKey = obj.constructor.toString(),
-		constructorKey = obj.length.toString();
+		if (!isExisty(this.pool[classKey]))
+			this.pool[classKey] = {};
+		if (!isExisty(this.pool[classKey][constructorKey]))
+			this.pool[classKey][constructorKey] = [];
 
-	if (!isExisty(this.pool[classKey]))
-		this.pool[classKey] = {};
-	if (!isExisty(this.pool[classKey][constructorKey]))
-		this.pool[classKey][constructorKey] = [];
+		this.pool[classKey][constructorKey].push(obj);
+	},
 
-	this.pool[classKey][constructorKey].push(obj);
-};
-
-arrayPool.flush = function() {
-	this.pool = {};
-};
-
-export { arrayPool as pool }
+	flush: function() {
+		this.pool = {};
+	}
+}

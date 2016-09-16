@@ -9,8 +9,7 @@ import { pool } from './arrayPool';
 import { Observable } from './Observable';
 import { config } from './config';
 
-var panels = [],
-	Renderer = THREE.WebGLRenderer.bind(null, {antialias: config.antialias});
+const Renderer = THREE.WebGLRenderer.bind(null, {antialias: config.antialias});
 // FIXME detect
 	// renderMode = Detector.webgl? 'webgl': Detector.canvas? 'canvas': 'none',
 	// Renderer = {
@@ -19,148 +18,152 @@ var panels = [],
 	// 	none: Error.bind(null, 'no 3D support')
 	// }[renderMode];
 
-function Panel(container, opts) {
-	opts = opts || {};
-	panels.push(this);
+export var panels = [];
 
-	container = container || config.container;
-	var containerStyle = window.getComputedStyle(container),
-		bgcolor = containerStyle.backgroundColor,
-	    width = parseInt(containerStyle.width),
-	    height = parseInt(containerStyle.height);
+export class Panel {
+	constructor(container, opts) {
+		opts = opts || {};
+		panels.push(this);
 
-	this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 500);
-	this.camera.position.set(-4, 4, 5);
+		container = container || config.container;
+		var containerStyle = window.getComputedStyle(container),
+			bgcolor = containerStyle.backgroundColor,
+		    width = parseInt(containerStyle.width),
+		    height = parseInt(containerStyle.height);
 
-	this.scene = new THREE.Scene();
-	var pointLight = new THREE.PointLight(0xFFFFFF);
-	pointLight.position.set( 0, 5, 7 );
-	this.scene.add( pointLight );
+		this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 500);
+		this.camera.position.set(-4, 4, 5);
 
-	this.renderer = new Renderer();
-	this.renderer.antialias = config.antialias;
-	this.renderer.setSize(width, height);
-	this.renderer.setClearColor(bgcolor, 1);
+		this.scene = new THREE.Scene();
+		var pointLight = new THREE.PointLight(0xFFFFFF);
+		pointLight.position.set( 0, 5, 7 );
+		this.scene.add( pointLight );
 
-	this.controls = new THREE.OrbitControls(this.camera, container);
+		this.renderer = new Renderer();
+		this.renderer.antialias = config.antialias;
+		this.renderer.setSize(width, height);
+		this.renderer.setClearColor(bgcolor, 1);
 
-	this.setAxes(config.axes);
+		this.controls = new THREE.OrbitControls(this.camera, container);
 
-	this.setContainer(container);
+		this.setAxes(config.axes);
 
-	if (config.debug) {
-		this.stats = new Stats();
-		this.stats.domElement.style.position = 'absolute';
-		this.stats.domElement.style.top = '0px';
-		container.appendChild(this.stats.domElement);
-	} else {
-		this.stats = {update: function() {}};
+		this.setContainer(container);
+
+		if (config.debug) {
+			this.stats = new Stats();
+			this.stats.domElement.style.position = 'absolute';
+			this.stats.domElement.style.top = '0px';
+			container.appendChild(this.stats.domElement);
+		} else {
+			this.stats = {update: function() {}};
+		}
 	}
-};
 
-Panel.prototype.setContainer = function(container) {
-	container.appendChild(this.renderer.domElement);
-	return this;
-};
+	setContainer(container) {
+		container.appendChild(this.renderer.domElement);
+		return this;
+	}
 
-Panel.prototype.update = function() {
-	this.controls.update();
-	this.renderer.render(this.scene, this.camera);
-	this.stats.update();
-};
+	update() {
+		this.controls.update();
+		this.renderer.render(this.scene, this.camera);
+		this.stats.update();
+	}
 
-Panel.prototype.drawAxes = function (len) {
-	if (!isExisty(this.axisObject)) {
-		this.axisObject = new THREE.Object3D();
+	drawAxes(len) {
+		if (!isExisty(this.axisObject)) {
+			this.axisObject = new THREE.Object3D();
 
-		var axisGeometry = new THREE.BufferGeometry();
-		axisGeometry.addAttribute('position', new THREE.BufferAttribute(pool.get(Float32Array, 18), 3));
-		this.axisObject.add(new THREE.Line(
-			axisGeometry,
-			new THREE.LineBasicMaterial({color: 0x888888}),
-			THREE.LinePieces
-		));
+			var axisGeometry = new THREE.BufferGeometry();
+			axisGeometry.addAttribute('position', new THREE.BufferAttribute(pool.get(Float32Array, 18), 3));
+			this.axisObject.add(new THREE.Line(
+				axisGeometry,
+				new THREE.LineBasicMaterial({color: 0x888888}),
+				THREE.LinePieces
+			));
 
-		for (var i = 0; i < 3; i++) {
-			var geometry = new THREE.BufferGeometry();
-			geometry.addAttribute('position', new THREE.BufferAttribute(axisGeometry.getAttribute('position').array.subarray(i * 6 + 3, i * 6 + 6), 3));
-			this.axisObject.add(new THREE.PointCloud(geometry, new THREE.PointCloudMaterial({
-				alphaTest: 0.17		// vaccarium.TODO: this is a horrible hack, see SOverflow #27042683
-			})));
+			for (var i = 0; i < 3; i++) {
+				var geometry = new THREE.BufferGeometry();
+				geometry.addAttribute('position', new THREE.BufferAttribute(axisGeometry.getAttribute('position').array.subarray(i * 6 + 3, i * 6 + 6), 3));
+				this.axisObject.add(new THREE.PointCloud(geometry, new THREE.PointCloudMaterial({
+					alphaTest: 0.17		// vaccarium.TODO: this is a horrible hack, see SOverflow #27042683
+				})));
+			}
+
+			this.scene.add(this.axisObject);
 		}
 
-		this.scene.add(this.axisObject);
-	}
-
-	if (isExisty(len))
-		setAxisGeometry(this.axisObject.children[0].geometry.getAttribute('position').array, len);
-	this._axes.forEach(function(axisId, i) {
-		drawTextLabel(this.axisObject.children[i + 1].material, axisId || '');
-	}.bind(this));
-
-	return this;
-};
-
-Panel.prototype.clearAxes = function() {
-	if (isExisty(this.axisObject)) {
-		this.axisObject.children.forEach(function(child) {
-			this.axisObject.remove(child);
+		if (isExisty(len))
+			setAxisGeometry(this.axisObject.children[0].geometry.getAttribute('position').array, len);
+		this._axes.forEach(function(axisId, i) {
+			drawTextLabel(this.axisObject.children[i + 1].material, axisId || '');
 		}.bind(this));
-		this.scene.remove(this.axisObject);
-		delete this.axisObject;
-	};
 
-	return this;
-};
-
-Panel.prototype.setAxes = function(axisNames) {
-	axisNames = axisNames.filter(function(n) {
-			return typeof(n) === 'string';
-		})
-		.slice(0, 3);
-
-	this._axes = [axisNames[1], axisNames[2], axisNames[0]];
-	if (axisNames.length === 3) {
-		this.controls.noRotate = false;
-		this.controls.noPan = false;
-		this.camera.up.set(0, 1, 0);
-	} else if (axisNames.length === 2) {
-		this.controls.noRotate = true;
-		this.controls.noPan = true;
-		this.camera.position.set(0, 5); // preserve distance or something, maybe smooth rotation
-		this.camera.up.set(1, 0, 0);
-	} else {
-		// 1 or >3 axes leads to what?
+		return this;
 	}
 
-	this.drawAxes(2);
-	// Object.getOwnPropertyNames(_G.graphs).forEach(function(graphName) {
-		// var graph = _G.graphs[graphName];
-		// if (graph.panel === this)
-			// graph.setPanel(this);
-	// }.bind(this));
+	clearAxes() {
+		if (isExisty(this.axisObject)) {
+			this.axisObject.children.forEach(function(child) {
+				this.axisObject.remove(child);
+			}.bind(this));
+			this.scene.remove(this.axisObject);
+			delete this.axisObject;
+		};
 
-	return this;
-};
-
-Panel.prototype.axisText = function(axis, distance) {
-	if (isExisty(this._axes) && this._axes.includes(axis)) {
-		var pos = this._axes.indexOf(axis),
-			geometry = new THREE.BufferGeometry();
-		geometry.addAttribute('position', new THREE.BufferAttribute(pool.get(Float32Array, 3), 3));
-		geometry.getAttribute('position').array[pos] = distance;
-		var textObject = new THREE.PointCloud(geometry, new THREE.PointCloudMaterial({
-			alphaTest: 0.17		// vaccarium.TODO: this is a horrible hack, see SOverflow #27042683
-		}));
-		drawTextLabel(textObject.material, distance || '');
-		this.axisObject.add(textObject);
+		return this;
 	}
-	return this;
-};
-Panel.prototype.labelAxis = function(axis, distance) {
-	return this.axisText(axis, distance);
-};
 
+	setAxes(axisNames) {
+		axisNames = axisNames.filter(function(n) {
+				return typeof(n) === 'string';
+			})
+			.slice(0, 3);
+
+		this._axes = [axisNames[1], axisNames[2], axisNames[0]];
+		if (axisNames.length === 3) {
+			this.controls.noRotate = false;
+			this.controls.noPan = false;
+			this.camera.up.set(0, 1, 0);
+		} else if (axisNames.length === 2) {
+			this.controls.noRotate = true;
+			this.controls.noPan = true;
+			this.camera.position.set(0, 5); // preserve distance or something, maybe smooth rotation
+			this.camera.up.set(1, 0, 0);
+		} else {
+			// 1 or >3 axes leads to what?
+		}
+
+		this.drawAxes(2);
+		// Object.getOwnPropertyNames(_G.graphs).forEach(function(graphName) {
+			// var graph = _G.graphs[graphName];
+			// if (graph.panel === this)
+				// graph.setPanel(this);
+		// }.bind(this));
+
+		return this;
+	}
+
+	axisText(axis, distance) {
+		if (isExisty(this._axes) && this._axes.includes(axis)) {
+			var pos = this._axes.indexOf(axis),
+				geometry = new THREE.BufferGeometry();
+			geometry.addAttribute('position', new THREE.BufferAttribute(pool.get(Float32Array, 3), 3));
+			geometry.getAttribute('position').array[pos] = distance;
+			var textObject = new THREE.PointCloud(geometry, new THREE.PointCloudMaterial({
+				alphaTest: 0.17		// vaccarium.TODO: this is a horrible hack, see SOverflow #27042683
+			}));
+			drawTextLabel(textObject.material, distance || '');
+			this.axisObject.add(textObject);
+		}
+		return this;
+	}
+
+	labelAxis(axis, distance) {
+		return this.axisText(axis, distance);
+	}
+}
 
 function setAxisGeometry(posArray, length) {
 	for (var i = 0; i < 3; i++) {
@@ -208,5 +211,3 @@ function drawTextLabel(mat, str) {
 	};
 	return drawTextLabel(mat, str);
 }
-
-export { Panel, panels }

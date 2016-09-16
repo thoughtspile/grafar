@@ -1,36 +1,33 @@
 import { config } from './config';
 import { panels } from './Panel';
 
-var grafar = {
-    version: '4.01r'
-};
+export const grafar = {
+    version: '4.01r',
 
-var update = function() {
-	var len = panels.length;
-	for (var i = 0; i < len; i++)
-		panels[i].update();
-	grafar.frameId++;
-	window.requestAnimationFrame(update);
-};
+    update: function() {
+    	var len = panels.length;
+    	for (var i = 0; i < len; i++) {
+    		panels[i].update();
+        }
+    	grafar.frameId++;
+    	window.requestAnimationFrame(grafar.update);
+    },
 
-function setup(changes, target) {
-	target = target || config;
-	Object.keys(changes).forEach(function(name) {
-		if (target.hasOwnProperty(name))
-			if (name !== 'grafaryaz')
-				target[name] = changes[name];
-			else
-				setup(changes[name], config.grafaryaz);
-	});
-	return grafar;
+    setup: function(changes, target) {
+    	target = target || config;
+    	Object.keys(changes).forEach(function(name) {
+    		if (target.hasOwnProperty(name)) {
+    			if (name !== 'grafaryaz') {
+    				target[name] = changes[name];
+    			} else {
+    				grafar.setup(changes[name], config.grafaryaz);
+                }
+            }
+    	});
+    	return grafar;
+    },
+
+    config,
+    panels,
+    frameId: 0
 }
-
-grafar.config = config;
-grafar.panels = panels;
-grafar.update = update;
-grafar.setup = setup;
-grafar.frameId = 0;
-
-update();
-
-export { grafar };

@@ -16,4 +16,7 @@ Object.keys(generators).forEach(key => {
 	grafar[key] = generators[key];
 });
 
+// bootstrap
+grafar.update();
+
 window.grafar = grafar;
