@@ -20,8 +20,7 @@ export class GrafarObject{
 	}
 
 	pin(panel) {
-	    var instance = new InstanceGL(panel, this.col);
-		this.glinstances.push(instance);
+		this.glinstances.push(new InstanceGL(panel, this.col));
 	    // var graph = new Reactive().lift(function(proj){
 	        // interleave(proj, instance.position);
 	    // }).bind(this.project()) // won't work because of undefined unification
@@ -30,30 +29,28 @@ export class GrafarObject{
 	}
 
 	constrain(constraint) {
-		var names = asArray(constraint.what || []),
-			using = asArray(constraint.using || []),
-			as = constraint.as || (() => {}),
-			maxlen = constraint.maxlen || 40,
-	        discrete = constraint.discrete || false;
+		const names = asArray(constraint.what || []);
+		const using = asArray(constraint.using || []);
+		const as = constraint.as || (() => {});
+		const maxlen = constraint.maxlen || 40;
+	    const discrete = constraint.discrete || false;
 
 		//debugger;
-	    var sources = this.project(using, true);
+	    const sources = this.project(using, true);
 	    // I only do this shit because project forces product
 	    // however, if it doesn't (force), memo would have to go into unify
 	    // which sucks even worse
-	    for (var i = 0; i < names.length; i++)
-	        if (!this.datasets.hasOwnProperty(names[i]))
-	            this.datasets[names[i]] = new Graph();
+		names.filter(name => !this.datasets.hasOwnProperty(name))
+			.forEach(name => { this.datasets[name] = new Graph(); });
 
-	    var computation = new Graph();
+	    const computation = new Graph();
 	    computation.data = new Reactive({
 	            buffers: names.map(() => new Buffer()),
 	            length: 0
 	        })
 	        .lift((par, out) => {
-	            var data = {};
-	            for (var i = 0; i < using.length; i++)
-	                data[using[i]] = par[i].array;
+	            const data = {};
+	            using.forEach((srcName, i) => { data[srcName] = par[i].array; });
 	            out.length = par.length === 0? maxlen: par[0].length;
 	            for (var i = 0; i < names.length; i++) {
 	                resizeBuffer(out.buffers[i], out.length);
@@ -79,36 +76,33 @@ export class GrafarObject{
 	        .lift(Graph.baseTranslate)
 	        .bind(sources.map(src => src.base));
 
-	    for (var i = 0; i < names.length; i++) {
-	        var dataset = this.datasets[names[i]];
+	    names.forEach((name, i) => {
+	        const dataset = this.datasets[name];
 
 	        dataset.base = computation.base;
 	        dataset.edges = computation.edges;
 
-	        (function(iLoc) {
-	            dataset.data
-	                .lift((src, target) => {
-	                    target.length = src[0].buffers[iLoc].length;
-	                    target.array = src[0].buffers[iLoc].array;
-	                })
-	                .bind([computation.data]);
-	        }(i));
-	    }
+            dataset.data
+                .lift((src, target) => {
+                    target.length = src[0].buffers[i].length;
+                    target.array = src[0].buffers[i].array;
+                })
+                .bind([computation.data]);
+	    });
 
 		return this;
 	}
 
 	colorize(args) {
-		var using = asArray(args.using || []),
-			as = args.as || (() => {});
+		const using = asArray(args.using || []);
+		const as = args.as || (() => {});
 
-		var data = {},
-			len;
-		for (var i = 0; i < using.length; i++) {
-			data[using[i]] = this.datasets[using[i]].data.value().array;
-		}
-		var buf = this.glinstances[0].color,
-			len = this.project(this.glinstances[0].panel._axes)[0].data.value().length;
+		const data = {};
+		using.forEach(sourceName => {
+			data[sourceName] = this.datasets[sourceName].data.value().array;
+		});
+		const buf = this.glinstances[0].color;
+		const len = this.project(this.glinstances[0].panel._axes)[0].data.value().length;
 		resizeBuffer(buf, len * 3);
 		// this should become as reactive as the Up-Goer 5
 		as(buf.array, data, len);
@@ -116,19 +110,19 @@ export class GrafarObject{
 	}
 
 	project(names, proxy) {
-	    var names = asArray(names || []);
-	    var namesHash = names.slice().sort().toString();
+	    names = asArray(names || []);
+	    const namesHash = names.slice().sort().toString();
 	    if (!this.projections.hasOwnProperty(namesHash)) {
-	        var temp = [];
-	        for (var i = 0; i < names.length; i++) {
-	            if (!this.datasets.hasOwnProperty(names[i])) {
-	                if (proxy)
-	                    this.datasets[using[i]] = new Graph();
-	                else
+	        const temp = names.map(name => {
+	            if (!this.datasets.hasOwnProperty(name)) {
+	                if (proxy) {
+	                    this.datasets[name] = new Graph();
+	                } else {
 	                    throw new Error('cannot select undefined');
+					}
 	            }
-	            temp[i] = this.datasets[names[i]];
-	        }
+	            return this.datasets[name];
+	        });
 	        this.projections[namesHash] = Graph.unify(temp);
 	    }
 		return this.projections[namesHash];
@@ -136,10 +130,9 @@ export class GrafarObject{
 
 	refresh() {
 		for (var i = 0; i < this.glinstances.length; i++) {
-			var instance = this.glinstances[i];
-			var tab = this.project(instance.panel._axes, false);
+			const instance = this.glinstances[i];
+			const tab = this.project(instance.panel._axes, false);
 	        if (tab.every(col => col.data.isValid)) {
-	            console.log('othing to see here');
 	            return this;
 	        }
 
@@ -155,9 +148,9 @@ export class GrafarObject{
 	        resizeBuffer(instance.normals, tab[0].data.value().length * 3);
 	        instance.object.children[2].geometry.computeVertexNormals();
 
-	        var hasEdges = tab[0].edges.value().length > 0;
-	        var hasFaces = tab[0].faces.value().length > 0;
-			instance.object.children[0].visible = !(hasEdges || hasFaces);
+	        const hasEdges = tab[0].edges.value().length > 0;
+	        const hasFaces = tab[0].faces.value().length > 0;
+			instance.object.children[0].visible = !hasEdges && !hasFaces;
 			//instance.object.children[1].visible = true;
 			//instance.object.children[2].visible = true;
 		}
@@ -166,13 +159,12 @@ export class GrafarObject{
 
 	run() {
 	    this.refresh();
-	    window.requestAnimationFrame(this.run.bind(this));
+	    window.requestAnimationFrame(() => this.run());
 	    return this;
 	}
 
 	hide(hide) {
-		for (var i = 0; i < this.glinstances.length; i++)
-			this.glinstances[i].object.visible = !hide;
+		this.glinstances.forEach(instance => { instance.object.visible = !hide; });
 		return this;
 	}
 

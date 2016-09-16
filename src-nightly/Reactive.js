@@ -28,15 +28,13 @@ export class Reactive {
 
     bind(newArgs) {
         this.unbind();
-        for (var i = 0; i < newArgs.length; i++)
-            setPush(newArgs[i].targets, this);
+        newArgs.forEach(arg => setPush(arg.targets, this));
         this.sources = newArgs.slice();
         return this;
     }
 
     unbind() {
-        for (var i = 0; i < this.sources.length; i++)
-            setPop(this.sources[i].targets, this);
+        this.sources.forEach(src => setPop(src.targets, this));
         this.sources.length = 0;
         this.invalidate();
         return this;
@@ -44,13 +42,11 @@ export class Reactive {
 
     validate() {
     	if (!this.isValid) {
-            var sourceData = [];
-            for (var i = 0; i < this.sources.length; i++) {
-                sourceData[i] = this.sources[i].value();
-            }
-            var res = this.fn(sourceData, this.data);
-            if (isExisty(res))
+            const sourceData = this.sources.map(src => src.value());
+            const res = this.fn(sourceData, this.data);
+            if (isExisty(res)) {
                 this.data = res;
+            }
     		this.isValid = true;
     	}
     	return this;
@@ -58,9 +54,9 @@ export class Reactive {
 
     invalidate() {
     	this.isValid = false;
-        for (var i = 0; i < this.targets.length; i++)
-            if (this.targets[i].isValid)
-                this.targets[i].invalidate();
+        this.targets
+            .filter(targ => targ.isValid)
+            .forEach(targ => targ.invalidate());
     	return this;
     }
 

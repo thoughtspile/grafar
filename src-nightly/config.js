@@ -15,7 +15,7 @@ export const config = {
 
 	tweenTime: 900,
 	tweenFunction: function(s, e, t) {
-		var part = (1 - Math.cos(Math.PI * t / config.tweenTime)) / 2;
+		const part = (1 - Math.cos(Math.PI * t / config.tweenTime)) / 2;
 		return s * (1 - part) + e * part;
 	},
 

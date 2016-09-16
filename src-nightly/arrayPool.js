@@ -4,25 +4,27 @@ export const pool = {
 	pool: {},
 
 	get(Constructor, length) {
-		var classKey = Constructor.toString(),
-			constructorKey = length.toString(),
-			classPool = this.pool[classKey],
-			temp = null;
-		if (isExisty(classPool) && isExisty(classPool[constructorKey]) && classPool[constructorKey].length !== 0)
-			temp = classPool[constructorKey].pop();
-		else
-			temp = new Constructor(length);
-		return temp;
+		const classKey = Constructor.toString();
+		const constructorKey = length.toString();
+		const classPool = this.pool[classKey];
+
+		if (isExisty(classPool) && isExisty(classPool[constructorKey]) && classPool[constructorKey].length !== 0) {
+			return classPool[constructorKey].pop();
+		}
+		return new Constructor(length);
 	},
 
 	push(obj) {
-		var classKey = obj.constructor.toString(),
-			constructorKey = obj.length.toString();
+		const classKey = obj.constructor.toString();
+		const constructorKey = obj.length.toString();
 
-		if (!isExisty(this.pool[classKey]))
+		if (!isExisty(this.pool[classKey])) {
 			this.pool[classKey] = {};
-		if (!isExisty(this.pool[classKey][constructorKey]))
+		}
+
+		if (!isExisty(this.pool[classKey][constructorKey])) {
 			this.pool[classKey][constructorKey] = [];
+		}
 
 		this.pool[classKey][constructorKey].push(obj);
 	},

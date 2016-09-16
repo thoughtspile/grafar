@@ -5,9 +5,7 @@ const Color = window.Color;
 import { isExisty, makeID } from './utils';
 import { config } from './config';
 
-
 var styles = {};
-
 
 export class Style {
 	constructor(init) {

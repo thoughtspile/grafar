@@ -18,7 +18,7 @@ const Renderer = THREE.WebGLRenderer.bind(null, {antialias: config.antialias});
 	// 	none: Error.bind(null, 'no 3D support')
 	// }[renderMode];
 
-export var panels = [];
+export const panels = [];
 
 export class Panel {
 	constructor(container, opts) {
@@ -26,16 +26,16 @@ export class Panel {
 		panels.push(this);
 
 		container = container || config.container;
-		var containerStyle = window.getComputedStyle(container),
-			bgcolor = containerStyle.backgroundColor,
-		    width = parseInt(containerStyle.width),
-		    height = parseInt(containerStyle.height);
+		const containerStyle = window.getComputedStyle(container);
+		const bgcolor = containerStyle.backgroundColor;
+		const width = parseInt(containerStyle.width);
+		const height = parseInt(containerStyle.height);
 
 		this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 500);
 		this.camera.position.set(-4, 4, 5);
 
 		this.scene = new THREE.Scene();
-		var pointLight = new THREE.PointLight(0xFFFFFF);
+		const pointLight = new THREE.PointLight(0xFFFFFF);
 		pointLight.position.set( 0, 5, 7 );
 		this.scene.add( pointLight );
 
@@ -75,7 +75,7 @@ export class Panel {
 		if (!isExisty(this.axisObject)) {
 			this.axisObject = new THREE.Object3D();
 
-			var axisGeometry = new THREE.BufferGeometry();
+			const axisGeometry = new THREE.BufferGeometry();
 			axisGeometry.addAttribute('position', new THREE.BufferAttribute(pool.get(Float32Array, 18), 3));
 			this.axisObject.add(new THREE.Line(
 				axisGeometry,
@@ -84,7 +84,7 @@ export class Panel {
 			));
 
 			for (var i = 0; i < 3; i++) {
-				var geometry = new THREE.BufferGeometry();
+				const geometry = new THREE.BufferGeometry();
 				geometry.addAttribute('position', new THREE.BufferAttribute(axisGeometry.getAttribute('position').array.subarray(i * 6 + 3, i * 6 + 6), 3));
 				this.axisObject.add(new THREE.PointCloud(geometry, new THREE.PointCloudMaterial({
 					alphaTest: 0.17		// vaccarium.TODO: this is a horrible hack, see SOverflow #27042683
@@ -94,8 +94,10 @@ export class Panel {
 			this.scene.add(this.axisObject);
 		}
 
-		if (isExisty(len))
+		if (isExisty(len)) {
 			setAxisGeometry(this.axisObject.children[0].geometry.getAttribute('position').array, len);
+		}
+
 		this._axes.forEach((axisId, i) => {
 			drawTextLabel(this.axisObject.children[i + 1].material, axisId || '');
 		});
@@ -144,11 +146,13 @@ export class Panel {
 
 	axisText(axis, distance) {
 		if (isExisty(this._axes) && this._axes.includes(axis)) {
-			var pos = this._axes.indexOf(axis),
-				geometry = new THREE.BufferGeometry();
+			const pos = this._axes.indexOf(axis);
+
+			const geometry = new THREE.BufferGeometry();
 			geometry.addAttribute('position', new THREE.BufferAttribute(pool.get(Float32Array, 3), 3));
 			geometry.getAttribute('position').array[pos] = distance;
-			var textObject = new THREE.PointCloud(geometry, new THREE.PointCloudMaterial({
+
+			const textObject = new THREE.PointCloud(geometry, new THREE.PointCloudMaterial({
 				alphaTest: 0.17		// vaccarium.TODO: this is a horrible hack, see SOverflow #27042683
 			}));
 			drawTextLabel(textObject.material, distance || '');
@@ -171,16 +175,16 @@ function setAxisGeometry(posArray, length) {
 }
 
 function drawTextLabel(mat, str) {
-	var memo = {},
-		fontSizePx = 21,
-		baselineOffsetPx = 0.15 * fontSizePx;
+	const memo = {};
+	const fontSizePx = 21;
+	const baselineOffsetPx = 0.15 * fontSizePx;
 
 	drawTextLabel = function(mat, str) {
 		if (!memo.hasOwnProperty(str)) {
-			var canvas = document.createElement('canvas'),
-				context = canvas.getContext('2d');
+			const canvas = document.createElement('canvas');
+			const context = canvas.getContext('2d');
 
-			var computedSize = Math.ceil(Math.max(2 * (fontSizePx + baselineOffsetPx), context.measureText(str).width));
+			const computedSize = Math.ceil(Math.max(2 * (fontSizePx + baselineOffsetPx), context.measureText(str).width));
 			canvas.width = computedSize;
 			canvas.height = computedSize;
 
@@ -197,7 +201,7 @@ function drawTextLabel(mat, str) {
 			};
 		}
 
-		var memoEntry = memo[str];
+		const memoEntry = memo[str];
 		mat.size = memoEntry.size;
 		mat.transparent = true;
 		mat.sizeAttenuation = false;

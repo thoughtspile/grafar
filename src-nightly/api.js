@@ -5,10 +5,7 @@ export const grafar = {
     version: '4.01r',
 
     update() {
-    	var len = panels.length;
-    	for (var i = 0; i < len; i++) {
-    		panels[i].update();
-        }
+		panels.forEach(panel => panel.update());
     	grafar.frameId++;
     	window.requestAnimationFrame(grafar.update);
     },

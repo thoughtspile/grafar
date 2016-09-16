@@ -4,83 +4,68 @@ import { emptyGraph, pathGraph, cartesianGraphProd, makeFaces } from './topology
 import { nunion } from './setUtils';
 import { Reactive } from './Reactive';
 
-var baseOrder = [];
-var baseComparator = (a, b) => baseOrder.indexOf(a) >= baseOrder.indexOf(b);
+const baseOrder = [];
+const baseComparator = (a, b) => baseOrder.indexOf(a) >= baseOrder.indexOf(b);
 
 export class Graph {
     constructor() {
         this.data = new Reactive(new Buffer());
-        this.edges = new Reactive({
-            array: new Uint32Array(0),
-            length: 0
-        });
-        this.faces = new Reactive({
-            array: new Uint32Array(0),
-            length: 0
-        });
-        this.colors = new Reactive({
-            array: new Float32Array(0),
-            length: 0
-        });
-        this.base = new Reactive({parent: this, struct: []});
+        this.edges = new Reactive({ array: new Uint32Array(0), length: 0 });
+        this.faces = new Reactive({ array: new Uint32Array(0), length: 0 });
+        this.colors = new Reactive({ array: new Float32Array(0), length: 0 });
+        this.base = new Reactive({ parent: this, struct: [] });
     }
 
     static contextify(col, targetBase) {
-        var temp = new Graph();
+        const temp = new Graph();
         temp.base = targetBase;
         temp.data.lift((par, out) => {
-            var data = par[0],
-                colBase = par[1].struct,
-                targetBase = par[2].struct,
-                totalLength = targetBase
+            const data = par[0];
+            const colBase = par[1].struct;
+            const targetBase = par[2].struct;
+            const totalLength = targetBase
                     .map(item => item.data.value().length)
-                    .reduce((prod, len) => prod * len, 1),
-                blockSize = 1,
-                len = data.length;
+                    .reduce((prod, len) => prod * len, 1);
+            let blockSize = 1;
+            let len = data.length;
+
             resizeBuffer(out, totalLength);
-            var res = out.array;
+            const res = out.array;
             res.set(data.array);
-            for (var i = 0; i < targetBase.length; i++) {
-                if (colBase.indexOf(targetBase[i]) === -1) {
+
+            targetBase.forEach(base => {
+                if (colBase.indexOf(base) === -1) {
                     blockRepeat(
                         res,
                         blockSize,
                         Math.floor(len / blockSize),
-                        targetBase[i].data.value().length,
+                        base.data.value().length,
                         res
                     );
-                    len *= targetBase[i].data.value().length;
+                    len *= base.data.value().length;
                 }
-                blockSize *= targetBase[i].data.value().length;
-            }
+                blockSize *= base.data.value().length;
+            });
         }).bind([col.data, col.base, temp.base]);
         return temp;
     }
 
     static unify(cols) {
-        var targetBase = new Reactive({
-                parent: null,
-                struct: []
-            })
+        const targetBase = new Reactive({ parent: null, struct: [] })
             .lift(Graph.baseTranslate)
             .bind(cols.map(col => col.base));
-        var baseEdges = new Reactive([])
+        const baseEdges = new Reactive([])
             .lift((src, targ) => src[0].struct.map(base => base.edges.value()))
-            .bind([targetBase]);
-        var targetEdges = new Reactive({
-                array: new Uint32Array(0),
-                length: 0
-            })
+            .bind([ targetBase ]);
+        const targetEdges = new Reactive({ array: new Uint32Array(0), length: 0 })
             .lift((arr, targ) => cartesianGraphProd(arr[0], targ))
-            .bind([baseEdges]);
-        var targetFaces = new Reactive({
-                array: new Uint32Array(0),
-                length: 0
-            })
+            .bind([ baseEdges ]);
+        const targetFaces = new Reactive({ array: new Uint32Array(0), length: 0 })
             .lift((arr, targ) => makeFaces(arr[0], targ))
-            .bind([baseEdges]);
+            .bind([ baseEdges ]);
+
         return cols.map(col => {
-            var unified = Graph.contextify(col, targetBase);
+            const unified = Graph.contextify(col, targetBase);
             unified.edges = targetEdges;
             unified.faces = targetFaces;
             return unified;
