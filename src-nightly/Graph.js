@@ -5,9 +5,7 @@ import { nunion } from './setUtils';
 import { Reactive } from './Reactive';
 
 var baseOrder = [];
-var baseComparator = function(a, b) {
-        return baseOrder.indexOf(a) >= baseOrder.indexOf(b);
-    };
+var baseComparator = (a, b) => baseOrder.indexOf(a) >= baseOrder.indexOf(b);
 
 export class Graph {
     constructor() {
@@ -30,13 +28,13 @@ export class Graph {
     static contextify(col, targetBase) {
         var temp = new Graph();
         temp.base = targetBase;
-        temp.data.lift(function(par, out) {
+        temp.data.lift((par, out) => {
             var data = par[0],
                 colBase = par[1].struct,
                 targetBase = par[2].struct,
-                totalLength = targetBase.reduce(function(pv, cv) {
-                    return pv * cv.data.value().length;
-                }, 1),
+                totalLength = targetBase
+                    .map(item => item.data.value().length)
+                    .reduce((prod, len) => prod * len, 1),
                 blockSize = 1,
                 len = data.length;
             resizeBuffer(out, totalLength);
@@ -65,33 +63,23 @@ export class Graph {
                 struct: []
             })
             .lift(Graph.baseTranslate)
-            .bind(cols.map(function(col) {
-                return col.base;
-            }));
+            .bind(cols.map(col => col.base));
         var baseEdges = new Reactive([])
-            .lift(function(src, targ) {
-                return src[0].struct.map(function(base) {
-                    return base.edges.value();
-                });
-            })
+            .lift((src, targ) => src[0].struct.map(base => base.edges.value()))
             .bind([targetBase]);
         var targetEdges = new Reactive({
                 array: new Uint32Array(0),
                 length: 0
             })
-            .lift(function(arr, targ) {
-                cartesianGraphProd(arr[0], targ);
-            })
+            .lift((arr, targ) => cartesianGraphProd(arr[0], targ))
             .bind([baseEdges]);
         var targetFaces = new Reactive({
                 array: new Uint32Array(0),
                 length: 0
             })
-            .lift(function(arr, targ) {
-                makeFaces(arr[0], targ);
-            })
+            .lift((arr, targ) => makeFaces(arr[0], targ))
             .bind([baseEdges]);
-        return cols.map(function(col) {
+        return cols.map(col => {
             var unified = Graph.contextify(col, targetBase);
             unified.edges = targetEdges;
             unified.faces = targetFaces;
@@ -104,9 +92,7 @@ export class Graph {
             baseOrder.push(self.parent);
             self.struct = [self.parent];
         } else {
-            nunion(src.map(function(b) {
-                return b.struct;
-            }), self.struct);
+            nunion(src.map(b => b.struct), self.struct);
             self.struct.sort(baseComparator);
         }
     }

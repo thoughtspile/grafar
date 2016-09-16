@@ -56,7 +56,7 @@ export class Panel {
 			this.stats.domElement.style.top = '0px';
 			container.appendChild(this.stats.domElement);
 		} else {
-			this.stats = {update: function() {}};
+			this.stats = { update: () => {} };
 		}
 	}
 
@@ -96,18 +96,16 @@ export class Panel {
 
 		if (isExisty(len))
 			setAxisGeometry(this.axisObject.children[0].geometry.getAttribute('position').array, len);
-		this._axes.forEach(function(axisId, i) {
+		this._axes.forEach((axisId, i) => {
 			drawTextLabel(this.axisObject.children[i + 1].material, axisId || '');
-		}.bind(this));
+		});
 
 		return this;
 	}
 
 	clearAxes() {
 		if (isExisty(this.axisObject)) {
-			this.axisObject.children.forEach(function(child) {
-				this.axisObject.remove(child);
-			}.bind(this));
+			this.axisObject.children.forEach(child => this.axisObject.remove(child));
 			this.scene.remove(this.axisObject);
 			delete this.axisObject;
 		};
@@ -116,9 +114,8 @@ export class Panel {
 	}
 
 	setAxes(axisNames) {
-		axisNames = axisNames.filter(function(n) {
-				return typeof(n) === 'string';
-			})
+		axisNames = axisNames
+			.filter(n => typeof(n) === 'string')
 			.slice(0, 3);
 
 		this._axes = [axisNames[1], axisNames[2], axisNames[0]];

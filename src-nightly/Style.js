@@ -85,11 +85,9 @@ export class Style {
 	}
 
 	update(styleChanges) {
-		Object.getOwnPropertyNames(styleChanges || {}).forEach(function(name) {
-			if (this.hasOwnProperty(name))
-				this[name] = styleChanges[name];
-		}.bind(this));
-
+		Object.getOwnPropertyNames(styleChanges || {})
+			.filter(name => this.hasOwnProperty(name))
+			.forEach(name => { this[name] = styleChanges[name]; });
 		return this;
 	}
 }

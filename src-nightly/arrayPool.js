@@ -3,7 +3,7 @@ import { isExisty } from './utils';
 export const pool = {
 	pool: {},
 
-	get: function(Constructor, length) {
+	get(Constructor, length) {
 		var classKey = Constructor.toString(),
 			constructorKey = length.toString(),
 			classPool = this.pool[classKey],
@@ -15,7 +15,7 @@ export const pool = {
 		return temp;
 	},
 
-	push: function(obj) {
+	push(obj) {
 		var classKey = obj.constructor.toString(),
 			constructorKey = obj.length.toString();
 
@@ -27,7 +27,7 @@ export const pool = {
 		this.pool[classKey][constructorKey].push(obj);
 	},
 
-	flush: function() {
+	flush() {
 		this.pool = {};
 	}
 }

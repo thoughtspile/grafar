@@ -32,7 +32,7 @@ export class GrafarObject{
 	constrain(constraint) {
 		var names = asArray(constraint.what || []),
 			using = asArray(constraint.using || []),
-			as = constraint.as || function() {},
+			as = constraint.as || (() => {}),
 			maxlen = constraint.maxlen || 40,
 	        discrete = constraint.discrete || false;
 
@@ -47,10 +47,10 @@ export class GrafarObject{
 
 	    var computation = new Graph();
 	    computation.data = new Reactive({
-	            buffers: names.map(function() { return new Buffer(); }),
+	            buffers: names.map(() => new Buffer()),
 	            length: 0
 	        })
-	        .lift(function(par, out) {
+	        .lift((par, out) => {
 	            var data = {};
 	            for (var i = 0; i < using.length; i++)
 	                data[using[i]] = par[i].array;
@@ -61,29 +61,23 @@ export class GrafarObject{
 	            }
 	            as(data, out.length, {});
 	        })
-	        .bind(sources.map(function(src) {
-	            return src.data;
-	        }));
+	        .bind(sources.map(src => src.data));
 	    if (sources.length === 0) {
 	        computation.edges.data.pointCount = maxlen;
 	        computation.edges.lift(discrete? emptyGraph: pathGraph);
 	    } else {
 	        computation.edges
-	            .lift(function(src, targ) {
+	            .lift((src, targ) => {
 	                // is clone stupid?
 	                targ.pointCount = src[0].pointCount;
 	                resizeBuffer(targ, src[0].length);
 	                targ.array.set(src[0].array);
 	            })
-	            .bind(sources.map(function(src) {
-	                return src.edges;
-	            }));
+	            .bind(sources.map(src => src.edges));
 	    }
 	    computation.base
 	        .lift(Graph.baseTranslate)
-	        .bind(sources.map(function(src) {
-	            return src.base;
-	        }));
+	        .bind(sources.map(src => src.base));
 
 	    for (var i = 0; i < names.length; i++) {
 	        var dataset = this.datasets[names[i]];
@@ -93,7 +87,7 @@ export class GrafarObject{
 
 	        (function(iLoc) {
 	            dataset.data
-	                .lift(function(src, target) {
+	                .lift((src, target) => {
 	                    target.length = src[0].buffers[iLoc].length;
 	                    target.array = src[0].buffers[iLoc].array;
 	                })
@@ -106,7 +100,7 @@ export class GrafarObject{
 
 	colorize(args) {
 		var using = asArray(args.using || []),
-			as = args.as || function() {};
+			as = args.as || (() => {});
 
 		var data = {},
 			len;
@@ -144,12 +138,12 @@ export class GrafarObject{
 		for (var i = 0; i < this.glinstances.length; i++) {
 			var instance = this.glinstances[i];
 			var tab = this.project(instance.panel._axes, false);
-	        if (tab.every(function(col) { return col.data.isValid; })) {
+	        if (tab.every(col => col.data.isValid)) {
 	            console.log('othing to see here');
 	            return this;
 	        }
 
-			interleave(tab.map(function(c) {return c.data.value()}), instance.position, 3);
+			interleave(tab.map(c => c.data.value()), instance.position, 3);
 
 			// debugger;
 			// reactiveness!

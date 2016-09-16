@@ -135,23 +135,17 @@ function makeFaces2(src, target) {
 
 function makeFaces(src, target) {
     // leads to wild results for non-2D objects
-    var nonEmpty = src.filter(function(src) { return src.length !== 0; });
+    var nonEmpty = src.filter(src => src.length !== 0);
     if (nonEmpty.length !== 2) {
         resizeBuffer(target, 0);
         return;
     }
     var leftStretch = src.slice(0, src.indexOf(nonEmpty[0]))
-        .reduce(function(pv, cv) {
-            return pv * cv.pointCount;
-        }, 1);
+        .reduce((pv, cv) => pv * cv.pointCount, 1);
     var midStretch = src.slice(src.indexOf(nonEmpty[0]) + 1, src.indexOf(nonEmpty[1]))
-        .reduce(function(pv, cv) {
-            return pv * cv.pointCount;
-        }, 1);
+        .reduce((pv, cv) => pv * cv.pointCount, 1);
     var rightStretch = src.slice(src.indexOf(nonEmpty[1]) + 1)
-        .reduce(function(pv, cv) {
-            return pv * cv.pointCount;
-        }, 1);
+        .reduce((pv, cv) => pv * cv.pointCount, 1);
 
     var accum = {
         array: new Uint32Array(0),
