@@ -27,7 +27,7 @@ function repeatPoints(arr, len, times) {
     return arr;
 }
 
-function blockRepeat(source, blockSize, blockCount, repCount, target) {
+function blockRepeat(source, blockSize: number, blockCount: number, repCount: number, target) {
     if (blockCount > 50) {
         for (var i = blockCount - 1; i >= 0; i--) {
             var baseS = i * blockSize;
@@ -63,13 +63,13 @@ function blockRepeat(source, blockSize, blockCount, repCount, target) {
     }
 };
 
-function incArray (arr, by) {
+function incArray (arr, by: number) {
     for (var i = 0; i < arr.length; i++)
         arr[i] += by;
     return arr;
 }
 
-function timesArray (n, arr) {
+function timesArray (n: number, arr) {
     for (var i = 0; i < arr.length; i++)
         arr[i] *= n;
     return arr;

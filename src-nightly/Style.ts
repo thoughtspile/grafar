@@ -44,7 +44,7 @@ export class Style {
         return new THREE.Color('rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ')');
     }
 
-    static constantColor(r, g, b) {
+    static constantColor(r: number, g: number, b: number) {
         return function(color, data, l) {
             for (var i = 0; i < l; i++) {
                 color[i * 3] = r;
@@ -54,11 +54,12 @@ export class Style {
         }
     }
 
-    static matHelper(type, col) {
+    static matHelper(type: 'point' | 'line' | 'mesh', col) {
         console.log('style.matHelper');
-        if (!isExisty(col))
+        if (!isExisty(col)) {
             col = Style.randColor();
-        if (type === 'point')
+        }
+        if (type === 'point') {
             return new THREE.PointCloudMaterial({
                 size: config.particleRadius,
                 transparent: true,
@@ -67,12 +68,14 @@ export class Style {
                 vertexColors: THREE.VertexColors
                 //color: col
             });
-        else if (type === 'line')
+        }
+        if (type === 'line') {
             return new THREE.LineBasicMaterial({
                 //color: col
                 vertexColors: THREE.VertexColors
             });
-        else if (type === 'mesh')
+        }
+        if (type === 'mesh') {
             return new THREE.MeshLambertMaterial({
                 side: THREE.DoubleSide,
                 transparent: true,
@@ -82,6 +85,7 @@ export class Style {
                 //color: col
                 //depthTest: false
             });
+        }
     }
 
     update(styleChanges) {

@@ -3,7 +3,7 @@ import { isExisty } from './utils';
 export const pool = {
     pool: {},
 
-    get(Constructor, length) {
+    get(Constructor, length: number) {
         const classKey = Constructor.toString();
         const constructorKey = length.toString();
         const classPool = this.pool[classKey];

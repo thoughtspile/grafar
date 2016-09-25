@@ -4,18 +4,18 @@ import { config as fullConfig } from './config';
 
 const config = fullConfig.grafaryaz;
 
-function zeros(arr, l) {
+function zeros(arr, l: number) {
     for (var i = 0; i < l; i++)
         arr[i] = 0;
     return arr;
 };
 
-function randomize(arr, l, mean, spread) {
+function randomize(arr, l: number, mean: number, spread: number) {
     for (var i = 0; i < l; i++)
         arr[i] = mean + spread / 2 * (Math.random() + Math.random() - 1);
 }
 
-function pow (x, p) {
+function pow (x: number, p: number) {
     var temp = Math.pow(x, p);
     if (!isNaN(temp))
         return temp;
@@ -27,18 +27,16 @@ function pow (x, p) {
     return NaN;
 }
 
-function constant(valOuter, name) {
+function constant(valOuter, name: string) {
     var val = valOuter;
-    console.log('create', val);
     return function(data, l, extras) {
-        console.log('call C', val);
         for (var i = 0; i < l ; i++)
             data[name][i] = val;
         extras.continuous = true;
     };
 }
 
-function ints(m, name) {
+function ints(m: number, name: string) {
     m = Number(m);
     return function(data, l, extras) {
         for (var i = 0; i < l; i++)
@@ -47,11 +45,10 @@ function ints(m, name) {
     };
 }
 
-function seq(a, b, name, closed, discrete) {
+function seq(a: number, b: number, name: string, closed: boolean = false, discrete: boolean = false) {
     a = Number(a);
     b = Number(b);
-    discrete = discrete || false;
-    var closeFix = (closed === true? 0: 1);
+    const closeFix = (closed? 0: 1);
     return function(data, l, extras) {
         var step = (b - a) / (l - closeFix);
         for (var i = 0; i < l; i++)
@@ -60,20 +57,19 @@ function seq(a, b, name, closed, discrete) {
     };
 }
 
-function logseq(a, b, name) {
+function logseq(a: number, b: number, name: string) {
     a = Number(a);
     b = Number(b);
-    var closeFix = (closed === true? 0: 1);
     return function(data, l, extras) {
-        console.log('logseq ' + name);
         var step = (b - a) / Math.log(l);
-        for (var i = 1; i < l + 1; i++)
+        for (var i = 1; i < l + 1; i++) {
             data[name][i] = a + Math.log(i) * step;
+        }
         extras.continuous = true;
     };
 }
 
-function traceZeroSet(f, names) {
+function traceZeroSet(f: (pt: number[]) => number, names: string[]) {
     var dof = names.length,
         tol = config.tol,
         gradf = grad(f, dof),
@@ -118,39 +114,30 @@ function traceZeroSet(f, names) {
         }
     }
 
-    function constructor(data, l, extras) {
-        var flatData = names.map(function(name) {
-                return data[name];
-            }),
-            i = 0,
-            j = 0;
+    function constructor(data, l: number, extras) {
+        var flatData = names.map(name => data[name]);
+        var i = 0;
+        var j = 0;
 
-        //var speed = {};
         var s = performance.now();
         estimator(flatData, l);
-        //speed['est'] = performance.now() - s;
 
-        //var s = performance.now();
         if (realSize === 0 && !isEmpty) {
-            //console.log('empty');
-            for (var j = 0; j < dof; j++)
+            for (var j = 0; j < dof; j++) {
                 zeros(flatData[j], l);
+            }
             needsReshuffle = true;
             isEmpty = true;
             return;
         }
 
-        //console.log(invalids);
         if (true) {//realSize !== 0 && (needsReshuffle || invalids > 15)) {
-            //console.log('reshuffle');
             for (j = 0; j < dof; j++)
                 randomize(flatData[j], l, mean[j], spread[j]);
             needsReshuffle = false;
             isEmpty = false;
         }
-        //speed['check'] = performance.now() - s;
 
-        //var s = performance.now();
         if (!isEmpty) {
             for (i = 0; i < l; i++) {
                 for (j = 0; j < dof; j++)
@@ -160,17 +147,16 @@ function traceZeroSet(f, names) {
                     flatData[j][i] = pt[j];
             }
         }
-        //console.log(performance.now() - s);
 
         extras.continuous = false;
     };
-    constructor.id = thisid;
+    constructor['id'] = thisid;
     return constructor;
 }
 
-function grad(fa, nargs) {
+function grad(fa: (pt: number[]) => number, nargs: number) {
     var diffStep = config.diffStep;
-    return function(pt, val, out) {
+    return function(pt: number[], val: number, out: number[]) {
         for (var i = 0; i < nargs; i++) {
             pt[i] += diffStep;
             out[i] = (fa(pt) - val) / diffStep;
@@ -179,8 +165,9 @@ function grad(fa, nargs) {
     };
 }
 
-var nabla = [], offset = [];
-function newton(pt, f, gradf, acceptNeg, maxIter) {
+var nabla = [];
+var offset = [];
+function newton(pt: number[], f: (pt: number[]) => number, gradf: (pt0: number[], pt: number, targ: number[]) => void, acceptNeg: boolean, maxIter: number) {
     var tol = config.tol,
         val = 0,
         i = 0,
