@@ -9,7 +9,7 @@ var template = Handlebars.compile('<html><body><ul>' +
 fs.readdir(exampleDir, function(err, files) {
     var absLinks = files
         .filter(name => name.match('\.html$'))
-        .map(name => '/examples/' + name);
+        .map(name => 'examples/' + name);
     var index = template({ examples: absLinks });
     fs.writeFileSync(__dirname + '/index.html', index)
 });
