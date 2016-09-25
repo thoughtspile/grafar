@@ -7,6 +7,7 @@ import { Style } from './Style';
 import { nunion } from './setUtils';
 import { Reactive } from './Reactive';
 import { Graph } from './Graph';
+import * as _ from 'lodash';
 
 export class GrafarObject{
     constructor(opts) {}
@@ -93,6 +94,37 @@ export class GrafarObject{
         return this;
     }
 
+    extern(constraint) {
+        const names = asArray(constraint.what || []);
+        constraint.using = _.flatten(asArray(constraint.using || []));
+        this.constrain(constraint);
+        return names;
+    }
+
+    private compile(ptMap, vars, out) {
+        var spreadInit = vars.map(name => 'var ' + name + ';').join('');
+        var loopHeader = 'for (var i = 0; i < l; i++) {';
+        var fetch = vars.map(name => name + ' = ' + 'data["' + name + '"][i];').join('');
+        var apply = 'data["' + out + '"][i] = fn(' + vars.join(',') + ')';
+        var loopFooter = '}';
+
+        var body = spreadInit + loopHeader + fetch + apply + loopFooter;
+
+        var unbound = new Function('data', 'l', 'fn', body);
+
+        return {
+            what: out,
+            using: vars,
+            as: function(data, l) { return unbound(data, l, ptMap); }
+        };
+    }
+
+    map(name, using, fn) {
+        const names = asArray(using || []);
+        const constraint = this.compile(fn, names, name);
+        return this.extern(constraint);
+    }
+
     colorize(args) {
         const using = asArray(args.using || []);
         const as = args.as || (() => {});
@@ -170,10 +202,6 @@ export class GrafarObject{
 
     hide(hide) {
         this.glinstances.forEach(instance => { instance.object.visible = !hide; });
-        return this;
-    }
-
-    reset() {
         return this;
     }
 }
