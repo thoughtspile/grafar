@@ -236,3 +236,5 @@ function triggerEvent(type, element) {
         element.fireEvent('on' + type);
     }
 }
+
+export {ui, UI};

@@ -1,8 +1,7 @@
 import * as THREE from '../libs/three.min';
 import Detector from '../libs/Detector';
-import * as Stats from 'stats';
-import { OrbitControls } from '../libs/OrbitControls'; // FIXME non-standard
-THREE.OrbitControls = OrbitControls;
+import * as Stats from 'stats.js';
+import * as OrbitControls from '../libs/OrbitControls';
 
 import { isExisty, makeID } from './utils';
 import { pool } from './arrayPool';
@@ -44,7 +43,7 @@ export class Panel {
         this.renderer.setSize(width, height);
         this.renderer.setClearColor(bgcolor, 1);
 
-        this.controls = new THREE.OrbitControls(this.camera, container);
+        this.controls = new OrbitControls(this.camera, container);
 
         this.setAxes(config.axes);
 

@@ -1,6 +1,6 @@
 import * as THREE from '../libs/three.min';
 import * as ColorDummy from '../libs/i-color.min';
-const Color = window.Color;
+const Color = window['Color'] || ColorDummy;
 
 import { isExisty, makeID } from './utils';
 import { config } from './config';
