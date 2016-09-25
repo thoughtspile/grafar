@@ -131,12 +131,17 @@ export class GrafarObject{
     refresh() {
         for (var i = 0; i < this.glinstances.length; i++) {
             const instance = this.glinstances[i];
-            const tab = this.project(instance.panel._axes, false);
+            const axes = instance.panel._axes;
+            const tab = this.project(axes, false);
             if (tab.every(col => col.data.isValid)) {
                 return this;
             }
 
-            interleave(tab.map(c => c.data.value()), instance.position, 3);
+            const computed = tab.map(c => c.data.value());
+            const normalizedComputed = tab.length === 2
+                ? [ computed[1], null, computed[0] ]
+                : computed;
+            interleave(normalizedComputed, instance.position, 3);
 
             // debugger;
             // reactiveness!

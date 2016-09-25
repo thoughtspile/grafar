@@ -32,12 +32,12 @@
                     data.y[i] = data.p[i] + data.e[i] * data.q[i] / n;
                 }
             }})
+            .colorize({ using: '', as: grafar.Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
             .refresh();
 
 		pan3d.camera.position.set(0, 5, 0);
         var t = 0;
         (function up() {
-            console.log(t);
             var ang = 2.7 * Math.pow(Math.sin(t / 50), 3);
             graph.constrain({what: 'x,y', using: 'p,q,e,t', as: function(data, l) {
                     for (var i = 0; i < l; i++) {
@@ -46,7 +46,9 @@
                         data.y[i] = data.p[i] + ang * data.e[i] * data.p[i] / n;
                     }
                 }})
+                .colorize({ using: '', as: grafar.Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
                 .refresh();
+
             t++;
             window.requestAnimationFrame(up);
         }())

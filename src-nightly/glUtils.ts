@@ -1,4 +1,5 @@
 import * as _T from '../libs/three.min';
+import * as _ from 'lodash';
 import { pool } from './arrayPool';
 import { Panel } from './Panel';
 import { config } from './config';
@@ -18,23 +19,30 @@ const DoubleSide = _T.DoubleSide;
 
 export function interleave(tab, buffer, itemsize?: any) {
     itemsize = itemsize || tab.length;
-    resizeBuffer(buffer, itemsize * tab[0].length);
+    const srcLen = tab[0].length;
+    resizeBuffer(buffer, itemsize * srcLen);
     const target = buffer.array;
-    var j;
-    for (j = 0; j < tab.length; j++) {
+    const existyIndices = _.range(itemsize).filter(i => !!tab[i]);
+
+    // copy real values
+    existyIndices.forEach(j => {
         const colData = tab[j].array;
         const len = tab[j].length;
         // explicit loop for perf
+        // i: source index, k: target index
         for (var i = 0, k = j; i < len; i++, k += itemsize) {
             target[k] = colData[i];
         }
-    }
-    for (j = tab.length; j < itemsize; j++) {
+    });
+
+    // fill missing values with zeros
+    _.difference(_.range(itemsize), existyIndices).forEach(j => {
         // explicit loop for perf
-        for (var i = 0, k = j; i < len; i++, k += itemsize) {
+        for (var i = 0, k = j; i < srcLen; i++, k += itemsize) {
             target[k] = 0;
         }
-    }
+    });
+
     buffer.needsUpdate = true;
 }
 
