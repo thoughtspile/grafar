@@ -102,19 +102,18 @@
 
 		// Первый шарик
 		obj_1.reset()
-            .constrain({what: 'phi', maxlen: 25, as: grafar.seq( 0, 2*Math.PI, 'phi')})
-    		.constrain({what: 'theta', maxlen: 25, as: grafar.seq( 0, Math.PI , 'theta')})
-    		.constrain({what: 'x, y, z', using: 'phi ,theta', as: function(data, l) {
+            .constrain({ what: 'phi', maxlen: 25, as: grafar.seq( 0, 2*Math.PI, 'phi') })
+    		.constrain({ what: 'theta', maxlen: 25, as: grafar.seq( 0, Math.PI , 'theta') })
+    		.constrain({ what: 'x, y, z', using: 'phi ,theta', as: function(data, l) {
 				var  phi = data.phi, theta = data.theta;
 				for (var i = 0; i < l; i++) {
 					data.x[i] =  obj_1_x + r_1* Math.sin(theta[i])*Math.cos(phi[i]);
 					data.y[i] = r_1 * Math.sin(theta[i])*Math.sin(phi[i]);
 					data.z[i] = r_1 * Math.cos(theta[i]);
 				}
-			}})
-    		.colorize({using: '', as: grafar.Style.constantColor(0/255,140/255, 240/255)})
+			} })
+    		.colorize({ using: '', as: grafar.Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
     		.refresh();
-
 
 		c_1.constrain({what: 'x, y, z', maxlen: 1, as: function(data, l) {
 				var x = data.x,
@@ -136,27 +135,27 @@
 
 		// Второй шарик
 		obj_2.reset()
-    		.constrain({what: 'phi', maxlen: 25, as: grafar.seq( 0, 2*Math.PI, 'phi')})
-    		.constrain({what: 'theta', maxlen: 25, as: grafar.seq( 0, Math.PI , 'theta')})
-    		.constrain({what: 'x, y, z', using: 'phi ,theta', as: function(data, l) {
-    				var  phi = data.phi, theta = data.theta;
-    				for (var i = 0; i < l; i++) {
-    					data.x[i] = obj_2_x + r_2 * Math.sin(theta[i])*Math.cos(phi[i]);
-    					data.y[i] =  r_2 * Math.sin(theta[i])*Math.sin(phi[i]);
-    					data.z[i] = r_2 * Math.cos(theta[i]);
-    				}
-    			}})
-    		.colorize({using: '', as: grafar.Style.constantColor(168/255, 228/255, 160/255)})
+    		.constrain({ what: 'phi', maxlen: 25, as: grafar.seq( 0, 2 * Math.PI, 'phi') })
+    		.constrain({ what: 'theta', maxlen: 25, as: grafar.seq( 0, Math.PI , 'theta') })
+    		.constrain({ what: 'x, y, z', using: 'phi ,theta', as: function(data, l) {
+				var  phi = data.phi, theta = data.theta;
+				for (var i = 0; i < l; i++) {
+					data.x[i] = obj_2_x + r_2 * Math.sin(theta[i])*Math.cos(phi[i]);
+					data.y[i] =  r_2 * Math.sin(theta[i])*Math.sin(phi[i]);
+					data.z[i] = r_2 * Math.cos(theta[i]);
+				}
+			} })
+    		.colorize({ using: '', as: grafar.Style.constantColor(168/255, 228/255, 160/255) })
     		.refresh();
 
-		c_2.constrain({what: 'x, y, z', maxlen: 1, as: function(data, l) {
+		c_2.constrain({ what: 'x, y, z', maxlen: 1, as: function(data, l) {
 				var x = data.x, y = data.y , z = data.z;
 				for (var i = 0; i < l; i++) {
 					x[i] = obj_2_x;
 					y[i] = 0;
 					z[i] = 0;
 				}
-			}})
+			} })
             .refresh();
 
 		c_2.glinstances[0].object.children[0].visible = true;
@@ -169,11 +168,11 @@
 		line.reset()
     		.constrain({what: 'x', maxlen: 100, as: grafar.seq(-10, 10, 'x')})
     		.constrain({what: 'y,z', using: 'x', as: function(data, l) {
-    				var x = data.x;
-    				for (var i = 0; i < l; i++) {
-    					data.y[i]= 0 ;
-    					data.z[i] = 0;
-    				}
+				var x = data.x;
+				for (var i = 0; i < l; i++) {
+					data.y[i]= 0 ;
+					data.z[i] = 0;
+				}
 			}})
     		.refresh();
 
