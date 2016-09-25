@@ -15,7 +15,7 @@
 	<script type="text/javascript" src="../build/grafar.js"></script>
 	<script type="text/javascript">
 		var pan3d = new grafar.Panel(document.getElementById('render')),//.setAxes(['x','y']),
-			graph = new grafar.ObjectR().pin(pan3d);
+			graph = new grafar.Object().pin(pan3d);
 
 		graph.constrain({what: 'ang', maxlen: 40, as: grafar.seq(-Math.PI, Math.PI, 'ang')})
             .constrain({what: 'dist', maxlen: 40, as: grafar.seq(0, Math.atan(60), 'dist')})
@@ -29,6 +29,7 @@
                 for (var i = 0; i < l; i++)
                     data.z[i] = Math.sin(data.x[i]) * Math.cos(data.y[i]) * Math.exp(-(Math.pow(data.x[i], 2) + Math.pow(data.x[i], 2))/600);
             }})
+            .colorize({ using: '', as: grafar.Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
             .refresh();
 
 		pan3d.camera.position.set(0, 250, 0);
