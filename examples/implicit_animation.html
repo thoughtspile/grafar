@@ -5,14 +5,15 @@
 	<link rel="stylesheet" type="text/css" href="../stylesheets/grafar_style.css" media="screen" />
 </head>
 
-<body>
+<body style="height: 100%;">
 	<script src = '../build/grafar.js'></script>
-	<script>		
+	<script>
         var duration = 100,
             pan = new grafar.Panel(document.body),
             obj = new grafar.Object().pin(pan),
             s = performance.now(),
             l = 0;
+
 
         window.requestAnimationFrame(function frame() {
             l = (performance.now() - s) / 2000;
@@ -27,8 +28,9 @@
                 })
                 .refresh();
 
-            if (l < duration)
+            if (l < duration) {
                 window.requestAnimationFrame(frame);
+            }
         });
 	</script>
 </body>

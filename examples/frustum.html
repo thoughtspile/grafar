@@ -30,10 +30,9 @@
                     data.z[i] = data.dist[i] * Math.sin(data.b[i]);
                 }
             }})
+            .colorize({ using: '', as: grafar.Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
             .refresh();
         pan3d.axisObject.visible = false;
-
-		//pan3d.camera.position.set(0, 250, 0);
 	</script>
 
 	</body>

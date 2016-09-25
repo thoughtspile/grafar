@@ -14,6 +14,12 @@
 
 	<script type="text/javascript" src="../build/grafar.js"></script>
 	<script type="text/javascript">
+        function setColor(threeObj, r, g, b) {
+            threeObj.material.color.r = r / 255;
+            threeObj.material.color.g = g / 255;
+            threeObj.material.color.b = b / 255;
+        }
+        
 		var pan3d = new grafar.Panel(document.getElementById('render')),//.setAxes(['x','y']),
 			graph = new grafar.Object().pin(pan3d),
 			graph2 = new grafar.Object().pin(pan3d),
@@ -27,7 +33,12 @@
                 return Math.max(v[0] * v[0] + v[1] * v[1] - 1, -v[0]);
             }, ['x', 'y', 'z']), discrete: true})
             .refresh();
-        console.log('hello');
+
+        // duct-tape point visibility
+		graph.glinstances[0].object.children[0].visible = true;
+		graph.glinstances[0].object.children[1].visible = false;
+		graph.glinstances[0].object.children[0].material.size = 2;
+		setColor(graph.glinstances[0].object.children[0], 0, 128, 0);
 	</script>
 
 	</body>

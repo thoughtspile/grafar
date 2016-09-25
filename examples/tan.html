@@ -18,7 +18,7 @@
 			graph = new grafar.Object().pin(pan3d);
 
         var eps = .00001;
-		graph.constrain({what: 'i', maxlen: 11, as: grafar.seq(-5, 5, 'i', false, true)})
+		graph.constrain({what: 'i', maxlen: 11, as: grafar.seq(-5, 5, 'i', false, true), discrete: true})
             .constrain({what: 't', maxlen: 30, as: grafar.seq(-Math.PI / 2 + eps, Math.PI / 2 - eps, 't')})
             .constrain({what: 'x', using: 'i, t', as: function(data, l) {
                 for (var i = 0; i < l; i++)
@@ -28,6 +28,7 @@
                 for (var i = 0; i < l; i++)
                     data.y[i] = Math.tan(data.x[i]);
             }})
+            .colorize({ using: '', as: grafar.Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
             .refresh();
 
 		pan3d.camera.position.set(0, 250, 0);

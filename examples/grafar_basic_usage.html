@@ -44,6 +44,7 @@
                     data.z[i] = outr / 2 * (Math.cos(a[i]) - 2 * Math.sin(2 * a[i])) * (2 + Math.cos(b[i])) * (2 + Math.cos(b[i] + Math.PI * 2 / 3)) / 4;
             }})
             .pin(pan)
+            .colorize({ using: '', as: grafar.Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
             .refresh();
 	</script>
 </body>
