@@ -19,15 +19,13 @@
             graph = new grafar.Object().pin(pan3d);
 
         graph.constrain({what: 't', maxlen: 30, as: grafar.seq(0, Math.PI, 't')})
-            .constrain({what: 'p', maxlen: 50, as: grafar.seq(-Math.PI, Math.PI, 'p')})
-            .constrain({what: 'x,y,z', using: 't,p', as: function(data, l) {
-                for (var i = 0; i < l; i++) {
-                    data.x[i] = Math.sin(data.t[i]) * Math.sin(data.p[i]);
-                    data.y[i] = 4 * Math.cos(data.t[i]) * Math.sin(data.p[i]);
-                    data.z[i] = 2 * Math.cos(data.p[i]);
-                }
-            }})
-            .colorize({ using: '', as: grafar.Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
+            .constrain({what: 'p', maxlen: 50, as: grafar.seq(-Math.PI, Math.PI, 'p')});
+
+        graph.map('x', 't,p', (t, p) => Math.sin(t) * Math.sin(p));
+        graph.map('y', 't,p', (t, p) => Math.cos(t) * Math.sin(p));
+        graph.map('z', 't,p', (t, p) => Math.cos(p));
+
+        graph.colorize({ using: '', as: grafar.Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
             .refresh();
 	</script>
 

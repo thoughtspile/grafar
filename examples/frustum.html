@@ -22,15 +22,11 @@
             .constrain({what: 'dist', maxlen: 3, as: function(data, l, ext) {
                 data.dist.set([0, 3, 20]);
                 ext.continuous = true;
-            }})
-            .constrain({what: 'x,y,z', using: 'a,b,dist', as: function(data, l) {
-                for (var i = 0; i < l; i++) {
-                    data.x[i] = data.dist[i] * Math.sin(data.a[i]);
-                    data.y[i] = data.dist[i];
-                    data.z[i] = data.dist[i] * Math.sin(data.b[i]);
-                }
-            }})
-            .colorize({ using: '', as: grafar.Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
+            }});
+        graph.map('x', 'a,b,dist', (a, b, dist) => dist * Math.sin(a));
+        graph.map('y', 'a,b,dist', (a, b, dist) => dist);
+        graph.map('z', 'a,b,dist', (a, b, dist) => dist * Math.sin(b));
+        graph.colorize({ using: '', as: grafar.Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
             .refresh();
         pan3d.axisObject.visible = false;
 	</script>

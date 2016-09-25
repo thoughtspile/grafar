@@ -103,9 +103,9 @@ export class GrafarObject{
 
     private compile(ptMap, vars, out) {
         var spreadInit = vars.map(name => 'var ' + name + ';').join('');
-        var loopHeader = 'for (var i = 0; i < l; i++) {';
-        var fetch = vars.map(name => name + ' = ' + 'data["' + name + '"][i];').join('');
-        var apply = 'data["' + out + '"][i] = fn(' + vars.join(',') + ')';
+        var loopHeader = 'for (var __i__ = 0; __i__ < l; __i__++) {';
+        var fetch = vars.map(name => name + ' = ' + 'data["' + name + '"][__i__];').join('');
+        var apply = 'data["' + out + '"][__i__] = fn(' + vars.join(',') + ')';
         var loopFooter = '}';
 
         var body = spreadInit + loopHeader + fetch + apply + loopFooter;

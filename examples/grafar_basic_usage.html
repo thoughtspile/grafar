@@ -25,26 +25,14 @@
 		var pan = new grafar.Panel(document.getElementById('plot_area')).drawAxes(0),
             outr = 2, inr = .6;
 
-        var graph = new grafar.Object()
+        var graph = new grafar.Object().pin(pan)
             .constrain({what: 'a', maxlen: 100, as: grafar.seq(0, 2 * Math.PI, 'a')})
-            .constrain({what: 'b', maxlen: 100, as: grafar.seq(0, 2 * Math.PI, 'b')})
-            .constrain({what: 'x', using: 'a, b', as: function(data, l) {
-                var a = data.a, b = data.b;
-                for (var i = 0; i < l; i++)
-                    data.x[i] = outr * Math.sin(3 * a[i]) / (2 + Math.cos(b[i]));
-            }})
-            .constrain({what: 'y', using: 'a, b', as: function(data, l) {
-                var a = data.a, b = data.b;
-                for (var i = 0; i < l; i++)
-                    data.y[i] = outr * (Math.sin(a[i]) + 2 * Math.sin(2 * a[i])) / (2 + Math.cos(b[i] + Math.PI * 2 / 3));
-            }})
-            .constrain({what: 'z', using: 'a, b', as: function(data, l) {
-                var a = data.a, b = data.b;
-                for (var i = 0; i < l; i++)
-                    data.z[i] = outr / 2 * (Math.cos(a[i]) - 2 * Math.sin(2 * a[i])) * (2 + Math.cos(b[i])) * (2 + Math.cos(b[i] + Math.PI * 2 / 3)) / 4;
-            }})
-            .pin(pan)
-            .colorize({ using: '', as: grafar.Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
+            .constrain({what: 'b', maxlen: 100, as: grafar.seq(0, 2 * Math.PI, 'b')});
+        graph.map('x', 'a, b', (a, b) => outr * Math.sin(3 * a) / (2 + Math.cos(b)));
+        graph.map('y', 'a, b', (a, b) => outr * (Math.sin(a) + 2 * Math.sin(2 * a)) / (2 + Math.cos(b + Math.PI * 2 / 3)));
+        graph.map('z', 'a, b', (a, b) => outr / 2 * (Math.cos(a) - 2 * Math.sin(2 * a)) * (2 + Math.cos(b)) * (2 + Math.cos(b + Math.PI * 2 / 3)) / 4);
+
+        graph.colorize({ using: '', as: grafar.Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
             .refresh();
 	</script>
 </body>

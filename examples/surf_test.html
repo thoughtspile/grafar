@@ -19,16 +19,12 @@
 
         graph.constrain({what: 'i', maxlen: 2, as: grafar.seq(-1, 1, 'i', 0, 1), discrete: true})
             .constrain({what: 't', maxlen: 20, as: grafar.seq(0, 1, 't')})
-            .constrain({what: 'y', maxlen: 20, as: grafar.seq(0, 1, 'y')})
-            .constrain({what: 'x', using: 'i, t', as: function(data, l) {
-                for (var i = 0; i < l; i++)
-                    data.x[i] = data.i[i] + data.t[i];
-            }})
-            .constrain({what: 'z', using: 'x,y', as: function(data, l) {
-                for (var i = 0; i < l; i++)
-                    data.z[i] = data.x[i] * data.y[i];
-            }})
-            .colorize({ using: '', as: grafar.Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
+            .constrain({what: 'y', maxlen: 20, as: grafar.seq(0, 1, 'y')});
+            
+        graph.map('x', 'i, t', (i, t) => i + t);
+        graph.map('z', 'x, y', (x, y) => x * y);
+
+        graph.colorize({ using: '', as: grafar.Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
             .refresh();
 	</script>
 
