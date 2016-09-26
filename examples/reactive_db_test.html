@@ -18,10 +18,11 @@
         var pan3d = new grafar.Panel(document.getElementById('render')),
             graph = new grafar.Object().pin(pan3d);
 
-        graph.constrain({what: 'i', maxlen: 2, as: grafar.seq(-1, 1, 'i'), discrete: true})
-            .constrain({what: 't', maxlen: 30, as: grafar.seq(0, 1, 't')})
-            .constrain({what: 'p', maxlen: 1, as: function(data) {data.p[0] = 0;}})
-            .constrain({what: 'y', maxlen: 60, as: grafar.seq(-1, 1, 'y')});
+        graph.constrain(grafar.set([-1, 1], 'i'))
+            .constrain(grafar.range(0, 1, 30, 't'))
+            .constrain(grafar.constant(0, 'p'))
+            .constrain(grafar.range(-1, 1, 60, 'y'));
+
         graph.map('x', 'i, t', (i, t) => i + t);
         graph.map('f', 'x,y', (x, y) => Math.sin(x * y) / 2)
         graph.map('z', 'f,p', (f, p) => f * p);

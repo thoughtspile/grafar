@@ -19,20 +19,16 @@
 			graph = new grafar.Object().pin(pan3d),
             len = .05;
 
-		graph.constrain({what: 'q', maxlen: 30, as: grafar.seq(-2.1, 2.1, 'q'), discrete: true})
-            .constrain({what: 'p', maxlen: 30, as: grafar.seq(-2.1, 2.1, 'p'), discrete: true})
-            .constrain({what: 'e', maxlen: 2, as: grafar.seq(-len, len, 'e')})
-            .constrain({what: 't', maxlen: 1, as: function(data) {
-                data.t[0] = 0;
-            }})
-            .constrain({what: 'x,y', using: 'p,q,e,t', as: function(data, l) {
-                for (var i = 0; i < l; i++) {
-                    var n = Math.sqrt(1 + Math.pow(data.q[i], 2));
-                    data.x[i] = data.q[i] + data.e[i] / n;
-                    data.y[i] = data.p[i] + data.e[i] * data.q[i] / n;
-                }
-            }})
-            .colorize({ using: '', as: grafar.Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
+		graph.constrain(grafar.seq(-2.1, 2.1, 30, 'q'))
+            .constrain(grafar.seq(-2.1, 2.1, 30, 'p'))
+            .constrain(grafar.range(-len, len, 2, 'e'))
+            .constrain(grafar.constant(0, 't'));
+
+        graph.map('n', 'q', q => Math.sqrt(1 + q * q));
+        graph.map('x', 'p,q,e,t,n', (p, q, e, t, n) => q + e / n);
+        graph.map('y', 'p,q,e,t,n', (p, q, e, t, n) => q + e * q / n);
+
+        graph.colorize({ using: '', as: grafar.Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
             .refresh();
 
 		pan3d.camera.position.set(0, 5, 0);

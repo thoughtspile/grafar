@@ -17,8 +17,8 @@
 		var pan3d = new grafar.Panel(document.getElementById('render')),//.setAxes(['x','y']),
 			graph = new grafar.Object().pin(pan3d);
 
-		graph.constrain({what: 'ang', maxlen: 40, as: grafar.seq(-Math.PI, Math.PI, 'ang')});
-        graph.constrain({what: 'dist', maxlen: 40, as: grafar.seq(0, Math.atan(60), 'dist')});
+		graph.constrain(grafar.range(-Math.PI, Math.PI, 40, 'ang'));
+        graph.constrain(grafar.range(0, Math.atan(60), 40, 'dist'));
         graph.map('x', 'ang, dist', (ang, dist) => Math.sin(ang) * Math.tan(dist));
         graph.map('y', 'ang, dist', (ang, dist) => Math.cos(ang) * Math.tan(dist));
         graph.map('z', 'x, y', (x, y) => Math.sin(x) * Math.cos(y) * Math.exp(-2 * x * x) / 600);

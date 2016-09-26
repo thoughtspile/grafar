@@ -17,10 +17,10 @@
         var pan3d = new grafar.Panel(document.getElementById('render')),
             graph = new grafar.Object().pin(pan3d);
 
-        graph.constrain({what: 'i', maxlen: 2, as: grafar.seq(-1, 1, 'i', 0, 1), discrete: true})
-            .constrain({what: 't', maxlen: 20, as: grafar.seq(0, 1, 't')})
-            .constrain({what: 'y', maxlen: 20, as: grafar.seq(0, 1, 'y')});
-            
+        graph.constrain(grafar.seq(-1, 1, 2, 'i'))
+            .constrain(grafar.range(0, 1, 20, 't'))
+            .constrain(grafar.range(0, 1, 20, 'y'));
+
         graph.map('x', 'i, t', (i, t) => i + t);
         graph.map('z', 'x, y', (x, y) => x * y);
 

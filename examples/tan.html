@@ -18,8 +18,8 @@
 			graph = new grafar.Object().pin(pan3d);
 
         var eps = .00001;
-		graph.constrain({what: 'i', maxlen: 11, as: grafar.seq(-5, 5, 'i', false, true), discrete: true})
-            .constrain({what: 't', maxlen: 30, as: grafar.seq(-Math.PI / 2 + eps, Math.PI / 2 - eps, 't')});
+		graph.constrain(grafar.ints(-5, 5, 'i'))
+            .constrain(grafar.range(-Math.PI / 2 + eps, Math.PI / 2 - eps, 30, 't'));
 
         graph.map('x', 'i, t', (i, t) => Math.PI * i + t);
         graph.map('y', 'x', x => Math.tan(x));

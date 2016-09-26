@@ -28,6 +28,19 @@ function pow (x: number, p: number) {
     return NaN;
 }
 
+function set(set: any[], name: string, discrete: boolean = true) {
+    return {
+        what: name,
+        using: [],
+        discrete,
+        maxlen: set.length,
+        as: function(data, l, extras) {
+            data[name].set(set);
+            extras['continuous'] = true;
+        }
+    };
+}
+
 function constant(valOuter: number, name: string): Constraint {
     const val = valOuter;
     return {
@@ -235,6 +248,7 @@ function newton(pt: number[], f: (pt: number[]) => number, gradf: (pt0: number[]
 export {
     constant,
     ints,
+    set,
     seq,
     range,
     logseq,

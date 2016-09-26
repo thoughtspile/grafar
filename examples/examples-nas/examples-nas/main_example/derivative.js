@@ -82,25 +82,20 @@
 		document.getElementById('cent').value =  C;
 
 		// Первый шарик
-		obj_1.constrain({ what: 'phi', maxlen: 25, as: grafar.seq(0, 2 * Math.PI, 'phi') });
-    	obj_1.constrain({ what: 'theta', maxlen: 25, as: grafar.seq(0, Math.PI , 'theta') });
+		obj_1.constrain(grafar.range(0, 2 * Math.PI, 25, 'phi'));
+    	obj_1.constrain(grafar.range(0, Math.PI, 25, 'theta'));
+
     	obj_1.map('x', 'phi, theta', (phi, theta) => obj_1_x + r_1 * Math.sin(theta) * Math.cos(phi));
     	obj_1.map('y', 'phi, theta', (phi, theta) => r_1 * Math.sin(theta) * Math.sin(phi));
     	obj_1.map('z', 'phi, theta', (phi, theta) => r_1 * Math.cos(theta));
-    	obj_1.colorize({ using: '', as: grafar.Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
+
+        obj_1.colorize({ using: '', as: grafar.Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
     		.refresh();
 
-		c_1.constrain({what: 'x, y, z', maxlen: 1, as: function(data, l) {
-				var x = data.x,
-                    y = data.y,
-                    z = data.z;
-				for (var i = 0; i < l; i++) {
-					x[i] = obj_1_x;
-					y[i] = 0;
-					z[i] = 0;
-				}
-			}})
-            .refresh();
+		c_1.constrain(grafar.constant(obj_1_x, 'x'));
+		c_1.constrain(grafar.constant(0, 'y'));
+		c_1.constrain(grafar.constant(0, 'z'));
+        c_1.refresh();
 
 		c_1.glinstances[0].object.children[0].visible = true;
 		c_1.glinstances[0].object.children[1].visible = false;
@@ -109,23 +104,20 @@
 		setColor(c_1.glinstances[0].object.children[0], 0, 128, 0);
 
 		// Второй шарик
-		var phi = obj_2.extern({ what: 'phi', maxlen: 25, as: grafar.seq(0, 2 * Math.PI, 'phi') });
-    	var theta = obj_2.extern({ what: 'theta', maxlen: 25, as: grafar.seq(0, Math.PI , 'theta') });
+		var phi = obj_2.extern(grafar.range(0, 2 * Math.PI, 25, 'phi'));
+    	var theta = obj_2.extern(grafar.range(0, Math.PI, 25, 'theta'));
+
     	obj_2.map('x', [phi, theta], (phi, theta) => obj_2_x + r_2 * Math.sin(theta) * Math.cos(phi));
     	obj_2.map('y', [phi, theta], (phi, theta) => r_2 * Math.sin(theta) * Math.sin(phi));
     	obj_2.map('z', [phi, theta], (phi, theta) => r_2 * Math.cos(theta));
-    	obj_2.colorize({ using: '', as: grafar.Style.constantColor(168/255, 228/255, 160/255) })
+
+        obj_2.colorize({ using: '', as: grafar.Style.constantColor(168/255, 228/255, 160/255) })
     		.refresh();
 
-		c_2.constrain({ what: 'x, y, z', maxlen: 1, as: function(data, l) {
-				var x = data.x, y = data.y , z = data.z;
-				for (var i = 0; i < l; i++) {
-					x[i] = obj_2_x;
-					y[i] = 0;
-					z[i] = 0;
-				}
-			} })
-            .refresh();
+        c_2.constrain(grafar.constant(obj_2_x, 'x'));
+		c_2.constrain(grafar.constant(0, 'y'));
+		c_2.constrain(grafar.constant(0, 'z'));
+        c_2.refresh();
 
 		c_2.glinstances[0].object.children[0].visible = true;
 		c_2.glinstances[0].object.children[1].visible = false;
@@ -134,7 +126,7 @@
 		setColor(c_2.glinstances[0].object.children[0], 0, 128, 0);
 
 		// Ось
-		line.constrain({what: 'x', maxlen: 100, as: grafar.seq(-10, 10, 'x')});
+		line.constrain(grafar.seq(-10, 10, 100, 'x'));
     	line.constrain({what: 'y,z', using: 'x', as: function(data, l) {
 				var x = data.x;
 				for (var i = 0; i < l; i++) {
@@ -150,14 +142,10 @@
 		line.glinstances[0].object.children[0].material.transparent = false;
 
 		// Центр масс
-		centr
-            .constrain({what: 'x, y, z', maxlen: 1, as: function(data, l) {
-				var x = data.x, y = data.y, z = data.z;
-				x[0] = C;
-				y[0] = 0;
-				z[0] = 0;
-			}})
-    		.refresh();
+        centr.constrain(grafar.constant(C, 'x'));
+		centr.constrain(grafar.constant(0, 'y'));
+		centr.constrain(grafar.constant(0, 'z'));
+		centr.refresh();
 
 		centr.glinstances[0].object.children[0].visible = true;
 		centr.glinstances[0].object.children[1].visible = false;
@@ -176,8 +164,8 @@
     	C = (m_1 * obj_1_x + m_2 * obj_2_x) / (m_1 + m_2);
 
         obj_1
-            .constrain({what: 'phi', maxlen: 25, as: grafar.seq( 0, 2*Math.PI, 'phi')})
-            .constrain({what: 'theta', maxlen: 25, as: grafar.seq( 0, Math.PI , 'theta')})
+            .constrain(grafar.range(0, 2 * Math.PI, 25, 'phi'))
+            .constrain(grafar.range(0, Math.PI, 25, 'theta'))
             .constrain({what: 'x, y, z', using: 'phi ,theta, temp', as: function(data, l) {
                 var deg = data.temp[0] * 0.0174533;
                 var track = get_track(C, obj_1_x);
@@ -197,12 +185,7 @@
     		isActive: false,
     		j: 1,
     		frame: function() {
-    			obj_1.constrain({
-                        what: 'temp',
-                        maxlen: 1,
-                        discrete: true,
-                        as: data => data.temp[0] = animationState.j
-                    })
+    			obj_1.constrain(grafar.constant(animationState.j, 'temp'))
     				.refresh();
 
     			if (animationState.isActive) {

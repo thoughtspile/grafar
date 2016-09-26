@@ -24,9 +24,11 @@
 			graph = new grafar.Object().pin(pan3d),
             sq2 = 1 / Math.sqrt(2);
 
-		graph.constrain({what: 'x,y,z', maxlen: 5000, as: grafar.traceZeroSet(function(v) {
-                return Math.max(v[0] * v[0] + v[1] * v[1] - 1, -v[0]);
-            }, ['x', 'y', 'z']), discrete: true})
+		graph.constrain(grafar.traceZeroSet(
+                v => Math.max(v[0] * v[0] + v[1] * v[1] - 1, -v[0]),
+                5000,
+                ['x', 'y', 'z']
+            ))
             .refresh();
 
         // duct-tape point visibility

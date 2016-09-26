@@ -25,9 +25,11 @@
 		var pan = new grafar.Panel(document.getElementById('plot_area')).drawAxes(0),
             outr = 2, inr = .6;
 
-        var graph = new grafar.Object().pin(pan)
-            .constrain({what: 'a', maxlen: 100, as: grafar.seq(0, 2 * Math.PI, 'a')})
-            .constrain({what: 'b', maxlen: 100, as: grafar.seq(0, 2 * Math.PI, 'b')});
+        var graph = new grafar.Object().pin(pan);
+
+        graph.constrain(grafar.range(0, 2 * Math.PI, 100, 'a'))
+        graph.constrain(grafar.range(0, 2 * Math.PI, 100, 'b'));
+
         graph.map('x', 'a, b', (a, b) => outr * Math.sin(3 * a) / (2 + Math.cos(b)));
         graph.map('y', 'a, b', (a, b) => outr * (Math.sin(a) + 2 * Math.sin(2 * a)) / (2 + Math.cos(b + Math.PI * 2 / 3)));
         graph.map('z', 'a, b', (a, b) => outr / 2 * (Math.cos(a) - 2 * Math.sin(2 * a)) * (2 + Math.cos(b)) * (2 + Math.cos(b + Math.PI * 2 / 3)) / 4);

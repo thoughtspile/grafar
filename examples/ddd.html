@@ -21,10 +21,11 @@
 		var pan3d = new grafar.Panel(document.getElementById('render')),//.setAxes(['x','y']),
 			graph = new grafar.Object().pin(pan3d);
 
-		graph.constrain({ what: 'x, y, z', maxlen: 50000, discrete: true, as: grafar.traceZeroSet(
-                ([ x, y, z ]) => x * x * x + y * y + z * z - 2,
+		graph.constrain(grafar.traceZeroSet(
+                v => v[0] * v[0] * v[0] + v[1] * v[1] + v[2] * v[2] - 2,
+                50000,
                 ['x', 'y', 'z']
-            ) })
+            ))
             .colorize({ using: '', as: grafar.Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
             .refresh();
 

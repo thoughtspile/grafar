@@ -18,8 +18,8 @@
         var pan3d = new grafar.Panel(document.getElementById('render')),
             graph = new grafar.Object().pin(pan3d);
 
-        graph.constrain({what: 't', maxlen: 30, as: grafar.seq(0, Math.PI, 't')})
-            .constrain({what: 'p', maxlen: 50, as: grafar.seq(-Math.PI, Math.PI, 'p')});
+        graph.constrain(grafar.range(0, Math.PI, 30, 't'))
+            .constrain(grafar.range(-Math.PI, Math.PI, 50, 'p'));
 
         graph.map('x', 't,p', (t, p) => Math.sin(t) * Math.sin(p));
         graph.map('y', 't,p', (t, p) => Math.cos(t) * Math.sin(p));
