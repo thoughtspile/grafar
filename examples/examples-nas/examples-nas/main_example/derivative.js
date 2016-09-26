@@ -50,25 +50,11 @@
     	line = new grafar.Object().pin(pan3d_main),
     	centr = new grafar.Object().pin(pan3d_main);
 
-	var cond_graf = [],
-    	obj_1_mass_x = [],
-    	obj_1_mass_y = [],
-	maxLambda = 20;
-	for (var i = 0; i < maxLambda; i++) {
-		cond_graf.push(new grafar.Object().pin(pan3d_main));
-		cond_graf[i].hide(true);
-	}
-
 	pan3d_main.camera.position.set(-8, 15, 10);
 	pan3d_main.setAxes(['x', 'y', 'z']);
 
-
 	var r_1,
         r_2,
-        obj_1_x,
-        obj_2_x,
-        m_1,
-        m_2,
         С;
 
 	// массив для анимации
@@ -80,11 +66,11 @@
 	updateProblem();
 
 	function updateProblem() {
-		var m_1 = parseFloat(document.getElementById('m_blue').value),
-    		m_2 = parseFloat(document.getElementById('m_green').value);
+		var m_1 = parseFloat(document.getElementById('m_blue').value);
+    	var m_2 = parseFloat(document.getElementById('m_green').value);
 
-		var obj_1_x = parseFloat(document.getElementById('sl_b').value),
-    		obj_2_x = parseFloat(document.getElementById('sl_g').value);
+		var obj_1_x = parseFloat(document.getElementById('sl_b').value);
+    	var obj_2_x = parseFloat(document.getElementById('sl_g').value);
 
 		r_1 = Math.pow(m_1 / 12, 1 / 3);
 		r_2 = Math.pow(m_2 / 12, 1 / 3);
@@ -94,11 +80,6 @@
 		document.getElementById('res').value =  (1 / Math.abs(m_1) + 1 / Math.abs(m_2)).toFixed(2);
 		document.getElementById('cent').disabled = true;
 		document.getElementById('cent').value =  C;
-
-		// Resetting animated panel
-		for (var i = 0; i < cond_graf.length; i++) {
-			cond_graf[i].hide(true);
-		}
 
 		// Первый шарик
 		obj_1.constrain({ what: 'phi', maxlen: 25, as: grafar.seq(0, 2 * Math.PI, 'phi') });
@@ -194,36 +175,40 @@
 
     	C = (m_1 * obj_1_x + m_2 * obj_2_x) / (m_1 + m_2);
 
-    	maxLam = 10;
+        obj_1
+            .constrain({what: 'phi', maxlen: 25, as: grafar.seq( 0, 2*Math.PI, 'phi')})
+            .constrain({what: 'theta', maxlen: 25, as: grafar.seq( 0, Math.PI , 'theta')})
+            .constrain({what: 'x, y, z', using: 'phi ,theta, temp', as: function(data, l) {
+                var deg = data.temp[0] * 0.0174533;
+                var track = get_track(C, obj_1_x);
+                var obj_1_mass_x = C + track * Math.cos(deg);
+                var obj_1_mass_y = track * Math.sin(deg);
 
-    	for (var i = 0; i < maxLam; i++) {
-            var deg = i * 360 / maxLam * 0.0174533;
-            var track = get_track(C, obj_1_x);
-    		obj_1_mass_x.push(C + track * Math.cos(deg));
-    		obj_1_mass_y.push(track * Math.sin(deg));
-    	}
+                var r = data.r, phi = data.phi, theta = data.theta;
+                for (var i = 0; i < l; i++) {
+                    data.x[i] = obj_1_mass_x + r_1 * Math.sin(theta[i])*Math.cos(phi[i]);
+                    data.y[i] = obj_1_mass_y + r_1 * Math.sin(theta[i])*Math.sin(phi[i]);
+                    data.z[i] = r_1 * Math.cos(theta[i]);
+                }
+            }})
+            .colorize({using: '', as: grafar.Style.constantColor(0/255,140/255, 240/255)});
 
     	var animationState = {
     		isActive: false,
     		j: 1,
     		frame: function() {
-    			obj_1
-    				.constrain({what: 'phi', maxlen: 25, as: grafar.seq( 0, 2*Math.PI, 'phi')})
-    				.constrain({what: 'theta', maxlen: 25, as: grafar.seq( 0, Math.PI , 'theta')})
-    				.constrain({what: 'x, y, z', using: 'phi ,theta', as: function(data, l) {
-    					var r = data.r, phi = data.phi, theta = data.theta;
-    					for (var i = 0; i < l; i++) {
-    						data.x[i] = obj_1_mass_x[animationState.j] + r_1 * Math.sin(theta[i])*Math.cos(phi[i]);
-    						data.y[i] = obj_1_mass_y[animationState.j] + r_1 * Math.sin(theta[i])*Math.sin(phi[i]);
-    						data.z[i] = r_1 * Math.cos(theta[i]);
-    					}
-    				}})
-    				.colorize({using: '', as: grafar.Style.constantColor(0/255,140/255, 240/255)})
+    			obj_1.constrain({
+                        what: 'temp',
+                        maxlen: 1,
+                        discrete: true,
+                        as: data => data.temp[0] = animationState.j
+                    })
     				.refresh();
+
     			if (animationState.isActive) {
-    				setTimeout(animationState.frame, 200);    // скорость здесь
+    				window.requestAnimationFrame(animationState.frame);
     			}
-    			animationState.j = (animationState.j + 1) % maxLam;
+    			animationState.j++;
     		}
     	};
 

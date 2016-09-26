@@ -1,6 +1,7 @@
 import { dot, norm } from './vectorUtils';
 import { arraySum, arrayTimes } from './arrayUtils';
 import { config as fullConfig } from './config';
+import { Constraint } from './GrafarObject';
 
 const config = fullConfig.grafaryaz;
 
@@ -27,49 +28,82 @@ function pow (x: number, p: number) {
     return NaN;
 }
 
-function constant(valOuter, name: string) {
-    var val = valOuter;
-    return function(data, l, extras) {
-        for (var i = 0; i < l ; i++)
-            data[name][i] = val;
-        extras.continuous = true;
+function constant(valOuter: number, name: string): Constraint {
+    const val = valOuter;
+    return {
+        what: name,
+        using: [],
+        discrete: true,
+        maxlen: 1,
+        as: function(data, l, extras) {
+            for (var i = 0; i < l ; i++) {
+                data[name][i] = val;
+            }
+            extras['continuous'] = true;
+        }
     };
 }
 
-function ints(m: number, name: string) {
-    m = Number(m);
-    return function(data, l, extras) {
-        for (var i = 0; i < l; i++)
-            data[name][i] = m + i;
-        extras.continuous = false;
-    };
+function ints(start: number, end: number, name: string): Constraint {
+    start = Math.ceil(Number(start));
+    end = Math.floor(Number(end));
+    const size = Math.abs(end + 1 - start);
+    return {
+        what: name,
+        using: [],
+        maxlen: size,
+        discrete: true,
+        as: function(data, l, extras) {
+            for (var i = 0; i <= size; i++) {
+                data[name][i] = start + i;
+            }
+            extras['continuous'] = false;
+        }
+    }
 }
 
-function seq(a: number, b: number, name: string, closed: boolean = false, discrete: boolean = false) {
+function seq(a: number, b: number, size: number, name: string, closed: boolean = false, discrete: boolean = true): Constraint {
     a = Number(a);
     b = Number(b);
     const closeFix = (closed? 0: 1);
-    return function(data, l, extras) {
-        var step = (b - a) / (l - closeFix);
-        for (var i = 0; i < l; i++)
-            data[name][i] = a + i * step;
-        extras.continuous = !discrete;
+    return {
+        what: name,
+        using: [],
+        maxlen: size,
+        discrete,
+        as: (data, l, extras) => {
+            var step = (b - a) / (l - closeFix);
+            for (var i = 0; i < l; i++) {
+                data[name][i] = a + i * step;
+            }
+            extras['continuous'] = !discrete;
+        }
     };
 }
 
-function logseq(a: number, b: number, name: string) {
+function range(a: number, b: number, size: number, name: string): Constraint {
+    return seq(a, b, size, name, false, false);
+}
+
+function logseq(a: number, b: number, size: number, name: string): Constraint {
     a = Number(a);
     b = Number(b);
-    return function(data, l, extras) {
-        var step = (b - a) / Math.log(l);
-        for (var i = 1; i < l + 1; i++) {
-            data[name][i] = a + Math.log(i) * step;
+    return {
+        what: name,
+        using: [],
+        maxlen: size,
+        discrete: false,
+        as: (data, l, extras) => {
+            var step = (b - a) / Math.log(l);
+            for (var i = 1; i < l + 1; i++) {
+                data[name][i] = a + Math.log(i) * step;
+            }
+            extras['continuous'] = true;
         }
-        extras.continuous = true;
     };
 }
 
-function traceZeroSet(f: (pt: number[]) => number, names: string[]) {
+function traceZeroSet(f: (pt: number[]) => number, size: number, names: string[]): Constraint {
     var dof = names.length,
         tol = config.tol,
         gradf = grad(f, dof),
@@ -151,7 +185,13 @@ function traceZeroSet(f: (pt: number[]) => number, names: string[]) {
         extras.continuous = false;
     };
     constructor['id'] = thisid;
-    return constructor;
+
+    return {
+        what: names,
+        maxlen: size,
+        using: [],
+        as: constructor
+    };
 }
 
 function grad(fa: (pt: number[]) => number, nargs: number) {
@@ -196,6 +236,7 @@ export {
     constant,
     ints,
     seq,
+    range,
     logseq,
     traceZeroSet,
     pow

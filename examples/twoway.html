@@ -19,16 +19,11 @@
             threeObj.material.color.g = g / 255;
             threeObj.material.color.b = b / 255;
         }
-        
+
 		var pan3d = new grafar.Panel(document.getElementById('render')),//.setAxes(['x','y']),
 			graph = new grafar.Object().pin(pan3d),
-			graph2 = new grafar.Object().pin(pan3d),
-			graph3 = new grafar.Object().pin(pan3d),
-			graph4 = new grafar.Object().pin(pan3d),
-			graph5 = new grafar.Object().pin(pan3d),
             sq2 = 1 / Math.sqrt(2);
 
-        var eps = .00001;
 		graph.constrain({what: 'x,y,z', maxlen: 5000, as: grafar.traceZeroSet(function(v) {
                 return Math.max(v[0] * v[0] + v[1] * v[1] - 1, -v[0]);
             }, ['x', 'y', 'z']), discrete: true})

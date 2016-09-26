@@ -9,8 +9,16 @@ import { Reactive } from './Reactive';
 import { Graph } from './Graph';
 import * as _ from 'lodash';
 
+export interface Constraint {
+    what: string | string[];
+    using?: string | string[];
+    as: (data, l: number, extras?: { [key: string]: any }) => any;
+    maxlen?: number;
+    discrete?: boolean;
+}
+
 export class GrafarObject{
-    constructor(opts) {}
+    constructor(opts?: any) {}
 
     datasets = {};
     projections = {};
@@ -29,7 +37,7 @@ export class GrafarObject{
         return this;
     }
 
-    constrain(constraint) {
+    constrain(constraint: Constraint) {
         const names = asArray(constraint.what || []);
         const using = asArray(constraint.using || []);
         const as = constraint.as || (() => {});
@@ -94,7 +102,7 @@ export class GrafarObject{
         return this;
     }
 
-    extern(constraint) {
+    extern(constraint: Constraint) {
         const names = asArray(constraint.what || []);
         constraint.using = _.flatten(asArray(constraint.using || []));
         this.constrain(constraint);
@@ -119,7 +127,7 @@ export class GrafarObject{
         };
     }
 
-    map(name, using, fn) {
+    map(name: string, using: string | string[], fn: (...args: number[]) => number) {
         const names = asArray(using || []);
         const constraint = this.compile(fn, names, name);
         return this.extern(constraint);

@@ -25,12 +25,10 @@
 
         pan3d.camera.position.set(-1.3, .47, .7);
 
-
-
-        const r = bld1.extern({ what: 'r', maxlen: 20, as: grafar.logseq(0, 1, 'r')});
-        const phi = bld1.extern({what: 'phi', maxlen: 20, as: grafar.seq(-segAng / 2, segAng / 2, 'phi')});
-        const rep = bld1.extern({what: 'rep', maxlen: seg, as: grafar.seq(0, 2 * pi, 'rep', true), discrete: true});
-        const layer = bld1.extern({what: 'layer', maxlen: 2, as: grafar.seq(0, 1, 'layer'), discrete: true})
+        const r = bld1.extern(grafar.logseq(0, 1, 20, 'r'));
+        const phi = bld1.extern(grafar.range(-segAng / 2, segAng / 2, 20, 'phi'));
+        const rep = bld1.extern(grafar.seq(0, 2 * pi, seg, 'rep', true));
+        const layer = bld1.extern(grafar.ints(0, 1, 'layer'));
 
         const z = bld1.map('z', [r, phi, rep, layer],
             (r, phi, _, layer) => hScale * Math.pow(r, power) * Math.cos(phi) + layer / 50
