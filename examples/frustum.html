@@ -14,19 +14,17 @@
 
 	<script type="text/javascript" src="../build/grafar.js"></script>
 	<script type="text/javascript">
-		var pan3d = new grafar.Panel(document.getElementById('render')),//.setAxes(['x','y']),
-			graph = new grafar.Object().pin(pan3d);
+		var pan3d = new grafar.Panel(document.getElementById('render'));//.setAxes(['x','y']),
 
-		graph.constrain(grafar.range(-Math.PI / 4, Math.PI / 4, 2, 'a'))
-            .constrain(grafar.range(-Math.PI / 5, Math.PI / 5, 2, 'b'))
-            .constrain(grafar.set([0, 3, 20], 'dist', false));
+		var a = grafar.range(-Math.PI / 4, Math.PI / 4, 2);
+        var b = grafar.range(-Math.PI / 5, Math.PI / 5, 2);
+        var dist = grafar.set([0, 3, 20], false);
 
-        graph.map('x', 'a,b,dist', (a, b, dist) => dist * Math.sin(a));
-        graph.map('y', 'a,b,dist', (a, b, dist) => dist);
-        graph.map('z', 'a,b,dist', (a, b, dist) => dist * Math.sin(b));
+        var x = grafar.map([a, b, dist], (a, b, dist) => dist * Math.sin(a));
+        var y = grafar.map([a, b, dist], (a, b, dist) => dist);
+        var z = grafar.map([a, b, dist], (a, b, dist) => dist * Math.sin(b));
 
-        graph.colorize({ using: '', as: grafar.Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
-            .refresh();
+        grafar.pin([x, y, z], pan3d);
         pan3d.axisObject.visible = false;
 	</script>
 

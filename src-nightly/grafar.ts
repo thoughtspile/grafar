@@ -30,11 +30,15 @@ Object.keys(generators).forEach(key => {
 grafar['map'] = (using, fn) => {
     const uid = makeID(Object.keys(registry.datasets));
     return registry.map(uid, using, fn);
-}
+};
 
-grafar['pin'] = ([[x], [y], [z]]: string[][], panel) => {
+grafar['constrain'] = registry.constrain.bind(registry);
+grafar['refresh'] = registry.refresh.bind(registry);
+
+grafar['pin'] = (vars: string[][], panel) => {
     // only works for single graph
-    panel.setAxes([x, y, z]);
+    const axes = _.range(3).map(i => vars[i]? vars[i][0]: null);
+    panel.setAxes(axes);
     registry.pin(panel)
         .colorize({ using: '', as: Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
         .refresh();

@@ -14,13 +14,13 @@
 
 	<script type="text/javascript" src="../build/grafar.js"></script>
 	<script type="text/javascript">
-        var pan3d = new grafar.Panel(document.getElementById('render')),
-            pi = Math.PI,
-            segAng = 3 * pi / 2,
-            seg = 9,
-            angRescale = 2 * pi / segAng / seg,
-            power = 2,
-            hScale = 1/3;
+        var pan3d = new grafar.Panel(document.getElementById('render'));
+        var pi = Math.PI;
+        var segAng = 3 * pi / 2;
+        var seg = 9;
+        var angRescale = 2 * pi / segAng / seg;
+        var power = 2;
+        var hScale = 1/3;
 
         pan3d.camera.position.set(-1.3, .47, .7);
 

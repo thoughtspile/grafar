@@ -15,39 +15,36 @@
 	<script type="text/javascript" src="../build/grafar.js"></script>
 	<script type="text/javascript">
         grafar.config.debug = false;
-		var pan3d = new grafar.Panel(document.getElementById('render')).setAxes(['x','y']),
-			graph = new grafar.Object().pin(pan3d),
-            len = .05;
+		var pan3d = new grafar.Panel(document.getElementById('render')).setAxes(['x','y']);
+        var len = .05;
 
-		graph.constrain(grafar.seq(-2.1, 2.1, 30, 'q'))
-            .constrain(grafar.seq(-2.1, 2.1, 30, 'p'))
-            .constrain(grafar.range(-len, len, 2, 'e'))
-            .constrain(grafar.constant(0, 't'));
+		var q = grafar.seq(-2.1, 2.1, 30);
+        var p = grafar.seq(-2.1, 2.1, 30);
+        var e = grafar.range(-len, len, 2);
+        var t = grafar.constant(0);
 
-        graph.map('n', 'q', q => Math.sqrt(1 + q * q));
-        graph.map('x', 'p,q,e,t,n', (p, q, e, t, n) => q + e / n);
-        graph.map('y', 'p,q,e,t,n', (p, q, e, t, n) => q + e * q / n);
+        var n = grafar.map([ q ], q => Math.sqrt(1 + q * q));
+        var x = grafar.map([ p, q, e, t, n ], (p, q, e, t, n) => q + e / n);
+        var y = grafar.map([ p, q, e, t, n ], (p, q, e, t, n) => q + e * q / n);
 
-        graph.colorize({ using: '', as: grafar.Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
-            .refresh();
+        grafar.pin([x, y], pan3d);
 
 		pan3d.camera.position.set(0, 5, 0);
         var t = 0;
         (function up() {
             var ang = 2.7 * Math.pow(Math.sin(t / 50), 3);
-            graph.constrain({what: 'x,y', using: 'p,q,e,t', as: function(data, l) {
-                    for (var i = 0; i < l; i++) {
-                        var n = Math.sqrt(1 + Math.pow(ang * data.p[i], 2));
-                        data.x[i] = data.q[i] + data.e[i] / n;
-                        data.y[i] = data.p[i] + ang * data.e[i] * data.p[i] / n;
-                    }
-                }})
-                .colorize({ using: '', as: grafar.Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
-                .refresh();
+            grafar.constrain({ what: [x, y], using: [p, q, e, t], as: (data, l) => {
+                for (var i = 0; i < l; i++) {
+                    var n = Math.sqrt(1 + Math.pow(ang * data[p][i], 2));
+                    data[x][i] = data[q][i] + data[e][i] / n;
+                    data[y][i] = data[p][i] + ang * data[e][i] * data[p][i] / n;
+                }
+            }});
+            grafar.refresh();
 
             t++;
             window.requestAnimationFrame(up);
-        }())
+        }());
 	</script>
 
 	</body>

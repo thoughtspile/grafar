@@ -14,16 +14,16 @@
 
 	<script type="text/javascript" src="../build/grafar.js"></script>
 	<script type="text/javascript">
-		var pan3d = new grafar.Panel(document.getElementById('render')),//.setAxes(['x','y']),
-			graph = new grafar.Object().pin(pan3d);
+		var pan3d = new grafar.Panel(document.getElementById('render'));//.setAxes(['x','y']),
 
-		graph.constrain(grafar.range(-Math.PI, Math.PI, 40, 'ang'));
-        graph.constrain(grafar.range(0, Math.atan(60), 40, 'dist'));
-        graph.map('x', 'ang, dist', (ang, dist) => Math.sin(ang) * Math.tan(dist));
-        graph.map('y', 'ang, dist', (ang, dist) => Math.cos(ang) * Math.tan(dist));
-        graph.map('z', 'x, y', (x, y) => Math.sin(x) * Math.cos(y) * Math.exp(-2 * x * x) / 600);
-        graph.colorize({ using: '', as: grafar.Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
-            .refresh();
+		var ang = grafar.range(-Math.PI, Math.PI, 40);
+        var dist = grafar.range(0, Math.atan(60), 40, 'dist');
+
+        var x = grafar.map([ang, dist], (ang, dist) => Math.sin(ang) * Math.tan(dist));
+        var y = grafar.map([ang, dist], (ang, dist) => Math.cos(ang) * Math.tan(dist));
+        var z = grafar.map([x, y], (x, y) => Math.sin(x) * Math.cos(y) * Math.exp(-2 * x * x));
+
+        grafar.pin([x,y,z], pan3d);
 
 		pan3d.camera.position.set(0, 250, 0);
         pan3d.axisObject.visible = false;
