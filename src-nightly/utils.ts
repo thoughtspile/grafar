@@ -1,6 +1,6 @@
 function makeID(obj) {
     while (true) {
-        var temp = Math.random().toString(36).substr(2, 9);
+        var temp = '__grafar' + Math.random().toString(36).substr(2, 9);
         if (!(temp in obj))
             return temp;
     }

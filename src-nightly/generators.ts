@@ -28,7 +28,7 @@ function pow (x: number, p: number) {
     return NaN;
 }
 
-function set(set: any[], name: string, discrete: boolean = true) {
+function set(name: string, set: any[], discrete: boolean = true) {
     return {
         what: name,
         using: [],
@@ -41,7 +41,7 @@ function set(set: any[], name: string, discrete: boolean = true) {
     };
 }
 
-function constant(valOuter: number, name: string): Constraint {
+function constant(name: string, valOuter: number): Constraint {
     const val = valOuter;
     return {
         what: name,
@@ -57,7 +57,7 @@ function constant(valOuter: number, name: string): Constraint {
     };
 }
 
-function ints(start: number, end: number, name: string): Constraint {
+function ints(name: string, start: number, end: number): Constraint {
     start = Math.ceil(Number(start));
     end = Math.floor(Number(end));
     const size = Math.abs(end + 1 - start);
@@ -75,7 +75,7 @@ function ints(start: number, end: number, name: string): Constraint {
     }
 }
 
-function seq(a: number, b: number, size: number, name: string, closed: boolean = false, discrete: boolean = true): Constraint {
+function seq(name: string, a: number, b: number, size: number, closed: boolean = false, discrete: boolean = true): Constraint {
     a = Number(a);
     b = Number(b);
     const closeFix = (closed? 0: 1);
@@ -94,11 +94,11 @@ function seq(a: number, b: number, size: number, name: string, closed: boolean =
     };
 }
 
-function range(a: number, b: number, size: number, name: string): Constraint {
-    return seq(a, b, size, name, false, false);
+function range(name: string, a: number, b: number, size: number): Constraint {
+    return seq(name, a, b, size, false, false);
 }
 
-function logseq(a: number, b: number, size: number, name: string): Constraint {
+function logseq(name: string, a: number, b: number, size: number): Constraint {
     a = Number(a);
     b = Number(b);
     return {
@@ -116,7 +116,7 @@ function logseq(a: number, b: number, size: number, name: string): Constraint {
     };
 }
 
-function traceZeroSet(f: (pt: number[]) => number, size: number, names: string[]): Constraint {
+function traceZeroSet(names: string[], f: (pt: number[]) => number, size: number): Constraint {
     var dof = names.length,
         tol = config.tol,
         gradf = grad(f, dof),

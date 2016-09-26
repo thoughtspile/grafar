@@ -127,13 +127,8 @@
 
 		// Ось
 		line.constrain(grafar.seq(-10, 10, 100, 'x'));
-    	line.constrain({what: 'y,z', using: 'x', as: function(data, l) {
-				var x = data.x;
-				for (var i = 0; i < l; i++) {
-					data.y[i]= 0 ;
-					data.z[i] = 0;
-				}
-			}});
+    	line.constrain(grafar.constant(0, 'y'));
+    	line.constrain(grafar.constant(0, 'z'));
     	line.refresh();
 
 		line.glinstances[0].object.children[0].visible = true;
