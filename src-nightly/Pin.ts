@@ -8,17 +8,19 @@ import { Style } from './Style';
 
 export class Pin {
     constructor(selection: string[], panel: Panel) {
+        this.selection = [ selection[1], selection[2], selection[0] ];
         this.glinstance = new InstanceGL(panel, this.col);
         Pin.pins.push(this);
     }
 
-    glinstance: any; // InstancGL
+    glinstance: any; // InstanceGL
     hidden = false;
+    selection: string[];
     col = Style.randColor();
 
     refresh() {
         const instance = this.glinstance;
-        const axes = instance.panel._axes;
+        const axes = this.selection;
         const tab = registry.project(axes, false);
         if (tab.every(col => col.data.isValid)) {
             return this;
@@ -26,7 +28,7 @@ export class Pin {
 
         const computed = tab.map(c => c.data.value());
         const normalizedComputed = tab.length === 2
-            ? [ computed[1], null, computed[0] ]
+            ? [ computed[0], null, computed[1] ]
             : computed;
         interleave(normalizedComputed, instance.position, 3);
 
@@ -62,7 +64,7 @@ export class Pin {
             data[sourceName] = registry.datasets[sourceName].data.value().array;
         });
         const buf = this.glinstance.color;
-        const len = registry.project(this.glinstance.panel._axes)[0].data.value().length;
+        const len = registry.project(this.selection)[0].data.value().length;
         resizeBuffer(buf, len * 3);
 
         as(buf.array, data, len);

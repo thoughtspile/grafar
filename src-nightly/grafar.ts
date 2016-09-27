@@ -78,7 +78,6 @@ const grafar = {
     pin(vars: string[][] | string[], panel) {
         // only works for single graph
         const axes = normalizeNames(vars, 3);
-        panel.setAxes(axes);
         const pin = new Pin(axes, panel);
 
         pin.colorize({ using: '', as: Style.constantColor(0 / 255, 140 / 255, 240 / 255) });
