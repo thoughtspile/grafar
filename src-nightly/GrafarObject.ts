@@ -23,20 +23,6 @@ export class GrafarObject{
     datasets = {};
     projections = {};
 
-    glinstances = [];
-    //graphs = [];
-    hidden = false;
-    col = Style.randColor();
-
-    pin(panel) {
-        this.glinstances.push(new InstanceGL(panel, this.col));
-        // var graph = new Reactive().lift(function(proj){
-            // interleave(proj, instance.position);
-        // }).bind(this.project()) // won't work because of undefined unification
-        //this.graphs.push(graph);
-        return this;
-    }
-
     constrain(constraint: Constraint) {
         const names = asArray(constraint.what || []);
         const using = asArray(constraint.using || []);
@@ -133,22 +119,6 @@ export class GrafarObject{
         return this.extern(constraint);
     }
 
-    colorize(args) {
-        const using = asArray(args.using || []);
-        const as = args.as || (() => {});
-
-        const data = {};
-        using.forEach(sourceName => {
-            data[sourceName] = this.datasets[sourceName].data.value().array;
-        });
-        const buf = this.glinstances[0].color;
-        const len = this.project(this.glinstances[0].panel._axes)[0].data.value().length;
-        resizeBuffer(buf, len * 3);
-        // this should become as reactive as the Up-Goer 5
-        as(buf.array, data, len);
-        return this;
-    }
-
     project(names, proxy?: any) {
         names = asArray(names || []);
         const namesHash = names.slice().sort().toString();
@@ -166,50 +136,5 @@ export class GrafarObject{
             this.projections[namesHash] = Graph.unify(temp);
         }
         return this.projections[namesHash];
-    }
-
-    refresh() {
-        for (var i = 0; i < this.glinstances.length; i++) {
-            const instance = this.glinstances[i];
-            const axes = instance.panel._axes;
-            const tab = this.project(axes, false);
-            if (tab.every(col => col.data.isValid)) {
-                return this;
-            }
-
-            const computed = tab.map(c => c.data.value());
-            const normalizedComputed = tab.length === 2
-                ? [ computed[1], null, computed[0] ]
-                : computed;
-            interleave(normalizedComputed, instance.position, 3);
-
-            // debugger;
-            // reactiveness!
-            //interleave([tab[0].colors.value()], instance.color);
-
-            interleave([tab[0].edges.value()], instance.segments);
-            interleave([tab[0].faces.value()], instance.faces);
-
-            resizeBuffer(instance.normals, tab[0].data.value().length * 3);
-            instance.object.children[2].geometry.computeVertexNormals();
-
-            const hasEdges = tab[0].edges.value().length > 0;
-            const hasFaces = tab[0].faces.value().length > 0;
-            instance.object.children[0].visible = !hasEdges && !hasFaces;
-            //instance.object.children[1].visible = true;
-            //instance.object.children[2].visible = true;
-        }
-        return this;
-    }
-
-    run() {
-        this.refresh();
-        window.requestAnimationFrame(() => this.run());
-        return this;
-    }
-
-    hide(hide) {
-        this.glinstances.forEach(instance => { instance.object.visible = !hide; });
-        return this;
     }
 }

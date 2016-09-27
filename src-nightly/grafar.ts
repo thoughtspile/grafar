@@ -3,13 +3,13 @@ import * as _ from 'lodash';
 import { UI } from './UI';
 
 import { config } from './config';
+import { registry } from './registry';
 import { Style } from './Style';
 import { Panel, panels } from './Panel';
 import { GrafarObject } from './GrafarObject';
 import * as generators from './generators';
 import { makeID, asArray } from './utils';
-
-const registry = new GrafarObject();
+import { Pin } from './Pin';
 
 function setColor(threeObj, r, g, b) {
     threeObj.material.color.r = r / 255;
@@ -22,7 +22,7 @@ const normalizeNames = (names: string[] | string[][], forceDim?: number) => {
     return forceDim? _.range(forceDim).map(i => flatVars[i] || null): flatVars;
 }
 
-export const grafar = {
+const grafar = {
     version: '4.01r',
 
     update() {
@@ -73,20 +73,20 @@ export const grafar = {
 
     constrain: registry.constrain.bind(registry),
 
-    refresh: registry.refresh.bind(registry),
+    refresh: () => Pin.refresh(),
 
     pin(vars: string[][] | string[], panel) {
         // only works for single graph
         const axes = normalizeNames(vars, 3);
         panel.setAxes(axes);
-        registry.pin(panel);
+        const pin = new Pin(axes, panel);
 
-        registry.colorize({ using: '', as: Style.constantColor(0 / 255, 140 / 255, 240 / 255) });
+        pin.colorize({ using: '', as: Style.constantColor(0 / 255, 140 / 255, 240 / 255) });
         // duct-tape point visibility
-        registry.glinstances[0].object.children[0].material.size = 2;
-        setColor(registry.glinstances[0].object.children[0], 0, 128, 0);
+        pin.glinstance.object.children[0].material.size = 2;
+        setColor(pin.glinstance.object.children[0], 0, 128, 0);
 
-        registry.refresh();
+        pin.refresh();
     },
 
     frameId: 0
@@ -104,4 +104,6 @@ Object.keys(generators).forEach(key => {
 // bootstrap
 grafar.update();
 
+// export
+export = grafar;
 window['grafar'] = grafar;
