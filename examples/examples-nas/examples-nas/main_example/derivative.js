@@ -15,13 +15,6 @@
 		}
 	}
 
-    function setColor(threeObj, r, g, b) {
-        threeObj.material.color.r = r / 255;
-        threeObj.material.color.g = g / 255;
-        threeObj.material.color.b = b / 255;
-    }
-
-
     // UI binding
 
     var panelMainDiv = document.getElementById('plot3d_main');
@@ -43,25 +36,12 @@
     // Grafar object declaration
 
 	var pan3d_main = new grafar.Panel(document.getElementById('plot3d_main'));
-	var obj_1 = new grafar.Object().pin(pan3d_main),
-    	c_1 = new grafar.Object().pin(pan3d_main),
-    	obj_2 = new grafar.Object().pin(pan3d_main),
-    	c_2 = new grafar.Object().pin(pan3d_main),
-    	line = new grafar.Object().pin(pan3d_main),
-    	centr = new grafar.Object().pin(pan3d_main);
 
 	pan3d_main.camera.position.set(-8, 15, 10);
 	pan3d_main.setAxes(['x', 'y', 'z']);
 
-	var r_1,
-        r_2,
-        С;
-
-	// массив для анимации
-	var obj = [];
-	for (var i = 0; i < 10; i++) {
-    	obj.push(new grafar.Object().pin(pan3d_main));
-    }
+	var r_1, r_2, С;
+    var dynamicSphere;
 
 	updateProblem();
 
@@ -82,71 +62,48 @@
 		document.getElementById('cent').value =  C;
 
 		// Первый шарик
-		obj_1.constrain(grafar.range(0, 2 * Math.PI, 25, 'phi'));
-    	obj_1.constrain(grafar.range(0, Math.PI, 25, 'theta'));
+		var phi = grafar.range(0, 2 * Math.PI, 25);
+    	var theta = grafar.range(0, Math.PI, 25, 'theta');
 
-    	obj_1.map('x', 'phi, theta', (phi, theta) => obj_1_x + r_1 * Math.sin(theta) * Math.cos(phi));
-    	obj_1.map('y', 'phi, theta', (phi, theta) => r_1 * Math.sin(theta) * Math.sin(phi));
-    	obj_1.map('z', 'phi, theta', (phi, theta) => r_1 * Math.cos(theta));
+    	var x1 = grafar.map([phi, theta], (phi, theta) => obj_1_x + r_1 * Math.sin(theta) * Math.cos(phi));
+    	var y1 = grafar.map([phi, theta], (phi, theta) => r_1 * Math.sin(theta) * Math.sin(phi));
+    	var z1 = grafar.map([phi, theta], (phi, theta) => r_1 * Math.cos(theta));
 
-        obj_1.colorize({ using: '', as: grafar.Style.constantColor(0 / 255, 140 / 255, 240 / 255) })
-    		.refresh();
+        dynamicSphere = [x1, y1, z1];
 
-		c_1.constrain(grafar.constant(obj_1_x, 'x'));
-		c_1.constrain(grafar.constant(0, 'y'));
-		c_1.constrain(grafar.constant(0, 'z'));
-        c_1.refresh();
+        grafar.pin([x1, y1, z1], pan3d_main);
 
-		c_1.glinstances[0].object.children[0].visible = true;
-		c_1.glinstances[0].object.children[1].visible = false;
-		c_1.glinstances[0].object.children[0].material.transparent = false;
-		c_1.glinstances[0].object.children[0].material.size = 20;
-		setColor(c_1.glinstances[0].object.children[0], 0, 128, 0);
+		var c1_x = grafar.constant(obj_1_x);
+		var c1_y = grafar.constant(0);
+		var c1_z = grafar.constant(0);
+        grafar.pin([c1_x, c1_y, c1_z], pan3d_main);
 
 		// Второй шарик
-		var phi = obj_2.extern(grafar.range(0, 2 * Math.PI, 25, 'phi'));
-    	var theta = obj_2.extern(grafar.range(0, Math.PI, 25, 'theta'));
+		var phi2 = grafar.range(0, 2 * Math.PI, 25);
+    	var theta2 = grafar.range(0, Math.PI, 25);
 
-    	obj_2.map('x', [phi, theta], (phi, theta) => obj_2_x + r_2 * Math.sin(theta) * Math.cos(phi));
-    	obj_2.map('y', [phi, theta], (phi, theta) => r_2 * Math.sin(theta) * Math.sin(phi));
-    	obj_2.map('z', [phi, theta], (phi, theta) => r_2 * Math.cos(theta));
+    	var x2 = grafar.map([phi, theta], (phi, theta) => obj_2_x + r_2 * Math.sin(theta) * Math.cos(phi));
+    	var y2 = grafar.map([phi, theta], (phi, theta) => r_2 * Math.sin(theta) * Math.sin(phi));
+    	var z2 = grafar.map([phi, theta], (phi, theta) => r_2 * Math.cos(theta));
 
-        obj_2.colorize({ using: '', as: grafar.Style.constantColor(168/255, 228/255, 160/255) })
-    		.refresh();
+        grafar.pin([x2, y2, z2], pan3d_main);
 
-        c_2.constrain(grafar.constant(obj_2_x, 'x'));
-		c_2.constrain(grafar.constant(0, 'y'));
-		c_2.constrain(grafar.constant(0, 'z'));
-        c_2.refresh();
-
-		c_2.glinstances[0].object.children[0].visible = true;
-		c_2.glinstances[0].object.children[1].visible = false;
-		c_2.glinstances[0].object.children[0].material.transparent = false;
-		c_2.glinstances[0].object.children[0].material.size = 20;
-		setColor(c_2.glinstances[0].object.children[0], 0, 128, 0);
+		var c2_x = grafar.constant(obj_1_x);
+		var c2_y = grafar.constant(0);
+		var c2_z = grafar.constant(0);
+        grafar.pin([c2_x, c2_y, c2_z], pan3d_main);
 
 		// Ось
-		line.constrain(grafar.seq(-10, 10, 100, 'x'));
-    	line.constrain(grafar.constant(0, 'y'));
-    	line.constrain(grafar.constant(0, 'z'));
-    	line.refresh();
-
-		line.glinstances[0].object.children[0].visible = true;
-		line.glinstances[0].object.children[0].material.size = 2;
-		setColor(line.glinstances[0].object.children[0], 225, 115, 5);
-		line.glinstances[0].object.children[0].material.transparent = false;
+		var line_x = grafar.seq(-10, 10, 100);
+    	var line_y = grafar.constant(0, 'y');
+    	var line_z = grafar.constant(0, 'z');
+        grafar.pin([line_x, line_y, line_z], pan3d_main);
 
 		// Центр масс
-        centr.constrain(grafar.constant(C, 'x'));
-		centr.constrain(grafar.constant(0, 'y'));
-		centr.constrain(grafar.constant(0, 'z'));
-		centr.refresh();
-
-		centr.glinstances[0].object.children[0].visible = true;
-		centr.glinstances[0].object.children[1].visible = false;
-		centr.glinstances[0].object.children[0].material.transparent = false;
-		centr.glinstances[0].object.children[0].material.size = 10;
-		setColor(centr.glinstances[0].object.children[0], 225, 115, 5);
+        var cg_x = grafar.constant(C);
+		var cg_y = grafar.constant(0);
+		var cg_z = grafar.constant(0);
+        grafar.pin([cg_x, cg_y, cg_z], pan3d_main);
 	}
 
     function prepareAnimation() {
@@ -158,30 +115,30 @@
 
     	C = (m_1 * obj_1_x + m_2 * obj_2_x) / (m_1 + m_2);
 
-        obj_1
-            .constrain(grafar.range(0, 2 * Math.PI, 25, 'phi'))
-            .constrain(grafar.range(0, Math.PI, 25, 'theta'))
-            .constrain({what: 'x, y, z', using: 'phi ,theta, temp', as: function(data, l) {
-                var deg = data.temp[0] * 0.0174533;
-                var track = get_track(C, obj_1_x);
-                var obj_1_mass_x = C + track * Math.cos(deg);
-                var obj_1_mass_y = track * Math.sin(deg);
+        var phi_ref = grafar.range(0, 2 * Math.PI, 25);
+        var theta_ref = grafar.range(0, Math.PI, 25);
+        var temp = grafar.constant(0);
+        grafar.constrain({what: dynamicSphere, using: [phi_ref, theta_ref, temp], as: (data, l) => {
+            var deg = data[temp][0] * 0.0174533;
+            var track = get_track(C, obj_1_x);
+            var obj_1_mass_x = C + track * Math.cos(deg);
+            var obj_1_mass_y = track * Math.sin(deg);
 
-                var r = data.r, phi = data.phi, theta = data.theta;
-                for (var i = 0; i < l; i++) {
-                    data.x[i] = obj_1_mass_x + r_1 * Math.sin(theta[i])*Math.cos(phi[i]);
-                    data.y[i] = obj_1_mass_y + r_1 * Math.sin(theta[i])*Math.sin(phi[i]);
-                    data.z[i] = r_1 * Math.cos(theta[i]);
-                }
-            }})
-            .colorize({using: '', as: grafar.Style.constantColor(0/255,140/255, 240/255)});
+            var phi = data[phi_ref];
+            var theta = data[theta_ref];
+            for (var i = 0; i < l; i++) {
+                data[dynamicSphere[0]][i] = obj_1_mass_x + r_1 * Math.sin(theta[i]) * Math.cos(phi[i]);
+                data[dynamicSphere[1]][i] = obj_1_mass_y + r_1 * Math.sin(theta[i]) * Math.sin(phi[i]);
+                data[dynamicSphere[2]][i] = r_1 * Math.cos(theta[i]);
+            }
+        }});
 
     	var animationState = {
     		isActive: false,
     		j: 1,
     		frame: function() {
-    			obj_1.constrain(grafar.constant(animationState.j, 'temp'))
-    				.refresh();
+    			grafar.constrain(grafar.generators.constant(temp, animationState.j));
+                grafar.refresh();
 
     			if (animationState.isActive) {
     				window.requestAnimationFrame(animationState.frame);
