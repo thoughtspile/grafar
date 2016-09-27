@@ -1,4 +1,3 @@
-import { grafar as _G } from './api';
 import { makeID } from './utils';
 
 const UI = {
@@ -66,20 +65,6 @@ const UI = {
         }
         return UI;
     }
-};
-
-// grafar-chainable constructor
-const ui = function(mockup, opts) {
-    opts = opts || {};
-    var container = opts.container || document;
-    if (typeof(container) === 'string')
-        container = document.getElementById(container);
-    if (mockup instanceof Array)
-        mockup = {init: mockup, type: 'group'};
-
-    UI.push(mockup, container);
-
-    return _G;
 };
 
 // field constructors
@@ -237,4 +222,4 @@ function triggerEvent(type, element) {
     }
 }
 
-export {ui, UI};
+export {UI};

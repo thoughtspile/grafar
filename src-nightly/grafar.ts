@@ -1,38 +1,15 @@
-import { grafar } from './api';
 import * as _ from 'lodash';
 
-import { UI, ui } from './UI';
+import { UI } from './UI';
 
-import { Registry } from './Registry';
+import { config } from './config';
 import { Style } from './Style';
-import { Panel } from './Panel';
+import { Panel, panels } from './Panel';
 import { GrafarObject } from './GrafarObject';
 import * as generators from './generators';
 import { makeID, asArray } from './utils';
 
-grafar['Style'] = Style;
-grafar['Panel'] = Panel;
-grafar['UI'] = UI;
-grafar['ui'] = ui;
-
 const registry = new GrafarObject();
-
-Object.keys(generators).forEach(key => {
-    grafar[key] = (...args) => {
-        // only works for 1-d generators
-        const uid = () => makeID(Object.keys(registry.datasets));
-        const constraint = generators[key](uid, ...args);
-        return registry.extern(constraint);
-    };
-});
-
-grafar['map'] = (using, fn) => {
-    const uid = makeID(Object.keys(registry.datasets));
-    return registry.map(uid, using, fn);
-};
-
-grafar['constrain'] = registry.constrain.bind(registry);
-grafar['refresh'] = registry.refresh.bind(registry);
 
 function setColor(threeObj, r, g, b) {
     threeObj.material.color.r = r / 255;
@@ -43,23 +20,86 @@ function setColor(threeObj, r, g, b) {
 const normalizeNames = (names: string[] | string[][], forceDim?: number) => {
     const flatVars = _.flatten(names);
     return forceDim? _.range(forceDim).map(i => flatVars[i] || null): flatVars;
-};
+}
 
-grafar['generators'] = generators;
+export const grafar = {
+    version: '4.01r',
 
-grafar['pin'] = (vars: string[][] | string[], panel) => {
-    // only works for single graph
-    const axes = normalizeNames(vars, 3);
-    panel.setAxes(axes);
-    registry.pin(panel);
+    update() {
+        panels.forEach(panel => panel.update());
+        grafar.frameId++;
+        window.requestAnimationFrame(grafar.update);
+    },
 
-    registry.colorize({ using: '', as: Style.constantColor(0 / 255, 140 / 255, 240 / 255) });
-    // duct-tape point visibility
-    registry.glinstances[0].object.children[0].material.size = 2;
-    setColor(registry.glinstances[0].object.children[0], 0, 128, 0);
+    setup(changes, target) {
+        target = target || config;
+        Object.keys(changes).forEach(name => {
+            if (!target.hasOwnProperty(name)) {
+                return;
+            }
+            if (name === 'grafaryaz') {
+                grafar.setup(changes[name], config.grafaryaz);
+                return;
+            }
+            target[name] = changes[name];
+        });
+        return grafar;
+    },
 
-    registry.refresh();
-};
+    config,
+    panels,
+    Style,
+    Panel,
+    generators,
+
+    UI,
+    ui(mockup, opts) {
+        opts = opts || {};
+        var container = opts.container || document;
+        if (typeof(container) === 'string')
+            container = document.getElementById(container);
+        if (mockup instanceof Array)
+            mockup = {init: mockup, type: 'group'};
+
+        UI.push(mockup, container);
+
+        return this;
+    },
+
+    map(using, fn) {
+        const uid = makeID(Object.keys(registry.datasets));
+        return registry.map(uid, using, fn);
+    },
+
+    constrain: registry.constrain.bind(registry),
+
+    refresh: registry.refresh.bind(registry),
+
+    pin(vars: string[][] | string[], panel) {
+        // only works for single graph
+        const axes = normalizeNames(vars, 3);
+        panel.setAxes(axes);
+        registry.pin(panel);
+
+        registry.colorize({ using: '', as: Style.constantColor(0 / 255, 140 / 255, 240 / 255) });
+        // duct-tape point visibility
+        registry.glinstances[0].object.children[0].material.size = 2;
+        setColor(registry.glinstances[0].object.children[0], 0, 128, 0);
+
+        registry.refresh();
+    },
+
+    frameId: 0
+}
+
+Object.keys(generators).forEach(key => {
+    grafar[key] = (...args) => {
+        // only works for 1-d generators
+        const uid = () => makeID(Object.keys(registry.datasets));
+        const constraint = generators[key](uid, ...args);
+        return registry.extern(constraint);
+    };
+});
 
 // bootstrap
 grafar.update();
