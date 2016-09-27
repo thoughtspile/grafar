@@ -13,11 +13,16 @@
         var s = performance.now();
         var l = 0;
 
+        var xyz = grafar.vsolve(
+            v => v[0] * v[0] + v[1] * v[1] + v[2] * v[2] * Math.sin(l) - 2,
+            12000,
+            3
+        );
 
         window.requestAnimationFrame(function frame() {
             l = (performance.now() - s) / 2000;
 
-            grafar.constrain(grafar.traceZeroSet(
+            grafar.constrain(
                 v => v[0] * v[0] + v[1] * v[1] + v[2] * v[2] * Math.sin(l) - 2,
                 12000,
                 ['x', 'y', 'z']

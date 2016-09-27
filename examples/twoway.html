@@ -14,28 +14,15 @@
 
 	<script type="text/javascript" src="../build/grafar.js"></script>
 	<script type="text/javascript">
-        function setColor(threeObj, r, g, b) {
-            threeObj.material.color.r = r / 255;
-            threeObj.material.color.g = g / 255;
-            threeObj.material.color.b = b / 255;
-        }
+		var pan3d = new grafar.Panel(document.getElementById('render'));
 
-		var pan3d = new grafar.Panel(document.getElementById('render')),//.setAxes(['x','y']),
-			graph = new grafar.Object().pin(pan3d),
-            sq2 = 1 / Math.sqrt(2);
+		var xyz = grafar.vsolve(
+            v => Math.max(v[0] * v[0] + v[1] * v[1] - 1, -v[0]),
+            5000,
+            3
+        );
 
-		graph.constrain(grafar.traceZeroSet(
-                v => Math.max(v[0] * v[0] + v[1] * v[1] - 1, -v[0]),
-                5000,
-                ['x', 'y', 'z']
-            ))
-            .refresh();
-
-        // duct-tape point visibility
-		graph.glinstances[0].object.children[0].visible = true;
-		graph.glinstances[0].object.children[1].visible = false;
-		graph.glinstances[0].object.children[0].material.size = 2;
-		setColor(graph.glinstances[0].object.children[0], 0, 128, 0);
+        grafar.pin(xyz, pan3d);
 	</script>
 
 	</body>

@@ -2,8 +2,16 @@ import { dot, norm } from './vectorUtils';
 import { arraySum, arrayTimes } from './arrayUtils';
 import { config as fullConfig } from './config';
 import { Constraint } from './GrafarObject';
+import * as _ from 'lodash';
 
 const config = fullConfig.grafaryaz;
+
+function extractUid(source: any): string {
+    if (source instanceof Function) {
+        return source();
+    }
+    return '' + source;
+}
 
 function zeros(arr, l: number) {
     for (var i = 0; i < l; i++)
@@ -28,7 +36,8 @@ function pow (x: number, p: number) {
     return NaN;
 }
 
-function set(name: string, set: any[], discrete: boolean = true) {
+function set(nameGen: () => string, set: any[], discrete: boolean = true) {
+    const name = nameGen();
     return {
         what: name,
         using: [],
@@ -41,7 +50,8 @@ function set(name: string, set: any[], discrete: boolean = true) {
     };
 }
 
-function constant(name: string, valOuter: number): Constraint {
+function constant(nameGen: () => string, valOuter: number): Constraint {
+    const name = nameGen();
     const val = valOuter;
     return {
         what: name,
@@ -57,7 +67,8 @@ function constant(name: string, valOuter: number): Constraint {
     };
 }
 
-function ints(name: string, start: number, end: number): Constraint {
+function ints(nameGen: () => string, start: number, end: number): Constraint {
+    const name = nameGen();
     start = Math.ceil(Number(start));
     end = Math.floor(Number(end));
     const size = Math.abs(end + 1 - start);
@@ -75,7 +86,8 @@ function ints(name: string, start: number, end: number): Constraint {
     }
 }
 
-function seq(name: string, a: number, b: number, size: number, closed: boolean = false, discrete: boolean = true): Constraint {
+function seq(nameGen: () => string, a: number, b: number, size: number, closed: boolean = false, discrete: boolean = true): Constraint {
+    const name = nameGen();
     a = Number(a);
     b = Number(b);
     const closeFix = (closed? 0: 1);
@@ -94,11 +106,12 @@ function seq(name: string, a: number, b: number, size: number, closed: boolean =
     };
 }
 
-function range(name: string, a: number, b: number, size: number): Constraint {
-    return seq(name, a, b, size, false, false);
+function range(nameGen: () => string, a: number, b: number, size: number): Constraint {
+    return seq(nameGen, a, b, size, false, false);
 }
 
-function logseq(name: string, a: number, b: number, size: number): Constraint {
+function logseq(nameGen: () => string, a: number, b: number, size: number): Constraint {
+    const name = nameGen();
     a = Number(a);
     b = Number(b);
     return {
@@ -116,9 +129,9 @@ function logseq(name: string, a: number, b: number, size: number): Constraint {
     };
 }
 
-function traceZeroSet(names: string[], f: (pt: number[]) => number, size: number): Constraint {
-    var dof = names.length,
-        tol = config.tol,
+function vsolve(nameGen: () => string, f: (pt: number[]) => number, size: number, dof: number): Constraint {
+    const names = _.range(dof).map(nameGen);
+    var tol = config.tol,
         gradf = grad(f, dof),
         probeSize = 100,
         thisid = Math.random().toFixed(10),
@@ -201,6 +214,7 @@ function traceZeroSet(names: string[], f: (pt: number[]) => number, size: number
 
     return {
         what: names,
+        discrete: true,
         maxlen: size,
         using: [],
         as: constructor
@@ -252,6 +266,6 @@ export {
     seq,
     range,
     logseq,
-    traceZeroSet,
+    vsolve,
     pow
 }
