@@ -31,11 +31,9 @@
         var t = 0;
         (function up() {
             t += .025;
-            // FIXME have grafar.update
-            grafar.constrain({what: p, maxlen: 1, as: function(data) {
-                    data[p][0] = Math.pow(Math.sin(t), 3);
-                }});
+            grafar.constrain(grafar.generators.constant(p, Math.pow(Math.sin(t), 3)));
             grafar.refresh();
+
             window.requestAnimationFrame(up);
         }());
 	</script>

@@ -45,6 +45,8 @@ const normalizeNames = (names: string[] | string[][], forceDim?: number) => {
     return forceDim? _.range(forceDim).map(i => flatVars[i] || null): flatVars;
 };
 
+grafar['generators'] = generators;
+
 grafar['pin'] = (vars: string[][] | string[], panel) => {
     // only works for single graph
     const axes = normalizeNames(vars, 3);

@@ -1,4 +1,3 @@
-<!--context.set('x @= [-20, 20] & y @= [-20, 20] & z == sin(x) * cos(y * x + $e)'.replace(/\$e/g, t));-->
 <html>
 
 <head>
@@ -22,11 +21,12 @@
         window.requestAnimationFrame(function frame() {
             l = (performance.now() - s) / 2000;
 
-            grafar.constrain(
+            grafar.constrain(grafar.generators.vsolve(
+                xyz,
                 v => v[0] * v[0] + v[1] * v[1] + v[2] * v[2] * Math.sin(l) - 2,
                 12000,
-                ['x', 'y', 'z']
-            ))
+                3
+            ));
             grafar.refresh();
 
             if (l < duration) {

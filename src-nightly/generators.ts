@@ -37,7 +37,7 @@ function pow (x: number, p: number) {
 }
 
 function set(nameGen: () => string, set: any[], discrete: boolean = true) {
-    const name = nameGen();
+    const name = extractUid(nameGen);
     return {
         what: name,
         using: [],
@@ -51,7 +51,7 @@ function set(nameGen: () => string, set: any[], discrete: boolean = true) {
 }
 
 function constant(nameGen: () => string, valOuter: number): Constraint {
-    const name = nameGen();
+    const name = extractUid(nameGen);
     const val = valOuter;
     return {
         what: name,
@@ -68,7 +68,7 @@ function constant(nameGen: () => string, valOuter: number): Constraint {
 }
 
 function ints(nameGen: () => string, start: number, end: number): Constraint {
-    const name = nameGen();
+    const name = extractUid(nameGen);
     start = Math.ceil(Number(start));
     end = Math.floor(Number(end));
     const size = Math.abs(end + 1 - start);
@@ -87,7 +87,7 @@ function ints(nameGen: () => string, start: number, end: number): Constraint {
 }
 
 function seq(nameGen: () => string, a: number, b: number, size: number, closed: boolean = false, discrete: boolean = true): Constraint {
-    const name = nameGen();
+    const name = extractUid(nameGen);
     a = Number(a);
     b = Number(b);
     const closeFix = (closed? 0: 1);
@@ -111,7 +111,7 @@ function range(nameGen: () => string, a: number, b: number, size: number): Const
 }
 
 function logseq(nameGen: () => string, a: number, b: number, size: number): Constraint {
-    const name = nameGen();
+    const name = extractUid(nameGen);
     a = Number(a);
     b = Number(b);
     return {
@@ -129,8 +129,13 @@ function logseq(nameGen: () => string, a: number, b: number, size: number): Cons
     };
 }
 
-function vsolve(nameGen: () => string, f: (pt: number[]) => number, size: number, dof: number): Constraint {
-    const names = _.range(dof).map(nameGen);
+function vsolve(nameGen: string[], f: (pt: number[]) => number, size: number, dof: number): Constraint;
+function vsolve(nameGen: () => string, f: (pt: number[]) => number, size: number, dof: number): Constraint;
+function vsolve(nameGen: any, f: (pt: number[]) => number, size: number, dof: number): Constraint {
+    const names = nameGen instanceof Array
+        ? _.flatten(nameGen)
+        : _.range(dof).map(() => extractUid(nameGen));
+    console.log(names)
     var tol = config.tol,
         gradf = grad(f, dof),
         probeSize = 100,

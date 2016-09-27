@@ -14,8 +14,7 @@
 
 	<script type="text/javascript" src="../build/grafar.js"></script>
 	<script type="text/javascript">
-		var pan3d = new grafar.Panel(document.getElementById('render')).setAxes(['x','y']),
-			graph = new grafar.Object().pin(pan3d);
+		var pan3d = new grafar.Panel(document.getElementById('render')).setAxes(['x','y']);
 
         var eps = .00001;
 		var i = grafar.ints(-5, 5);
