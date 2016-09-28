@@ -6,36 +6,50 @@ import * as _ from 'lodash';
 
 const config = fullConfig.grafaryaz;
 
+/*
+ * Если передать функцию, делает строку из ее результата,
+ *   иначе делает строку из параметра.
+ * Костылик, чтобы в генераторы можно было передавать
+ *   - функцию, возвращающую уникальное имя переменной (при создании)
+ *   - Имя переменной (при обновлении)
+ */
 function extractUid(source: any): string {
     if (source instanceof Function) {
-        return source();
+        return '' + source();
     }
     return '' + source;
 }
 
+/*
+ * Заполнить l первых элементов массива arr нулями.
+ * Если arr instanceof Array и arr.length < l, arr увеличится до размера l.
+ * Если arr instanceof TypedArray, то arr заполнится до конца и функция будет работать медленно.
+ * TODO: перетащить в arrayUtils
+ */
 function zeros(arr, l: number) {
-    for (var i = 0; i < l; i++)
+    for (let i = 0; i < l; i++) {
         arr[i] = 0;
+    }
     return arr;
 };
 
+/*
+ * Заполнить l первых элементов массива arr случайными элементами на отрезке mean +- spread.
+ * Если arr.length < l, то:
+ *   - при arr instanceof Array: arr увеличится до размера l.
+ *   - при arr instanceof TypedArray: arr заполнится до конца и функция будет работать медленно.
+ */
 function randomize(arr, l: number, mean: number, spread: number) {
-    for (var i = 0; i < l; i++)
+    for (var i = 0; i < l; i++) {
         arr[i] = mean + spread / 2 * (Math.random() + Math.random() - 1);
+    }
 }
 
-function pow (x: number, p: number) {
-    var temp = Math.pow(x, p);
-    if (!isNaN(temp))
-        return temp;
-
-    temp = -Math.pow(-x, p);
-    if (Math.abs(Math.pow(temp, 1 / p) - x) < config.tol)
-        return temp;
-
-    return NaN;
-}
-
+/*
+ * Обернуть числа из массива set для графара.
+ * @discrete -- использовать дискретную топологию (не соединять точки)
+ *   @default true
+ */
 function set(nameGen: () => string, set: any[], discrete: boolean = true) {
     const name = extractUid(nameGen);
     return {
@@ -50,9 +64,11 @@ function set(nameGen: () => string, set: any[], discrete: boolean = true) {
     };
 }
 
-function constant(nameGen: () => string, valOuter: number): Constraint {
+/*
+ * Обернуть одно число для графара.
+ */
+function constant(nameGen: () => string, val: number): Constraint {
     const name = extractUid(nameGen);
-    const val = valOuter;
     return {
         what: name,
         using: [],
@@ -67,6 +83,9 @@ function constant(nameGen: () => string, valOuter: number): Constraint {
     };
 }
 
+/*
+ * Дискретное графар-измерение из целых чисел на отрезке [start, end].
+ */
 function ints(nameGen: () => string, start: number, end: number): Constraint {
     const name = extractUid(nameGen);
     start = Math.ceil(Number(start));
@@ -86,6 +105,13 @@ function ints(nameGen: () => string, start: number, end: number): Constraint {
     }
 }
 
+/*
+ * Графар-измерение из size чисел с равным шагом между a и b:
+ *   data[i] = a + i * (b - a) / size
+ * TODO: разве правильно?
+ * При closed = true шаг немного уменьшается, и последний элемент не упирается в b.
+ * TODO: зачем?
+ */
 function seq(nameGen: () => string, a: number, b: number, size: number, closed: boolean = false, discrete: boolean = true): Constraint {
     const name = extractUid(nameGen);
     a = Number(a);
@@ -106,10 +132,18 @@ function seq(nameGen: () => string, a: number, b: number, size: number, closed: 
     };
 }
 
+/*
+ * Отрезок [a, b] (топология отрезка).
+ * Внутри использует seq.
+ */
 function range(nameGen: () => string, a: number, b: number, size: number): Constraint {
     return seq(nameGen, a, b, size, false, false);
 }
 
+/*
+ * Логарифмическая последовательность чисел между a и b (больше чисел ближе к a).
+ * TODO: убрать
+ */
 function logseq(nameGen: () => string, a: number, b: number, size: number): Constraint {
     const name = extractUid(nameGen);
     a = Number(a);
@@ -129,11 +163,15 @@ function logseq(nameGen: () => string, a: number, b: number, size: number): Cons
     };
 }
 
+/*
+ * Графар-измерение из size нулей функции f: R^dof -> R.
+ * Использует метод Ньютона.
+ */
 function vsolve(nameGen: string[], f: (pt: number[]) => number, size: number, dof: number): Constraint;
 function vsolve(nameGen: () => string, f: (pt: number[]) => number, size: number, dof: number): Constraint;
 function vsolve(nameGen: any, f: (pt: number[]) => number, size: number, dof: number): Constraint {
-    const names = nameGen instanceof Array
-        ? _.flatten(nameGen)
+    const names: string[] = nameGen instanceof Array
+        ? _.flatten(<any[]>nameGen)
         : _.range(dof).map(() => extractUid(nameGen));
     console.log(names)
     var tol = config.tol,
@@ -226,10 +264,21 @@ function vsolve(nameGen: any, f: (pt: number[]) => number, size: number, dof: nu
     };
 }
 
+/*
+ * Градиент функции fa: R^nargs -> R.
+ * @result: функция (pt: number[nargs], val: number[nargs] === fa(pt), out: number[nargs])
+ *   То есть нужно передать:
+ *     - точку;
+ *     - значение fa в этой точке (ура, сэкономили один вызов fa);
+ *     - массив out, в который положить градиент.
+ *   Использует nargs вызовов fa и никакой дополнительной памяти.
+ *   После вызова значение pt может немного сползти на ошибку округления.
+ */
 function grad(fa: (pt: number[]) => number, nargs: number) {
     var diffStep = config.diffStep;
     return function(pt: number[], val: number, out: number[]) {
         for (var i = 0; i < nargs; i++) {
+            // Оптимизационный трюк, чтобы не выделять память и не копировать массив.
             pt[i] += diffStep;
             out[i] = (fa(pt) - val) / diffStep;
             pt[i] -= diffStep;
@@ -237,30 +286,47 @@ function grad(fa: (pt: number[]) => number, nargs: number) {
     };
 }
 
+// Эти контейнеры переиспользуются между вызовами newton для разных точек.
 var nabla = [];
 var offset = [];
+/*
+ * Попробовать найти нуль функции f с градиентом gradf методом Ньютона,
+ *   начиная с точки pt. Положить решение в pt (да, параметр мутирует).
+ * @param maxIter: наибольшее число итераций. При превышении функция возвращает 0.
+ * @param acceptNeg: возвращать pt, если f(pt) <= 0: решать неравенство.
+ */
 function newton(pt: number[], f: (pt: number[]) => number, gradf: (pt0: number[], pt: number, targ: number[]) => void, acceptNeg: boolean, maxIter: number) {
-    var tol = config.tol,
-        val = 0,
-        i = 0,
-        j = 0,
-        posterr = 0,
-        l = pt.length;
+    const tol = config.tol;
+    const l = pt.length;
+    let val = 0;
+    let posterr = 0;
 
-    for (i = 0; i < maxIter; i++) {
+    for (let i = 0; i < maxIter; i++) {
         val = f(pt);
         gradf(pt, val, nabla);
+        // Постериорная оценка ошибки (как далеко от решения мы находимся)
         posterr = -val / dot(nabla, nabla);
-        for (j = 0; j < l; j++)
+
+        for (let j = 0; j < l; j++) {
             offset[j] = posterr * nabla[j];
-        if (norm(offset) < tol)
+        }
+
+        // Довольно близко
+        if (norm(offset) < tol) {
             return pt;
-        for (j = 0; j < l; j++)
+        }
+
+        // Подвинуть поближе
+        for (let j = 0; j < l; j++) {
             pt[j] += offset[j];
+        }
     }
 
-    for (j = 0; j < l; j++)
-        pt[j] = 0; ////// WWWWWWWWWWWWWWTTTTTTTTTTTTTTFFFFFFFFFFF
+    // Если не сошлись за maxIter итераций, вернуть 0.
+    for (let j = 0; j < l; j++) {
+        pt[j] = 0;
+    }
+
     return pt;
 }
 
@@ -271,6 +337,5 @@ export {
     seq,
     range,
     logseq,
-    vsolve,
-    pow
+    vsolve
 }
