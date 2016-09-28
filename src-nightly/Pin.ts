@@ -13,7 +13,7 @@ export class Pin {
         Pin.pins.push(this);
     }
 
-    glinstance: any; // InstanceGL
+    glinstance: InstanceGL;
     hidden = false;
     selection: string[];
     col = Style.randColor();

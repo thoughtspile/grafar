@@ -17,27 +17,31 @@ const MeshLambertMaterial = _T.MeshLambertMaterial;
 const MeshPhongMaterial = _T.MeshPhongMaterial;
 const DoubleSide = _T.DoubleSide;
 
-export function interleave(tab, buffer, itemsize?: any) {
+/*
+ * Переложить элементы из нескольких Buffer в один Three.Buffer:
+ *   например, из [x1,x2], [y1,y2], [z1,z2] получится [x1,y1,z1,  x2,y2,z2]
+ * @param itemsize -- размерность, чтобы можно было сложить два массива в трехмерный общий.
+ *   например, если itemsize === 3, из [x1,x2], [y1,y2] получится [x1,y1,0,  x2,y2,0]
+ *   более того, можно передать tab = [x_buff, null, z_buff], получится [x1,0,z1,  x2,0,z2]
+ */
+export function interleave(tab: { array: Float32Array; length: number }[], buffer: { array: Float32Array; needsUpdate: boolean }, itemsize?: number) {
     itemsize = itemsize || tab.length;
     const srcLen = tab[0].length;
     resizeBuffer(buffer, itemsize * srcLen);
     const target = buffer.array;
     const existyIndices = _.range(itemsize).filter(i => !!tab[i]);
 
-    // copy real values
+    // Скопировать настоящие значения из tab
     existyIndices.forEach(j => {
         const colData = tab[j].array;
         const len = tab[j].length;
-        // explicit loop for perf
-        // i: source index, k: target index
         for (var i = 0, k = j; i < len; i++, k += itemsize) {
             target[k] = colData[i];
         }
     });
 
-    // fill missing values with zeros
+    // Заполнить остальные нулями
     _.difference(_.range(itemsize), existyIndices).forEach(j => {
-        // explicit loop for perf
         for (var i = 0, k = j; i < srcLen; i++, k += itemsize) {
             target[k] = 0;
         }
@@ -46,57 +50,74 @@ export function interleave(tab, buffer, itemsize?: any) {
     buffer.needsUpdate = true;
 }
 
-export function resizeBuffer(buffer, size) {
-    const type = buffer.array.constructor;
+/*
+ * Изменить размер буфера (работает для Three.Buffer и Buffer)
+ * Старый массив сдается в pool, новый берется оттуда же.
+ * Если размер не изменился, ничего не произойдет.
+ */
+export function resizeBuffer(buffer: { array: Float32Array; length: number }, size) {
+    const type: any = buffer.array.constructor;
+    // TODO: pool сам разрулит такой случай: сдал массив, получил его же.
     if (size !== buffer.array.length) {
         pool.push(buffer.array);
-        buffer.array = pool.get(type, size);
+        buffer.array = <any>pool.get(type, size);
         if (buffer.hasOwnProperty('length')) {
             buffer.length = size;
         }
     }
 };
 
-export function InstanceGL(panel, col) {
-    const pointGeometry = new BufferGeometry();
-    const lineGeometry = new BufferGeometry();
-    const meshGeometry = new BufferGeometry();
+/*
+ * Обертка для Three-штучек:
+ *   слой спрайтов, слой линий, слой граней.
+ *   также нормали и цвета.
+ *   все собирается в Three.Object3D
+ * добавить на Panel (в <Panel>.scene: THREE.Scene)
+ */
+export class InstanceGL {
+    constructor(public panel, col) {
+        this.linkAttributes();
+        this.linkColor();
 
-    const position = new BufferAttribute(pool.get(Float32Array, 0), 3);
-    const lineIndex = new BufferAttribute(pool.get(Uint32Array, 0), 2);
-    const meshIndex = new BufferAttribute(pool.get(Uint32Array, 0), 3);
+        this.object.add(new PointCloud(this.pointGeometry, matHelper('point', col)))
+            .add(new Line(this.lineGeometry, matHelper('line', col), LinePieces))
+            .add(new _T.Mesh(this.meshGeometry, matHelper('mesh', col)));
+        panel.scene.add(this.object);
+    }
 
-    const normal = new BufferAttribute(pool.get(Float32Array, 0), 3);
-    const color = new BufferAttribute(pool.get(Float32Array, 0), 3);
+    linkAttributes() {
+        this.pointGeometry.addAttribute('position', this.position);
+        this.lineGeometry.addAttribute('position', this.position);
+        this.meshGeometry.addAttribute('position', this.position);
+        this.lineGeometry.addAttribute('index', this.segments);
+        this.meshGeometry.addAttribute('index', this.faces);
+        this.meshGeometry.addAttribute('normal', this.normals);
+    }
 
-    pointGeometry.addAttribute('position', position);
-    lineGeometry.addAttribute('position', position);
-    meshGeometry.addAttribute('position', position);
-    lineGeometry.addAttribute('index', lineIndex);
-    meshGeometry.addAttribute('index', meshIndex);
-    meshGeometry.addAttribute('normal', normal);
+    linkColor() {
+        this.pointGeometry.addAttribute('color', this.color);
+        this.lineGeometry.addAttribute('color', this.color);
+        this.meshGeometry.addAttribute('color', this.color);
+    }
 
-    pointGeometry.addAttribute('color', color);
-    lineGeometry.addAttribute('color', color);
-    meshGeometry.addAttribute('color', color);
+    pointGeometry = new BufferGeometry();
+    lineGeometry = new BufferGeometry();
+    meshGeometry = new BufferGeometry();
 
-    const object = new Object3D();
-    object.add(new PointCloud(pointGeometry, matHelper('point', col)))
-        .add(new Line(lineGeometry, matHelper('line', col), LinePieces))
-        .add(new _T.Mesh(meshGeometry, matHelper('mesh', col)));
-    panel.scene.add(object);
+    position = new BufferAttribute(pool.get(Float32Array, 0), 3);
+    segments = new BufferAttribute(pool.get(Uint32Array, 0), 2);
+    faces = new BufferAttribute(pool.get(Uint32Array, 0), 3);
 
-    this.panel = panel;
-    this.position = position;
-    this.color = color;
-    this.segments = lineIndex;
-    this.faces = meshIndex;
-    this.normals = normal;
-    this.object = object;
-};
+    normals = new BufferAttribute(pool.get(Float32Array, 0), 3);
+    color = new BufferAttribute(pool.get(Float32Array, 0), 3);
 
+    object = new Object3D();
+}
 
-function matHelper(type, col) {
+/*
+ * Фабрика THREE-материалов.
+ */
+function matHelper(type: 'point' | 'line' | 'mesh', col) {
     if (type === 'point') {
         return new PointCloudMaterial({
             size: config.particleRadius,
