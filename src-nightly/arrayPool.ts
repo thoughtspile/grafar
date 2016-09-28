@@ -1,35 +1,49 @@
 import { isExisty } from './utils';
 
-export const pool = {
-    pool: {},
+/*
+ * Хранит выделенные массивы, чтобы снизить снизить затраты на аллокацию и сборку мусора
+ */
+export class pool {
+    static pool: { [ className: string ]: { [length: string]: any[] } } = {}
 
-    get(Constructor, length: number) {
+    /*
+     * Получить массив класса Constructor (например, Float32Array) и длины length
+     * Если такого массива нет в пуле, создать его через new Constructor(length)
+     */
+    static get<T>(Constructor: new(length: number) => T, length: number): T {
         const classKey = Constructor.toString();
         const constructorKey = length.toString();
-        const classPool = this.pool[classKey];
+        const classPool = pool.pool[classKey];
 
         if (isExisty(classPool) && isExisty(classPool[constructorKey]) && classPool[constructorKey].length !== 0) {
             return classPool[constructorKey].pop();
         }
         return new Constructor(length);
-    },
+    }
 
-    push(obj) {
+    /*
+     * Положить массив в пул.
+     * Не стоит использовать массив после того, как передали его сюда.
+     */
+    static push(obj) {
         const classKey = obj.constructor.toString();
         const constructorKey = obj.length.toString();
 
-        if (!isExisty(this.pool[classKey])) {
-            this.pool[classKey] = {};
+        if (!isExisty(pool.pool[classKey])) {
+            pool.pool[classKey] = {};
         }
 
-        if (!isExisty(this.pool[classKey][constructorKey])) {
-            this.pool[classKey][constructorKey] = [];
+        if (!isExisty(pool.pool[classKey][constructorKey])) {
+            pool.pool[classKey][constructorKey] = [];
         }
 
-        this.pool[classKey][constructorKey].push(obj);
-    },
+        pool.pool[classKey][constructorKey].push(obj);
+    }
 
-    flush() {
-        this.pool = {};
+    /*
+     * Очистить пул
+     */
+    static flush() {
+        pool.pool = {};
     }
 };
