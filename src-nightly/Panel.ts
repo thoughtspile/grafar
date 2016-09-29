@@ -142,17 +142,12 @@ export class Panel {
         }
 
         this.drawAxes(2);
-        // Object.getOwnPropertyNames(_G.graphs).forEach(function(graphName) {
-            // var graph = _G.graphs[graphName];
-            // if (graph.panel === this)
-                // graph.setPanel(this);
-        // }.bind(this));
 
         return this;
     }
 
     axisText(axis, distance) {
-        if (isExisty(this._axes) && this._axes.includes(axis)) {
+        if (isExisty(this._axes) && this._axes.indexOf(axis) > -1) {
             const pos = this._axes.indexOf(axis);
 
             const geometry = new THREE.BufferGeometry();

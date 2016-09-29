@@ -6,6 +6,9 @@ import { Panel } from './Panel';
 import { registry } from './registry';
 import { Style } from './Style';
 
+/*
+ * Связка между графар-переменными и панелью.
+ */
 export class Pin {
     constructor(selection: string[], panel: Panel) {
         this.selection = [ selection[1], selection[2], selection[0] ];

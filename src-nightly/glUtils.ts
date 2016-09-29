@@ -24,7 +24,7 @@ const DoubleSide = _T.DoubleSide;
  *   например, если itemsize === 3, из [x1,x2], [y1,y2] получится [x1,y1,0,  x2,y2,0]
  *   более того, можно передать tab = [x_buff, null, z_buff], получится [x1,0,z1,  x2,0,z2]
  */
-export function interleave(tab: { array: Float32Array; length: number }[], buffer: { array: Float32Array; needsUpdate: boolean }, itemsize?: number) {
+export function interleave(tab: { array: Float32Array; length: number }[], buffer: { array: Float32Array; length: number; needsUpdate: boolean }, itemsize?: number) {
     itemsize = itemsize || tab.length;
     const srcLen = tab[0].length;
     resizeBuffer(buffer, itemsize * srcLen);
