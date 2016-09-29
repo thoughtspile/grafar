@@ -20,8 +20,8 @@ export interface Constraint {
 export class GrafarObject{
     constructor(opts?: any) {}
 
-    datasets = {};
-    projections = {};
+    datasets: { [name: string]: Graph } = {};
+    projections: { [nameHash: string]: Graph[] } = {};
 
     constrain(constraint: Constraint) {
         const names = asArray(constraint.what || []);
@@ -30,7 +30,6 @@ export class GrafarObject{
         const maxlen = constraint.maxlen || 40;
         const discrete = constraint.discrete || false;
 
-        //debugger;
         const sources = this.project(using, true);
         // I only do this shit because project forces product
         // however, if it doesn't (force), memo would have to go into unify
@@ -39,6 +38,7 @@ export class GrafarObject{
             .forEach(name => { this.datasets[name] = new Graph(); });
 
         const computation = new Graph();
+        // Это какой-то ужасный хак
         computation.data = new Reactive({
                 buffers: names.map(() => new Buffer()),
                 length: 0
@@ -54,6 +54,7 @@ export class GrafarObject{
                 as(data, out.length, {});
             })
             .bind(sources.map(src => src.data));
+
         if (sources.length === 0) {
             computation.edges.data.pointCount = maxlen;
             computation.edges.lift(discrete? emptyGraph: pathGraph);
@@ -67,6 +68,7 @@ export class GrafarObject{
                 })
                 .bind(sources.map(src => src.edges));
         }
+
         computation.base
             .lift(Graph.baseTranslate)
             .bind(sources.map(src => src.base));
@@ -77,8 +79,7 @@ export class GrafarObject{
             dataset.base = computation.base;
             dataset.edges = computation.edges;
 
-            dataset.data
-                .lift((src, target) => {
+            dataset.data.lift((src, target) => {
                     target.length = src[0].buffers[i].length;
                     target.array = src[0].buffers[i].array;
                 })
@@ -119,8 +120,8 @@ export class GrafarObject{
         return this.extern(constraint);
     }
 
-    project(names, proxy?: any) {
-        names = asArray(names || []);
+    project(rawNames: string | string[] = [], proxy: boolean = false) {
+        const names = asArray(rawNames);
         const namesHash = names.slice().sort().toString();
         if (!this.projections.hasOwnProperty(namesHash)) {
             const temp = names.map(name => {

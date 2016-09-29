@@ -6,8 +6,9 @@
 function makeID(obj: { [key: string]: any }) {
     while (true) {
         var temp = '__grafar' + Math.random().toString(36).substr(2, 9);
-        if (!(temp in obj))
+        if (!(temp in obj)) {
             return temp;
+        }
     }
 }
 
@@ -25,7 +26,7 @@ function isExisty(obj: any) {
  * Если передать массив, вернет его же, но без null и undefined.
  * Функция нормализовывала имена переменных, чтобы 'x,y', 'x, y' и ['x', 'y'] становились одинаковыми, но теперь, может, уже и не актуально.
  */
-function asArray(str: string | string[]) {
+function asArray(str: string | string[]): string[] {
     if (typeof str === 'string') {
         return str.replace(/ /g, '').split(',');
     }

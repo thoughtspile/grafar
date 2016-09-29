@@ -14,7 +14,7 @@ import { Reactive } from './Reactive';
  * Данные хранятся в GL-формате: ребра (e_11, e_12), ..., (e_n1, e_n2) разложены
  *   в массиве как [e_11,e_12, ..., e_n1,e_n2]
  */
-interface GraphBuffer {
+export interface GraphBuffer {
     array: Uint32Array;
     pointCount: number;
     length: number;

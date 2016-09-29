@@ -5,7 +5,6 @@ import * as OrbitControls from '../libs/OrbitControls';
 
 import { isExisty, makeID } from './utils';
 import { pool } from './arrayPool';
-import { Observable } from './Observable';
 import { config } from './config';
 
 const Renderer = THREE.WebGLRenderer.bind(null, {antialias: config.antialias});

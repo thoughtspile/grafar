@@ -1,6 +1,6 @@
 import { resizeBuffer } from './glUtils';
 import { Buffer, blockRepeat } from './arrayUtils';
-import { emptyGraph, pathGraph, cartesianGraphProd, makeFaces } from './topology';
+import { GraphBuffer, emptyGraph, pathGraph, cartesianGraphProd, makeFaces } from './topology';
 import { nunion } from './setUtils';
 import { Reactive } from './Reactive';
 
@@ -11,9 +11,9 @@ export class Graph {
     constructor() {}
 
     data = new Reactive(new Buffer());
-    edges = new Reactive({ array: new Uint32Array(0), length: 0 });
-    faces = new Reactive({ array: new Uint32Array(0), length: 0 });
-    colors = new Reactive({ array: new Float32Array(0), length: 0 });
+    edges = new Reactive<GraphBuffer>({ array: new Uint32Array(0), length: 0, pointCount: 0 });
+    faces = new Reactive<GraphBuffer>({ array: new Uint32Array(0), length: 0, pointCount: 0 });
+    colors = new Reactive<Buffer>({ array: new Float32Array(0), length: 0 });
     base = new Reactive({ parent: this, struct: [] });
 
     static contextify(col, targetBase) {
@@ -50,17 +50,17 @@ export class Graph {
         return temp;
     }
 
-    static unify(cols) {
+    static unify(cols: Graph[]) {
         const targetBase = new Reactive({ parent: null, struct: [] })
             .lift(Graph.baseTranslate)
             .bind(cols.map(col => col.base));
         const baseEdges = new Reactive([])
             .lift((src, targ) => src[0].struct.map(base => base.edges.value()))
             .bind([ targetBase ]);
-        const targetEdges = new Reactive({ array: new Uint32Array(0), length: 0 })
+        const targetEdges = new Reactive({ array: new Uint32Array(0), length: 0, pointCount: 0 })
             .lift((arr, targ) => cartesianGraphProd(arr[0], targ))
             .bind([ baseEdges ]);
-        const targetFaces = new Reactive({ array: new Uint32Array(0), length: 0 })
+        const targetFaces = new Reactive({ array: new Uint32Array(0), length: 0, pointCount: 0 })
             .lift((arr, targ) => makeFaces(arr[0], targ))
             .bind([ baseEdges ]);
 
