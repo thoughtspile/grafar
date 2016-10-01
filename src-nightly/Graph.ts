@@ -15,8 +15,7 @@ export class Graph {
     edges = new Reactive<GraphBuffer>({ array: new Uint32Array(0), length: 0, pointCount: 0 });
     faces = new Reactive<GraphBuffer>({ array: new Uint32Array(0), length: 0, pointCount: 0 });
     colors = new Reactive<Buffer>({ array: new Float32Array(0), length: 0 });
-    base = new Reactive({ parent: { edges: this.edges, data: this.data }, struct: [] });
-    // base = new Reactive({ parent: this, struct: [] });
+    base = new Reactive({ struct: [{ edges: this.edges, data: this.data }] });
 
     static contextify(col, targetBase) {
         const temp = new Graph();
@@ -80,7 +79,6 @@ export class Graph {
     }
 
     static registerBase(src, self) {
-        baseOrder.push(self.parent);
-        self.struct = [self.parent];
+        baseOrder.push(self.struct[0]);
     }
 }
