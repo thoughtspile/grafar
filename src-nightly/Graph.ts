@@ -13,7 +13,12 @@ export class Graph {
     edges = new Reactive<GraphBuffer>({ array: new Uint32Array(0), length: 0, pointCount: 0 });
     faces = new Reactive<GraphBuffer>({ array: new Uint32Array(0), length: 0, pointCount: 0 });
     colors = new Reactive<Buffer>({ array: new Float32Array(0), length: 0 });
-    base = new Reactive([{ id: makeID(), edges: this.edges, data: this.data }]);
+    base = new Reactive([{ id: makeID(), edges: null, data: null }])
+        .lift(([ edges, data ], self) => {
+            self[0].edges = edges;
+            self[0].data = data;
+        })
+        .bind([ this.edges, this.data ]);
 
     static contextify(col, targetBase) {
         const temp = new Graph();
@@ -23,7 +28,7 @@ export class Graph {
             const colBase = par[1];
             const targetBase = par[2];
             const totalLength = targetBase
-                .map(item => item.data.value().length)
+                .map(item => item.data.length)
                 .reduce((prod, len) => prod * len, 1);
             let blockSize = 1;
             let len = data.length;
@@ -38,12 +43,12 @@ export class Graph {
                         res,
                         blockSize,
                         Math.floor(len / blockSize),
-                        base.data.value().length,
+                        base.data.length,
                         res
                     );
-                    len *= base.data.value().length;
+                    len *= base.data.length;
                 }
-                blockSize *= base.data.value().length;
+                blockSize *= base.data.length;
             });
         }).bind([col.data, col.base, temp.base]);
         return temp;
@@ -55,7 +60,7 @@ export class Graph {
             .bind(cols.map(col => col.base));
 
         const baseEdges = new Reactive([])
-            .lift(([ bases ], targ) => bases.map(base => base.edges.value()))
+            .lift(([ bases ], targ) => bases.map(base => base.edges))
             .bind([ targetBase ]);
 
         const targetEdges = new Reactive({ array: new Uint32Array(0), length: 0, pointCount: 0 })
