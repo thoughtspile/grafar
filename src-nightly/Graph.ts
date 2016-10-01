@@ -74,7 +74,4 @@ export class Graph {
     static mergeBases(src, self) {
         return _.union.apply(_, src).sort((a, b) => a.id.localeCompare(b.id));
     }
-
-    static registerBase(src, self) {
-    }
 }
