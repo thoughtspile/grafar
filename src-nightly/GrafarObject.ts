@@ -70,7 +70,7 @@ export class GrafarObject{
         }
 
         computation.base
-            .lift(Graph.baseTranslate)
+            .lift(sources.length === 0? Graph.registerBase: Graph.mergeBases)
             .bind(sources.map(src => src.base));
 
         names.forEach((name, i) => {

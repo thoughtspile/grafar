@@ -25,8 +25,8 @@ export class Graph {
             const colBase = par[1].struct;
             const targetBase = par[2].struct;
             const totalLength = targetBase
-                    .map(item => item.data.value().length)
-                    .reduce((prod, len) => prod * len, 1);
+                .map(item => item.data.value().length)
+                .reduce((prod, len) => prod * len, 1);
             let blockSize = 1;
             let len = data.length;
 
@@ -78,7 +78,7 @@ export class Graph {
             .sort(baseComparator);
     }
 
-    static registerBase(self) {
+    static registerBase(src, self) {
         baseOrder.push(self.parent);
         self.struct = [self.parent];
     }
