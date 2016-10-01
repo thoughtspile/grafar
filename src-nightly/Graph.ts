@@ -13,10 +13,10 @@ export class Graph {
     edges = new Reactive<GraphBuffer>({ array: new Uint32Array(0), length: 0, pointCount: 0 });
     faces = new Reactive<GraphBuffer>({ array: new Uint32Array(0), length: 0, pointCount: 0 });
     colors = new Reactive<Buffer>({ array: new Float32Array(0), length: 0 });
-    base = new Reactive([{ id: makeID(), edges: null, data: null }])
+    base = new Reactive([{ id: makeID(), edges: null, length: 0 }])
         .lift(([ edges, data ], self) => {
             self[0].edges = edges;
-            self[0].data = data;
+            self[0].length = data.length;
         })
         .bind([ this.edges, this.data ]);
 
@@ -28,7 +28,7 @@ export class Graph {
             const colBase = par[1];
             const targetBase = par[2];
             const totalLength = targetBase
-                .map(item => item.data.length)
+                .map(item => item.length)
                 .reduce((prod, len) => prod * len, 1);
             let blockSize = 1;
             let len = data.length;
@@ -43,12 +43,12 @@ export class Graph {
                         res,
                         blockSize,
                         Math.floor(len / blockSize),
-                        base.data.length,
+                        base.length,
                         res
                     );
-                    len *= base.data.length;
+                    len *= base.length;
                 }
-                blockSize *= base.data.length;
+                blockSize *= base.length;
             });
         }).bind([col.data, col.base, temp.base]);
         return temp;
