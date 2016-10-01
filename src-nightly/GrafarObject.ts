@@ -39,7 +39,7 @@ export class GrafarObject{
 
         const computation = new Graph();
         // Это какой-то ужасный хак
-        computation.data = new Reactive({
+        computation.data.setCache({
                 buffers: names.map(() => new Buffer()),
                 length: 0
             })

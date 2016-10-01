@@ -33,6 +33,12 @@ export class Reactive<T> {
         return this;
     }
 
+    setCache(data: T) {
+        this.data = data;
+        this.invalidate();
+        return this;
+    }
+
     /** Установить функцию и рекурсивно инвалидировать дочерние переменные */
     lift(fn: (src, targ) => any) {
         this.fn = fn;
