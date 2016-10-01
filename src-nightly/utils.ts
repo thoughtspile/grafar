@@ -1,16 +1,20 @@
+const uidRegistry = {};
+
 /**
  * Возвращает ключ, которого еще нет в obj.
  * Например, чтобы генерировать случайные уникальные имена переменных.
  * Формат ключа: '__grafar' + около 7 случайных символов.
+ * TODO obj not needed
  */
-function makeID(obj: { [key: string]: any }) {
+function makeID(obj?: any) {
     while (true) {
         var temp = '__grafar' + Math.random().toString(36).substr(2, 9);
-        if (!(temp in obj)) {
+        if (!(temp in uidRegistry)) {
             return temp;
         }
     }
 }
+
 
 /**
  * obj -- не undefined и не null.

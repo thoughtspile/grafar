@@ -4,9 +4,7 @@ import { GraphBuffer, emptyGraph, pathGraph, cartesianGraphProd, makeFaces } fro
 import { nunion } from './setUtils';
 import { Reactive } from './Reactive';
 import * as _ from 'lodash';
-
-const baseOrder = [];
-const baseComparator = (a, b) => baseOrder.indexOf(a) - baseOrder.indexOf(b);
+import { makeID } from './utils';
 
 export class Graph {
     constructor() {}
@@ -15,7 +13,7 @@ export class Graph {
     edges = new Reactive<GraphBuffer>({ array: new Uint32Array(0), length: 0, pointCount: 0 });
     faces = new Reactive<GraphBuffer>({ array: new Uint32Array(0), length: 0, pointCount: 0 });
     colors = new Reactive<Buffer>({ array: new Float32Array(0), length: 0 });
-    base = new Reactive([{ edges: this.edges, data: this.data }]);
+    base = new Reactive([{ id: makeID(), edges: this.edges, data: this.data }]);
 
     static contextify(col, targetBase) {
         const temp = new Graph();
@@ -74,10 +72,9 @@ export class Graph {
     }
 
     static mergeBases(src, self) {
-        return _.union.apply(_, src).sort(baseComparator);
+        return _.union.apply(_, src).sort((a, b) => a.id.localeCompare(b.id));
     }
 
     static registerBase(src, self) {
-        baseOrder.push(self[0]);
     }
 }
