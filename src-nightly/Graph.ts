@@ -15,15 +15,15 @@ export class Graph {
     edges = new Reactive<GraphBuffer>({ array: new Uint32Array(0), length: 0, pointCount: 0 });
     faces = new Reactive<GraphBuffer>({ array: new Uint32Array(0), length: 0, pointCount: 0 });
     colors = new Reactive<Buffer>({ array: new Float32Array(0), length: 0 });
-    base = new Reactive({ struct: [{ edges: this.edges, data: this.data }] });
+    base = new Reactive([{ edges: this.edges, data: this.data }]);
 
     static contextify(col, targetBase) {
         const temp = new Graph();
         temp.base = targetBase;
         temp.data.lift((par, out) => {
             const data = par[0];
-            const colBase = par[1].struct;
-            const targetBase = par[2].struct;
+            const colBase = par[1];
+            const targetBase = par[2];
             const totalLength = targetBase
                 .map(item => item.data.value().length)
                 .reduce((prod, len) => prod * len, 1);
@@ -52,11 +52,11 @@ export class Graph {
     }
 
     static unify(cols: Graph[]) {
-        const targetBase = new Reactive({ parent: null, struct: [] })
+        const targetBase = new Reactive([])
             .lift(Graph.mergeBases)
             .bind(cols.map(col => col.base));
         const baseEdges = new Reactive([])
-            .lift((src, targ) => src[0].struct.map(base => base.edges.value()))
+            .lift(([ bases ], targ) => bases.map(base => base.edges.value()))
             .bind([ targetBase ]);
         const targetEdges = new Reactive({ array: new Uint32Array(0), length: 0, pointCount: 0 })
             .lift((arr, targ) => cartesianGraphProd(arr[0], targ))
@@ -74,11 +74,10 @@ export class Graph {
     }
 
     static mergeBases(src, self) {
-        self.struct = _.union.apply(_, src.map(b => b.struct))
-            .sort(baseComparator);
+        return _.union.apply(_, src).sort(baseComparator);
     }
 
     static registerBase(src, self) {
-        baseOrder.push(self.struct[0]);
+        baseOrder.push(self[0]);
     }
 }
