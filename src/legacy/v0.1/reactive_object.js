@@ -96,11 +96,10 @@
                     return src.edges;
                 }));
         }
+
         computation.base
-            .lift(Graph.baseTranslate)
-            .bind(sources.map(function(src) {
-                return src.base;
-            }));
+            .lift(sources.length === 0? Graph.registerBase: Graph.mergeBases)
+            .bind(sources.map(src => src.base));
 
         for (var i = 0; i < names.length; i++) {
             var dataset = this.datasets[names[i]];

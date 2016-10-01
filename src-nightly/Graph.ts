@@ -3,9 +3,10 @@ import { Buffer, blockRepeat } from './arrayUtils';
 import { GraphBuffer, emptyGraph, pathGraph, cartesianGraphProd, makeFaces } from './topology';
 import { nunion } from './setUtils';
 import { Reactive } from './Reactive';
+import * as _ from 'lodash';
 
 const baseOrder = [];
-const baseComparator = (a, b) => baseOrder.indexOf(a) >= baseOrder.indexOf(b);
+const baseComparator = (a, b) => baseOrder.indexOf(a) - baseOrder.indexOf(b);
 
 export class Graph {
     constructor() {}
@@ -52,7 +53,7 @@ export class Graph {
 
     static unify(cols: Graph[]) {
         const targetBase = new Reactive({ parent: null, struct: [] })
-            .lift(Graph.baseTranslate)
+            .lift(Graph.mergeBases)
             .bind(cols.map(col => col.base));
         const baseEdges = new Reactive([])
             .lift((src, targ) => src[0].struct.map(base => base.edges.value()))
@@ -72,13 +73,13 @@ export class Graph {
         });
     }
 
-    static baseTranslate(src, self) {
-        if (src.length === 0) {
-            baseOrder.push(self.parent);
-            self.struct = [self.parent];
-        } else {
-            nunion(src.map(b => b.struct), self.struct);
-            self.struct.sort(baseComparator);
-        }
+    static mergeBases(src, self) {
+        self.struct = _.union.apply(_, src.map(b => b.struct))
+            .sort(baseComparator);
+    }
+
+    static registerBase(self) {
+        baseOrder.push(self.parent);
+        self.struct = [self.parent];
     }
 }
