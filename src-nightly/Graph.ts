@@ -51,11 +51,13 @@ export class Graph {
 
     static unify(cols: Graph[]) {
         const targetBase = new Reactive([])
-            .lift(Graph.mergeBases)
+            .lift(src => _.union.apply(_, src).sort((a, b) => a.id.localeCompare(b.id)))
             .bind(cols.map(col => col.base));
+
         const baseEdges = new Reactive([])
             .lift(([ bases ], targ) => bases.map(base => base.edges.value()))
             .bind([ targetBase ]);
+
         const targetEdges = new Reactive({ array: new Uint32Array(0), length: 0, pointCount: 0 })
             .lift((arr, targ) => cartesianGraphProd(arr[0], targ))
             .bind([ baseEdges ]);
@@ -69,9 +71,5 @@ export class Graph {
             unified.faces = targetFaces;
             return unified;
         });
-    }
-
-    static mergeBases(src, self) {
-        return _.union.apply(_, src).sort((a, b) => a.id.localeCompare(b.id));
     }
 }
