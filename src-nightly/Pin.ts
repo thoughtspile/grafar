@@ -11,9 +11,17 @@ import { Style } from './Style';
  * Связка между графар-переменными и панелью.
  */
 export class Pin {
-    constructor(selection: string[], panel: Panel) {
-        this.selection = [ selection[1], selection[2], selection[0] ];
+    constructor(selection: { axes: string[], color?: string[] }, panel: Panel) {
+        this.selection = [ selection.axes[1], selection.axes[2], selection.axes[0] ];
         this.glinstance = new InstanceGL(panel, this.col);
+
+        if (!selection.color) {
+            this.colorize({ using: '', as: Style.constantColor(0 / 255, 140 / 255, 240 / 255) });
+            // duct-tape point visibility
+            this.glinstance.object.children[0].material.size = 2;
+            setColor(this.glinstance.object.children[0], 0, 128, 0);
+        }
+
         Pin.pins.push(this);
     }
 
@@ -85,4 +93,10 @@ export class Pin {
         Pin.pins.forEach(pin => pin.refresh());
         return this;
     }
+}
+
+function setColor(threeObj, r, g, b) {
+    threeObj.material.color.r = r / 255;
+    threeObj.material.color.g = g / 255;
+    threeObj.material.color.b = b / 255;
 }

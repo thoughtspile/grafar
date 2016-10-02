@@ -11,12 +11,6 @@ import * as generators from './generators';
 import { makeID, asArray } from './utils';
 import { Pin } from './Pin';
 
-function setColor(threeObj, r, g, b) {
-    threeObj.material.color.r = r / 255;
-    threeObj.material.color.g = g / 255;
-    threeObj.material.color.b = b / 255;
-}
-
 const normalizeNames = (names: string[] | string[][], forceDim?: number) => {
     const flatVars = _.flatten(names);
     return forceDim? _.range(forceDim).map(i => flatVars[i] || null): flatVars;
@@ -77,13 +71,7 @@ const grafar = {
 
     pin(vars: string[][] | string[], panel) {
         const axes = normalizeNames(vars, 3);
-        const pin = new Pin(axes, panel);
-
-        pin.colorize({ using: '', as: Style.constantColor(0 / 255, 140 / 255, 240 / 255) });
-        // duct-tape point visibility
-        pin.glinstance.object.children[0].material.size = 2;
-        setColor(pin.glinstance.object.children[0], 0, 128, 0);
-
+        const pin = new Pin({ axes }, panel);
         pin.refresh();
     },
 
