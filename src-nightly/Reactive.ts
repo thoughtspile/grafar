@@ -1,6 +1,6 @@
 import { isExisty } from './utils';
 import { repeatArray, blockRepeat, repeatPoints } from './arrayUtils';
-import { union, setpush as setPush, setpop as setPop } from './setUtils';
+import { setPush, setPop } from './math/SetUtils';
 
 /**
  * Реактивная переменная.

@@ -3,7 +3,6 @@ import { InstanceGL, interleave, resizeBuffer } from './glUtils';
 import { Buffer } from './arrayUtils';
 import { pool } from './arrayPool';
 import { Style } from './Style';
-import { nunion } from './setUtils';
 import { Reactive } from './Reactive';
 import { Graph, Slice } from './Graph';
 import { TopoRegistry } from './topology/TopoRegistry';
