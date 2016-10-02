@@ -1,9 +1,10 @@
 import * as _ from 'lodash';
 
-import { Reactive } from './Reactive';
-import { makeID } from './utils';
-import { GraphBuffer } from './topology';
-import { emptyGraph, pathGraph } from './topology';
+import { Reactive } from '../Reactive';
+import { makeID } from '../utils';
+import { GraphBuffer, emptyGraph, pathGraph, cartesianGraphProd, makeFaces } from './topology';
+
+export { GraphBuffer };
 
 export class TopoRegistry {
     static free(edges: Reactive<GraphBuffer>, length: Reactive<number>) {
@@ -29,5 +30,17 @@ export class TopoRegistry {
                 return discrete? emptyGraph(null, edges): pathGraph(null, edges);
             })
             .bind([ length ]);
+    }
+
+    static deriveEdges(baseEdges: Reactive<GraphBuffer[]>) {
+        return new Reactive({ array: new Uint32Array(0), length: 0, pointCount: 0 })
+            .lift(([ dimEdges ], targ) => cartesianGraphProd(dimEdges, targ))
+            .bind([ baseEdges ]);
+    }
+
+    static deriveFaces(baseEdges: Reactive<GraphBuffer[]>) {
+        return new Reactive({ array: new Uint32Array(0), length: 0, pointCount: 0 })
+            .lift(([ dimEdges ], targ) => makeFaces(dimEdges, targ))
+            .bind([ baseEdges ]);
     }
 }

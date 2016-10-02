@@ -1,8 +1,8 @@
-import { resizeBuffer } from './glUtils';
-import { incArray, timesArray } from './arrayUtils';
-import { pool } from './arrayPool';
-import { firstMatch } from './setUtils';
-import { Reactive } from './Reactive';
+import { resizeBuffer } from '../glUtils';
+import { incArray, timesArray } from '../arrayUtils';
+import { pool } from '../arrayPool';
+import { firstMatch } from '../setUtils';
+import { Reactive } from '../Reactive';
 
 /**
  * Графы задают топологию объекта (какие вершины соединять отрезком).

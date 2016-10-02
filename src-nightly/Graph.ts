@@ -2,9 +2,8 @@ import * as _ from 'lodash';
 
 import { resizeBuffer } from './glUtils';
 import { Buffer, blockRepeat } from './arrayUtils';
-import { GraphBuffer, cartesianGraphProd, makeFaces } from './topology';
 import { Reactive } from './Reactive';
-import { TopoRegistry } from './TopoRegistry';
+import { GraphBuffer, TopoRegistry } from './topology/TopoRegistry';
 
 export interface Slice {
     data: Reactive<Buffer>[];
@@ -63,12 +62,8 @@ export class Graph {
         return {
             data: cols.map(col => col.contextify(targetBase)),
             base: targetBase,
-            edges: new Reactive({ array: new Uint32Array(0), length: 0, pointCount: 0 })
-                .lift(([ dimEdges ], targ) => cartesianGraphProd(dimEdges, targ))
-                .bind([ baseEdges ]),
-            faces: new Reactive({ array: new Uint32Array(0), length: 0, pointCount: 0 })
-                .lift(([ dimEdges ], targ) => makeFaces(dimEdges, targ))
-                .bind([ baseEdges ]),
+            edges: TopoRegistry.deriveEdges(baseEdges),
+            faces: TopoRegistry.deriveFaces(baseEdges),
             length: new Reactive(0)
                 .lift(([ dims ]) => dims.reduce((prod, dim) => prod * dim.length, 1))
                 .bind([ targetBase ])

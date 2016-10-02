@@ -6,7 +6,7 @@ import { Style } from './Style';
 import { nunion } from './setUtils';
 import { Reactive } from './Reactive';
 import { Graph, Slice } from './Graph';
-import { TopoRegistry } from './TopoRegistry';
+import { TopoRegistry } from './topology/TopoRegistry';
 import * as _ from 'lodash';
 
 export interface ConstraintData {
