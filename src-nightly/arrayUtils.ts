@@ -1,6 +1,20 @@
 // На самом деле любой типизированный массив, но в TS у них нет общего интерфейса)
 type TypedArray = Float32Array;
 
+
+/**
+ * Заполнить l первых элементов массива arr нулями.
+ * Если arr instanceof Array и arr.length < l, arr увеличится до размера l.
+ * Если arr instanceof TypedArray, то arr заполнится до конца и функция будет работать медленно.
+ * TODO: перетащить в arrayUtils
+ */
+function zeros(arr: number[] | TypedArray, l: number) {
+    for (let i = 0; i < l; i++) {
+        arr[i] = 0;
+    }
+    return arr;
+};
+
 /*
  * Поэлементно сложить `a` и `b`, положить результат в `out`
  * Один и тот же массив можно передать как несколько параметров (например, сложить результат в `a`)
@@ -145,6 +159,7 @@ class Buffer {
 
 export {
     Buffer,
+    zeros,
     arraySum,
     arrayTimes,
     incArray,
