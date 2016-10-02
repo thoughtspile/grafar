@@ -30,10 +30,10 @@ export class Graph {
     data = new Reactive(new Buffer());
     edges = new Reactive<GraphBuffer>({ array: new Uint32Array(0), length: 0, pointCount: 0 });
     faces = new Reactive<GraphBuffer>({ array: new Uint32Array(0), length: 0, pointCount: 0 });
-    colors = new Reactive<Buffer>({ array: new Float32Array(0), length: 0 });
+    colors = new Reactive(new Buffer());
     base = TopoRegistry.free(this.edges, this.data);
 
-    static contextify(col, targetBase) {
+    private contextify(targetBase) {
         const temp = new Graph();
         temp.base = targetBase;
         temp.data.lift((par, out) => {
@@ -63,7 +63,7 @@ export class Graph {
                 }
                 blockSize *= base.length;
             });
-        }).bind([col.data, col.base, temp.base]);
+        }).bind([this.data, this.base, temp.base]);
         return temp;
     }
 
@@ -82,7 +82,7 @@ export class Graph {
             .bind([ baseEdges ]);
 
         return cols.map(col => {
-            const unified = Graph.contextify(col, targetBase);
+            const unified = col.contextify(targetBase);
             unified.edges = targetEdges;
             unified.faces = targetFaces;
             return unified;
