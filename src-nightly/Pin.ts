@@ -24,7 +24,7 @@ export class Pin {
     refresh() {
         const instance = this.glinstance;
         const axes = this.selection;
-        const tab = registry.project(axes, false);
+        const tab = registry.project(axes);
         if (tab.every(col => col.data.isValid)) {
             return this;
         }

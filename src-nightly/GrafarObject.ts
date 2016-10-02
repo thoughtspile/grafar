@@ -30,10 +30,7 @@ export class GrafarObject{
         const maxlen = constraint.maxlen || 40;
         const discrete = constraint.discrete || false;
 
-        const sources = this.project(using, true);
-        // I only do this shit because project forces product
-        // however, if it doesn't (force), memo would have to go into unify
-        // which sucks even worse
+        const sources = this.project(using);
         names.filter(name => !this.datasets.hasOwnProperty(name))
             .forEach(name => { this.datasets[name] = new Graph(); });
 
@@ -67,7 +64,7 @@ export class GrafarObject{
 
             dataset.base = base;
             dataset.edges = edges;
-
+            // faces?
             dataset.data.lift((src, target) => {
                     target.length = src[0].buffers[i].length;
                     target.array = src[0].buffers[i].array;
@@ -109,17 +106,13 @@ export class GrafarObject{
         return this.extern(constraint);
     }
 
-    project(rawNames: string | string[] = [], proxy: boolean = false) {
+    project(rawNames: string | string[] = []) {
         const names = asArray(rawNames);
         const namesHash = names.slice().sort().toString();
         if (!this.projections.hasOwnProperty(namesHash)) {
             const temp = names.map(name => {
                 if (!this.datasets.hasOwnProperty(name)) {
-                    if (proxy) {
-                        this.datasets[name] = new Graph();
-                    } else {
-                        throw new Error('cannot select undefined');
-                    }
+                    throw new Error(`cannot select undefined ${ name }`);
                 }
                 return this.datasets[name];
             });

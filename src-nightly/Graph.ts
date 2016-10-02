@@ -8,7 +8,8 @@ import { makeID } from './utils';
 
 export class TopoRegistry {
     static free(edges, data) {
-        return new Reactive([{ id: makeID(), edges: null, length: 0 }])
+        const id = makeID();
+        return new Reactive([{ id, edges: null, length: 0 }])
             .lift(([ edges, data ], self) => {
                 self[0].edges = edges;
                 self[0].length = data.length;
@@ -67,7 +68,7 @@ export class Graph {
     }
 
     static unify(cols: Graph[]) {
-        const targetBase = TopoRegistry.derive(cols.map(col => col.base);
+        const targetBase = TopoRegistry.derive(cols.map(col => col.base));
 
         const baseEdges = new Reactive([])
             .lift(([ bases ], targ) => bases.map(base => base.edges))
