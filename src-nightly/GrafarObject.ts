@@ -6,7 +6,7 @@ import { emptyGraph, pathGraph, cartesianGraphProd } from './topology';
 import { Style } from './Style';
 import { nunion } from './setUtils';
 import { Reactive } from './Reactive';
-import { Graph } from './Graph';
+import { Graph, TopoRegistry } from './Graph';
 import * as _ from 'lodash';
 
 export interface Constraint {
@@ -37,9 +37,7 @@ export class GrafarObject{
         names.filter(name => !this.datasets.hasOwnProperty(name))
             .forEach(name => { this.datasets[name] = new Graph(); });
 
-        const computation = new Graph();
-        // Это какой-то ужасный хак
-        computation.data.setCache({
+        const data = new Reactive({
                 buffers: names.map(() => new Buffer()),
                 length: 0
             })
@@ -55,35 +53,26 @@ export class GrafarObject{
             })
             .bind(sources.map(src => src.data));
 
-        if (sources.length === 0) {
-            computation.edges.data.pointCount = maxlen;
-            computation.edges.lift(discrete? emptyGraph: pathGraph);
-        } else {
-            computation.edges
-                .lift((src, targ) => {
-                    // is clone stupid?
-                    targ.pointCount = src[0].pointCount;
-                    resizeBuffer(targ, src[0].length);
-                    targ.array.set(src[0].array);
-                })
-                .bind(sources.map(src => src.edges));
-        }
+        const edges = sources.length === 0
+            ? new Reactive({ array: new Uint32Array(0), length: 0, pointCount: maxlen })
+                .lift(discrete? emptyGraph: pathGraph)
+            : sources[0].edges;
 
-        if (sources.length > 0) {
-            computation.base = sources[0].base;
-        }
+        const base = sources.length === 0
+            ? TopoRegistry.free(edges, data)
+            : sources[0].base;
 
         names.forEach((name, i) => {
             const dataset = this.datasets[name];
 
-            dataset.base = computation.base;
-            dataset.edges = computation.edges;
+            dataset.base = base;
+            dataset.edges = edges;
 
             dataset.data.lift((src, target) => {
                     target.length = src[0].buffers[i].length;
                     target.array = src[0].buffers[i].array;
                 })
-                .bind([computation.data]);
+                .bind([data]);
         });
 
         return this;
