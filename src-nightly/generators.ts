@@ -1,4 +1,4 @@
-import { zeros } from './arrayUtils';
+import { zeros } from './array/ArrayUtils';
 import { extractUid } from './utils';
 import { config as fullConfig } from './config';
 import { ConstraintData } from './GrafarObject';
