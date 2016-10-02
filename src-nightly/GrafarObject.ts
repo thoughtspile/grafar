@@ -55,8 +55,8 @@ export class GrafarObject{
             this.datasets[name] = this.datasets[name] || new Graph();
             const dataset = this.datasets[name];
 
-            dataset.base = base;
-            dataset.edges = edges;
+            dataset.base.assign(base);
+            dataset.edges.assign(edges);
             // faces?
             dataset.data.lift(([ data, length ], target) => {
                     target.length = length;

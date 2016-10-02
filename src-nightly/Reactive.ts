@@ -62,6 +62,13 @@ export class Reactive<T> {
         return this;
     }
 
+    /** Привязать мое значение к значению source */
+    assign(source: Reactive<T>): Reactive<T> {
+        this.lift(([ src ]) => { this.data = src; })
+            .bind([ source ]);
+        return this;
+    }
+
     /** Вычислить свое актуальное значение */
     validate(): Reactive<T> {
         if (!this.isValid) {

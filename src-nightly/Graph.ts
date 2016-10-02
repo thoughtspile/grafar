@@ -2,8 +2,7 @@ import * as _ from 'lodash';
 
 import { resizeBuffer } from './glUtils';
 import { Buffer, blockRepeat } from './arrayUtils';
-import { GraphBuffer, emptyGraph, pathGraph, cartesianGraphProd, makeFaces } from './topology';
-import { nunion } from './setUtils';
+import { GraphBuffer, cartesianGraphProd, makeFaces } from './topology';
 import { Reactive } from './Reactive';
 import { TopoRegistry } from './TopoRegistry';
 
@@ -18,11 +17,18 @@ export interface Slice {
 export class Graph {
     constructor() {}
 
-    data = new Reactive(new Buffer());
-    edges = new Reactive<GraphBuffer>({ array: new Uint32Array(0), length: 0, pointCount: 0 });
-    faces = new Reactive<GraphBuffer>({ array: new Uint32Array(0), length: 0, pointCount: 0 });
-    colors = new Reactive(new Buffer());
-    base = TopoRegistry.free(this.edges, new Reactive(0).lift(data => data.length).bind([ this.data ]));
+    /** с геттером, потому что ссылка сохранилась в base */
+    private _data = new Reactive(new Buffer());
+    get data() { return this._data };
+
+    private _edges = new Reactive<GraphBuffer>({ array: new Uint32Array(0), length: 0, pointCount: 0 });
+    get edges() { return this._edges };
+
+    private _faces = new Reactive<GraphBuffer>({ array: new Uint32Array(0), length: 0, pointCount: 0 });
+    get faces() { return this._faces };
+
+    private _base = TopoRegistry.free(this.edges, new Reactive(0).lift(data => data.length).bind([ this.data ]));
+    get base() { return this._base };
 
     private contextify(targetBase) {
         return new Reactive(new Buffer()).lift(([data, colBase, targetBase], out) => {
@@ -50,7 +56,7 @@ export class Graph {
     static unify(cols: Graph[]): Slice {
         const targetBase = TopoRegistry.derive(cols.map(col => col.base));
 
-        const baseEdges = new Reactive([])
+        const baseEdges = new Reactive<GraphBuffer[]>([])
             .lift(([ bases ], targ) => bases.map(base => base.edges))
             .bind([ targetBase ]);
 
