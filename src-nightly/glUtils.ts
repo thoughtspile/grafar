@@ -2,6 +2,7 @@ import * as THREE from '../libs/three.min';
 import * as _ from 'lodash';
 
 import { Pool } from './array/Pool';
+import { Buffer } from './array/Buffer';
 import { Panel } from './Panel';
 import { config } from './config';
 
@@ -15,7 +16,7 @@ import { config } from './config';
 export function interleave(tab: { array: Float32Array; length: number }[], buffer: { array: Float32Array; length: number; needsUpdate: boolean }, itemsize?: number) {
     itemsize = itemsize || tab.length;
     const srcLen = tab[0].length;
-    resizeBuffer(buffer, itemsize * srcLen);
+    Buffer.resize(buffer, itemsize * srcLen);
     const target = buffer.array;
     const existyIndices = _.range(itemsize).filter(i => !!tab[i]);
 
@@ -37,23 +38,6 @@ export function interleave(tab: { array: Float32Array; length: number }[], buffe
 
     buffer.needsUpdate = true;
 }
-
-/*
- * Изменить размер буфера (работает для Three.Buffer и Buffer)
- * Старый массив сдается в Pool, новый берется оттуда же.
- * Если размер не изменился, ничего не произойдет.
- */
-export function resizeBuffer(buffer: { array: Float32Array; length: number }, size) {
-    const type: any = buffer.array.constructor;
-    // TODO: Pool сам разрулит такой случай: сдал массив, получил его же.
-    if (size !== buffer.array.length) {
-        Pool.push(buffer.array);
-        buffer.array = <any>Pool.get(type, size);
-        if (buffer.hasOwnProperty('length')) {
-            buffer.length = size;
-        }
-    }
-};
 
 /*
  * Обертка для Three-штучек:

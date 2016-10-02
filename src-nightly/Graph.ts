@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
 
-import { resizeBuffer } from './glUtils';
 import { blockRepeat } from './array/ArrayUtils';
 import { Buffer } from './array/Buffer';
 import { Reactive } from './Reactive';
@@ -38,7 +37,7 @@ export class Graph {
             let blockSize = 1;
             let len = data.length;
 
-            resizeBuffer(out, totalLength);
+            Buffer.resize(out, totalLength);
             const res = out.array;
             res.set(data.array);
 

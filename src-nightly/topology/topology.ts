@@ -1,4 +1,4 @@
-import { resizeBuffer } from '../glUtils';
+import { Buffer } from '../array/Buffer';
 import { incArray, arrayTimes } from '../array/ArrayUtils';
 import { Pool } from '../array/Pool';
 import { Reactive } from '../Reactive';
@@ -31,7 +31,7 @@ export interface GraphBuffer {
  */
 function pathGraph(srcDummy: any, target: GraphBuffer) {
     var edgeCount = target.pointCount - 1;
-    resizeBuffer(target, edgeCount * 2);
+    Buffer.resize(target, edgeCount * 2);
     var data = target.array;
     for (var i = 0, j = 0; i < edgeCount; i++, j += 2) {
         data[j] = i;
@@ -49,7 +49,7 @@ function pathGraph(srcDummy: any, target: GraphBuffer) {
  * @return {void}
  */
 function emptyGraph(srcDummy: any, target: GraphBuffer) {
-    resizeBuffer(target, 0);
+    Buffer.resize(target, 0);
 }
 
 
@@ -75,7 +75,7 @@ function cartesianGraphProd2(src: [GraphBuffer, GraphBuffer], target: GraphBuffe
     const nodeCount2 = src[1].pointCount;
 
     // reactive of course these should be!
-    resizeBuffer(target, (edgeCount1 * nodeCount2 + edgeCount2 * nodeCount1) * 2);
+    Buffer.resize(target, (edgeCount1 * nodeCount2 + edgeCount2 * nodeCount1) * 2);
     target.pointCount = nodeCount1 * nodeCount2;
 
     let pos = 0;
@@ -118,7 +118,7 @@ function cartesianGraphProd(src: GraphBuffer[], target: GraphBuffer) {
     }
 
     // перекладываем в target
-    resizeBuffer(target, accum.length);
+    Buffer.resize(target, accum.length);
     target.array.set(accum.array);
     target.pointCount = accum.pointCount;
 };
@@ -141,7 +141,7 @@ function makeFaces2(src: [GraphBuffer, GraphBuffer], target: GraphBuffer) {
     const nodeCount2 = src[1].pointCount;
 
     // reactive of course these should be!
-    resizeBuffer(target, edgeCount1 * edgeCount2 * 2 * 3);
+    Buffer.resize(target, edgeCount1 * edgeCount2 * 2 * 3);
     const targArray = target.array;
     target.pointCount = nodeCount1 * nodeCount2;
 
@@ -181,7 +181,7 @@ function makeFaces(src: GraphBuffer[], target) {
     const nonEmpty = src.filter(src => src.length !== 0);
 
     if (nonEmpty.length !== 2) {
-        resizeBuffer(target, 0);
+        Buffer.resize(target, 0);
         return;
     }
 
@@ -202,7 +202,7 @@ function makeFaces(src: GraphBuffer[], target) {
     let nodeCount1 = nonEmpty[0].pointCount;
     let buffer = new Uint32Array(nonEmpty[0].array);
 
-    resizeBuffer(accum, edgeCount1 * leftStretch * 2);
+    Buffer.resize(accum, edgeCount1 * leftStretch * 2);
     accum.pointCount = leftStretch * nodeCount1;
 
     arrayTimes(leftStretch, buffer, buffer);
@@ -215,7 +215,7 @@ function makeFaces(src: GraphBuffer[], target) {
     nodeCount1 = accum.pointCount;
     buffer = new Uint32Array(accum.array);
 
-    resizeBuffer(accum, edgeCount1 * midStretch * 2);
+    Buffer.resize(accum, edgeCount1 * midStretch * 2);
     accum.pointCount = midStretch * nodeCount1;
 
     for (var i = 0, pos = 0; i < midStretch; i++, pos += 2 * edgeCount1) {
@@ -234,7 +234,7 @@ function makeFaces(src: GraphBuffer[], target) {
         cartesianGraphProd([accum, rightPad], accum)
     }
 
-    resizeBuffer(target, accum.length);
+    Buffer.resize(target, accum.length);
     target.array.set(accum.array);
     target.pointCount = accum.pointCount;
 };

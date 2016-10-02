@@ -1,7 +1,8 @@
 import * as _ from 'lodash';
 import { isExisty, asArray } from './utils';
 
-import { InstanceGL, interleave, resizeBuffer } from './glUtils';
+import { InstanceGL, interleave } from './glUtils';
+import { Buffer } from './array/Buffer';
 import { Panel } from './Panel';
 import { registry } from './registry';
 import { Style } from './Style';
@@ -42,7 +43,7 @@ export class Pin {
         interleave([tab.edges.value()], instance.segments);
         interleave([tab.faces.value()], instance.faces);
 
-        resizeBuffer(instance.normals, tab.length.value() * 3);
+        Buffer.resize(instance.normals, tab.length.value() * 3);
         instance.object.children[2].geometry.computeVertexNormals();
 
         const hasEdges = tab.edges.value().length > 0;
@@ -68,7 +69,7 @@ export class Pin {
         });
         const buf = this.glinstance.color;
         const len = registry.project(this.selection).length.value();
-        resizeBuffer(buf, len * 3);
+        Buffer.resize(buf, len * 3);
 
         as(buf.array, data, len);
         return this;

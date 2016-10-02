@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 import { isExisty, asArray } from './utils';
-import { InstanceGL, interleave, resizeBuffer } from './glUtils';
+import { InstanceGL, interleave } from './glUtils';
 import { Buffer } from './array/Buffer';
 import { Reactive } from './Reactive';
 import { Graph, Slice } from './Graph';
@@ -36,7 +36,7 @@ export class GrafarObject{
             .lift((par, out) => {
                 /** HACK: при обновлении length данные не пересчитаются */
                 const lengthHack = length.value();
-                out.forEach(buff => resizeBuffer(buff, lengthHack));
+                out.forEach(buff => Buffer.resize(buff, lengthHack));
                 /** Разложить массивы по именам */
                 const namedData = _.extend(
                     _.zipObject(using, par.map(col => col.array)),
