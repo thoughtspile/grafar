@@ -6,7 +6,8 @@ import { emptyGraph, pathGraph, cartesianGraphProd } from './topology';
 import { Style } from './Style';
 import { nunion } from './setUtils';
 import { Reactive } from './Reactive';
-import { Graph, TopoRegistry } from './Graph';
+import { Graph } from './Graph';
+import { TopoRegistry } from './TopoRegistry';
 import * as _ from 'lodash';
 
 export interface Constraint {

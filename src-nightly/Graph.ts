@@ -1,28 +1,11 @@
+import * as _ from 'lodash';
+
 import { resizeBuffer } from './glUtils';
 import { Buffer, blockRepeat } from './arrayUtils';
 import { GraphBuffer, emptyGraph, pathGraph, cartesianGraphProd, makeFaces } from './topology';
 import { nunion } from './setUtils';
 import { Reactive } from './Reactive';
-import * as _ from 'lodash';
-import { makeID } from './utils';
-
-export class TopoRegistry {
-    static free(edges, data) {
-        const id = makeID();
-        return new Reactive([{ id, edges: null, length: 0 }])
-            .lift(([ edges, data ], self) => {
-                self[0].edges = edges;
-                self[0].length = data.length;
-            })
-            .bind([ edges, data ]);
-    }
-
-    static derive(bases) {
-        return new Reactive([])
-            .lift(src => _.union.apply(_, src).sort((a, b) => a.id.localeCompare(b.id)))
-            .bind(bases);
-    }
-}
+import { TopoRegistry } from './TopoRegistry';
 
 export class Graph {
     constructor() {}
@@ -85,7 +68,7 @@ export class Graph {
             unified.base = targetBase;
             unified.edges = targetEdges;
             unified.faces = targetFaces;
-            
+
             return unified;
         });
     }
