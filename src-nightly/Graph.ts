@@ -34,9 +34,7 @@ export class Graph {
     base = TopoRegistry.free(this.edges, this.data);
 
     private contextify(targetBase) {
-        const temp = new Graph();
-        temp.base = targetBase;
-        temp.data.lift((par, out) => {
+        return new Reactive(new Buffer()).lift((par, out) => {
             const data = par[0];
             const colBase = par[1];
             const targetBase = par[2];
@@ -63,8 +61,7 @@ export class Graph {
                 }
                 blockSize *= base.length;
             });
-        }).bind([this.data, this.base, temp.base]);
-        return temp;
+        }).bind([ this.data, this.base, targetBase ]);
     }
 
     static unify(cols: Graph[]) {
@@ -82,9 +79,13 @@ export class Graph {
             .bind([ baseEdges ]);
 
         return cols.map(col => {
-            const unified = col.contextify(targetBase);
+            const unified = new Graph();
+
+            unified.data = col.contextify(targetBase);
+            unified.base = targetBase;
             unified.edges = targetEdges;
             unified.faces = targetFaces;
+            
             return unified;
         });
     }
