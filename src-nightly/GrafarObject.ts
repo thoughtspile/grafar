@@ -9,7 +9,7 @@ import { Graph, Slice } from './Graph';
 import { TopoRegistry } from './TopoRegistry';
 import * as _ from 'lodash';
 
-export interface Constraint {
+export interface ConstraintData {
     what: string | string[];
     using?: string | string[];
     as: (data, l: number, extras?: { [key: string]: any }) => any;
@@ -23,7 +23,7 @@ export class GrafarObject{
     datasets: { [name: string]: Graph } = {};
     projections: { [nameHash: string]: Slice } = {};
 
-    constrain(constraint: Constraint) {
+    constrain(constraint: ConstraintData) {
         const names = asArray(constraint.what || []);
         const using = asArray(constraint.using || []);
         const as = constraint.as || (() => {});
@@ -68,34 +68,16 @@ export class GrafarObject{
         return this;
     }
 
-    extern(constraint: Constraint) {
+    extern(constraint: ConstraintData) {
         const names = asArray(constraint.what || []);
         constraint.using = _.flatten(asArray(constraint.using || []));
         this.constrain(constraint);
         return names;
     }
 
-    private compile(ptMap, vars, out) {
-        var spreadInit = vars.map(name => 'var ' + name + ';').join('');
-        var loopHeader = 'for (var __i__ = 0; __i__ < l; __i__++) {';
-        var fetch = vars.map(name => name + ' = ' + 'data["' + name + '"][__i__];').join('');
-        var apply = 'data["' + out + '"][__i__] = fn(' + vars.join(',') + ')';
-        var loopFooter = '}';
-
-        var body = spreadInit + loopHeader + fetch + apply + loopFooter;
-
-        var unbound = new Function('data', 'l', 'fn', body);
-
-        return {
-            what: out,
-            using: vars,
-            as: function(data, l) { return unbound(data, l, ptMap); }
-        };
-    }
-
     map(name: string, using: string | string[], fn: (...args: number[]) => number) {
         const names = asArray(using || []);
-        const constraint = this.compile(fn, names, name);
+        const constraint = compile(fn, names, name);
         return this.extern(constraint);
     }
 
@@ -113,4 +95,20 @@ export class GrafarObject{
         }
         return this.projections[namesHash];
     }
+}
+
+const compile = (ptMap: (...args: number[]) => number, vars, out): ConstraintData => {
+    const unbound = new Function('data', 'l', 'fn', `
+        ${ vars.map(name => `var ${ name };`).join('\n') }
+        for (var __i__ = 0; __i__ < l; __i__++) {
+            ${ vars.map(name => `${ name } = data["${ name }"][__i__];`).join('') }
+            data["${ out }"][__i__] = fn(${ vars.join(',') })
+        }
+    `);
+
+    return {
+        what: out,
+        using: vars,
+        as: (data, l) => unbound(data, l, ptMap)
+    };
 }

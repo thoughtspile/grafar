@@ -1,7 +1,7 @@
 import { dot, norm } from './vectorUtils';
 import { arraySum, arrayTimes } from './arrayUtils';
 import { config as fullConfig } from './config';
-import { Constraint } from './GrafarObject';
+import { ConstraintData } from './GrafarObject';
 import * as _ from 'lodash';
 
 const config = fullConfig.grafaryaz;
@@ -67,7 +67,7 @@ function set(nameGen: () => string, set: any[], discrete: boolean = true) {
 /*
  * Обернуть одно число для графара.
  */
-function constant(nameGen: () => string, val: number): Constraint {
+function constant(nameGen: () => string, val: number): ConstraintData {
     const name = extractUid(nameGen);
     return {
         what: name,
@@ -86,7 +86,7 @@ function constant(nameGen: () => string, val: number): Constraint {
 /*
  * Дискретное графар-измерение из целых чисел на отрезке [start, end].
  */
-function ints(nameGen: () => string, start: number, end: number): Constraint {
+function ints(nameGen: () => string, start: number, end: number): ConstraintData {
     const name = extractUid(nameGen);
     start = Math.ceil(Number(start));
     end = Math.floor(Number(end));
@@ -112,7 +112,7 @@ function ints(nameGen: () => string, start: number, end: number): Constraint {
  * При closed = true шаг немного уменьшается, и последний элемент не упирается в b.
  * TODO: зачем?
  */
-function seq(nameGen: () => string, a: number, b: number, size: number, closed: boolean = false, discrete: boolean = true): Constraint {
+function seq(nameGen: () => string, a: number, b: number, size: number, closed: boolean = false, discrete: boolean = true): ConstraintData {
     const name = extractUid(nameGen);
     a = Number(a);
     b = Number(b);
@@ -136,7 +136,7 @@ function seq(nameGen: () => string, a: number, b: number, size: number, closed: 
  * Отрезок [a, b] (топология отрезка).
  * Внутри использует seq.
  */
-function range(nameGen: () => string, a: number, b: number, size: number): Constraint {
+function range(nameGen: () => string, a: number, b: number, size: number): ConstraintData {
     return seq(nameGen, a, b, size, false, false);
 }
 
@@ -144,7 +144,7 @@ function range(nameGen: () => string, a: number, b: number, size: number): Const
  * Логарифмическая последовательность чисел между a и b (больше чисел ближе к a).
  * TODO: убрать
  */
-function logseq(nameGen: () => string, a: number, b: number, size: number): Constraint {
+function logseq(nameGen: () => string, a: number, b: number, size: number): ConstraintData {
     const name = extractUid(nameGen);
     a = Number(a);
     b = Number(b);
@@ -167,9 +167,9 @@ function logseq(nameGen: () => string, a: number, b: number, size: number): Cons
  * Графар-измерение из size нулей функции f: R^dof -> R.
  * Использует метод Ньютона.
  */
-function vsolve(nameGen: string[], f: (pt: number[]) => number, size: number, dof: number): Constraint;
-function vsolve(nameGen: () => string, f: (pt: number[]) => number, size: number, dof: number): Constraint;
-function vsolve(nameGen: any, f: (pt: number[]) => number, size: number, dof: number): Constraint {
+function vsolve(nameGen: string[], f: (pt: number[]) => number, size: number, dof: number): ConstraintData;
+function vsolve(nameGen: () => string, f: (pt: number[]) => number, size: number, dof: number): ConstraintData;
+function vsolve(nameGen: any, f: (pt: number[]) => number, size: number, dof: number): ConstraintData {
     const names: string[] = nameGen instanceof Array
         ? _.flatten(<any[]>nameGen)
         : _.range(dof).map(() => extractUid(nameGen));
