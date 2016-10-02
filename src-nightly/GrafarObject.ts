@@ -2,7 +2,6 @@ import { isExisty, asArray } from './utils';
 import { InstanceGL, interleave, resizeBuffer } from './glUtils';
 import { Buffer } from './arrayUtils';
 import { pool } from './arrayPool';
-import { emptyGraph, pathGraph, cartesianGraphProd } from './topology';
 import { Style } from './Style';
 import { nunion } from './setUtils';
 import { Reactive } from './Reactive';
@@ -34,30 +33,23 @@ export class GrafarObject{
 
         const sources = this.project(using);
 
-        const data = new Reactive({
-                buffers: names.map(() => new Buffer()),
-                length: 0
-            })
+        const length = isFree? new Reactive(maxlen): sources.length;
+        const data = new Reactive(names.map(() => new Buffer()))
             .lift((par, out) => {
-                const data = {};
-                using.forEach((srcName, i) => { data[srcName] = par[i].array; });
-                out.length = par.length === 0? maxlen: par[0].length;
-                for (var i = 0; i < names.length; i++) {
-                    resizeBuffer(out.buffers[i], out.length);
-                    data[names[i]] = out.buffers[i].array;
-                }
-                as(data, out.length, {});
+                /** HACK: при обновлении length данные не пересчитаются */
+                const lengthHack = length.value();
+                out.forEach(buff => resizeBuffer(buff, lengthHack));
+                /** Разложить массивы по именам */
+                const namedData = _.extend(
+                    _.zipObject(using, par.map(col => col.array)),
+                    _.zipObject(names, out.map(col => col.array))
+                );
+                as(namedData, lengthHack, {});
             })
             .bind(sources.data);
 
-        const edges = isFree
-            ? new Reactive({ array: new Uint32Array(0), length: 0, pointCount: maxlen })
-                .lift(discrete? emptyGraph: pathGraph)
-            : sources.edges;
-
-        const base = isFree
-            ? TopoRegistry.free(edges, data)
-            : sources.base;
+        const edges = isFree? TopoRegistry.freeEdges(discrete, length): sources.edges;
+        const base = isFree? TopoRegistry.free(edges, length): sources.base;
 
         names.forEach((name, i) => {
             this.datasets[name] = this.datasets[name] || new Graph();
@@ -66,11 +58,11 @@ export class GrafarObject{
             dataset.base = base;
             dataset.edges = edges;
             // faces?
-            dataset.data.lift(([ data ], target) => {
-                    target.length = data.buffers[i].length;
-                    target.array = data.buffers[i].array;
+            dataset.data.lift(([ data, length ], target) => {
+                    target.length = length;
+                    target.array = data[i].array;
                 })
-                .bind([ data ]);
+                .bind([ data, length ]);
         });
 
         return this;

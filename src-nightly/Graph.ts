@@ -22,7 +22,7 @@ export class Graph {
     edges = new Reactive<GraphBuffer>({ array: new Uint32Array(0), length: 0, pointCount: 0 });
     faces = new Reactive<GraphBuffer>({ array: new Uint32Array(0), length: 0, pointCount: 0 });
     colors = new Reactive(new Buffer());
-    base = TopoRegistry.free(this.edges, this.data);
+    base = TopoRegistry.free(this.edges, new Reactive(0).lift(data => data.length).bind([ this.data ]));
 
     private contextify(targetBase) {
         return new Reactive(new Buffer()).lift(([data, colBase, targetBase], out) => {

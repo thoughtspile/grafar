@@ -40,7 +40,7 @@ export class Reactive<T> {
     }
 
     /** Установить функцию и рекурсивно инвалидировать дочерние переменные */
-    lift(fn: (src, targ) => any) {
+    lift(fn: (src, targ: T) => any) {
         this.fn = fn;
         this.invalidate();
         return this;
