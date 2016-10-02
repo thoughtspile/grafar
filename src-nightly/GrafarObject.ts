@@ -29,10 +29,9 @@ export class GrafarObject{
         const as = constraint.as || (() => {});
         const maxlen = constraint.maxlen || 40;
         const discrete = constraint.discrete || false;
+        const isFree = using.length === 0;
 
         const sources = this.project(using);
-        names.filter(name => !this.datasets.hasOwnProperty(name))
-            .forEach(name => { this.datasets[name] = new Graph(); });
 
         const data = new Reactive({
                 buffers: names.map(() => new Buffer()),
@@ -50,16 +49,17 @@ export class GrafarObject{
             })
             .bind(sources.map(src => src.data));
 
-        const edges = sources.length === 0
+        const edges = isFree
             ? new Reactive({ array: new Uint32Array(0), length: 0, pointCount: maxlen })
                 .lift(discrete? emptyGraph: pathGraph)
             : sources[0].edges;
 
-        const base = sources.length === 0
+        const base = isFree
             ? TopoRegistry.free(edges, data)
             : sources[0].base;
 
         names.forEach((name, i) => {
+            this.datasets[name] = this.datasets[name] || new Graph();
             const dataset = this.datasets[name];
 
             dataset.base = base;
