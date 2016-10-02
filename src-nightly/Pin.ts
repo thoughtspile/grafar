@@ -19,12 +19,10 @@ export class Pin {
         // set sprite size: should be configurable
         this.glinstance.object.children[0].material.size = 2;
 
-        if (!selection.color) {
-            this.colors = _([0 / 255, 140 / 255, 240 / 255])
-                .map(cmp => registry.extern(constant(makeID, cmp)))
-                .flatten<string>()
-                .value();
-        }
+        this.colors = selection.color || _([0 / 255, 140 / 255, 240 / 255])
+            .map(cmp => registry.extern(constant(makeID, cmp)))
+            .flatten<string>()
+            .value();
 
         Pin.pins.push(this);
     }

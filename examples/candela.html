@@ -38,8 +38,9 @@
         const y = grafar.map([r, phi, rep, layer],
             (r, phi, rep, _) => Math.sin(rep + angRescale * phi) * r
         );
+        const color = [grafar.constant(0), grafar.constant(0), grafar.constant(0)];
 
-        grafar.pin([x, y, z], pan3d);
+        grafar.pin({ axes: [x, y, z], color }, pan3d);
 	</script>
 
 	</body>

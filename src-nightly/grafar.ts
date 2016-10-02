@@ -69,9 +69,14 @@ const grafar = {
 
     refresh: () => Pin.refresh(),
 
-    pin(vars: string[][] | string[], panel) {
-        const axes = normalizeNames(vars, 3);
-        const pin = new Pin({ axes }, panel);
+    // pin(vars: { axes: string[][] | string[]; color: string[][] | string[]}, panel: Panel)
+    // pin(vars: string[][] | string[], panel)
+    pin(vars: any, panel) {
+        const props = {
+            axes: normalizeNames(vars.axes || vars, 3),
+            color: vars.color? normalizeNames(vars.color, 3): null
+        };
+        const pin = new Pin(props, panel);
         pin.refresh();
     },
 
