@@ -17,10 +17,7 @@ export class Graph {
     base = TopoRegistry.free(this.edges, this.data);
 
     private contextify(targetBase) {
-        return new Reactive(new Buffer()).lift((par, out) => {
-            const data = par[0];
-            const colBase = par[1];
-            const targetBase = par[2];
+        return new Reactive(new Buffer()).lift(([data, colBase, targetBase], out) => {
             const totalLength = targetBase
                 .map(item => item.length)
                 .reduce((prod, len) => prod * len, 1);
@@ -32,17 +29,12 @@ export class Graph {
             res.set(data.array);
 
             targetBase.forEach(base => {
+                const dimSize = base.length;
                 if (colBase.indexOf(base) === -1) {
-                    blockRepeat(
-                        res,
-                        blockSize,
-                        Math.floor(len / blockSize),
-                        base.length,
-                        res
-                    );
-                    len *= base.length;
+                    blockRepeat(res, blockSize, Math.floor(len / blockSize), dimSize, res);
+                    len *= dimSize;
                 }
-                blockSize *= base.length;
+                blockSize *= dimSize;
             });
         }).bind([ this.data, this.base, targetBase ]);
     }
@@ -55,10 +47,10 @@ export class Graph {
             .bind([ targetBase ]);
 
         const targetEdges = new Reactive({ array: new Uint32Array(0), length: 0, pointCount: 0 })
-            .lift((arr, targ) => cartesianGraphProd(arr[0], targ))
+            .lift(([ dimEdges ], targ) => cartesianGraphProd(dimEdges, targ))
             .bind([ baseEdges ]);
         const targetFaces = new Reactive({ array: new Uint32Array(0), length: 0, pointCount: 0 })
-            .lift((arr, targ) => makeFaces(arr[0], targ))
+            .lift(([ dimEdges ], targ) => makeFaces(dimEdges, targ))
             .bind([ baseEdges ]);
 
         return cols.map(col => {
