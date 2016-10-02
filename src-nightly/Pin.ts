@@ -37,9 +37,10 @@ export class Pin {
     refresh() {
         const instance = this.glinstance;
         /** FIXME проблемы с порядком */
+        const dim = this.axes.filter(Boolean).length;
         const tab = registry.project(this.axes.concat(this.colors));
-        const pos = tab.data.slice(0, this.axes.length);
-        const col = tab.data.slice(this.axes.length);
+        const pos = tab.data.slice(0, dim);
+        const col = tab.data.slice(dim);
 
         /**
          * FIXME
@@ -51,12 +52,12 @@ export class Pin {
         }
 
         const computedPos = pos.map(col => col.value());
-        const normalizedComputed = this.axes.length === 2
+        const normalizedComputed = dim === 2
             ? [ computedPos[0], null, computedPos[1] ]
             : computedPos;
         interleave(normalizedComputed, instance.position, 3);
 
-        interleave(col.map(col => col.value()), instance.color);
+        interleave(col.map(col => col.value()), instance.color, 3);
 
         /** Как-нибудь можно попробовать шеллоу, если не цеплять одни edges и faces к разным GL-контекстам */
         Buffer.clone(instance.segments, tab.edges.value());
