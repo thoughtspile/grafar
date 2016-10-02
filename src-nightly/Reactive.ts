@@ -12,17 +12,18 @@ export class Reactive<T> {
     constructor(public data: T) {}
 
     /** Зависимость от родительских значений (src). targ -- кеш, потому что в графаре много дорогих операций. */
-    fn: (src, targ) => any = () => {};
+    private fn: (src, targ) => any = () => {};
     /** Флаг актуальности значения. Сбрасывается, когда меняются родительские переменные. */
-    isValid = false;
+    private _isValid = false;
+    get isValid() { return this._isValid; }
 
     /** Реактивные переменные, от которых я завишу. */
-    sources: Reactive<any>[] = [];
+    private sources: Reactive<any>[] = [];
     /**
      * Реактивные переменные, зависящие от меня.
      * На самом деле так себе решение, потому что теперь нужно явно вызывать Reactive.unbind, или память потечет.
      */
-    targets: Reactive<any>[] = [];
+    private targets: Reactive<any>[] = [];
 
     static isReactive(obj: any) {
         return obj instanceof Reactive;
@@ -55,7 +56,7 @@ export class Reactive<T> {
     }
 
     /** Убрать из родителей упоминания обо мне, чтобы память не текла. */
-    unbind(): Reactive<T> {
+    private unbind(): Reactive<T> {
         this.sources.forEach(src => setPop(src.targets, this));
         this.sources.length = 0;
         this.invalidate();
@@ -77,14 +78,14 @@ export class Reactive<T> {
             if (isExisty(res)) {
                 this.data = res;
             }
-            this.isValid = true;
+            this._isValid = true;
         }
         return this;
     }
 
     /** Рекурсивно инвалидировать детей */
     invalidate(): Reactive<T> {
-        this.isValid = false;
+        this._isValid = false;
         this.targets
             .filter(targ => targ.isValid)
             .forEach(targ => targ.invalidate());
