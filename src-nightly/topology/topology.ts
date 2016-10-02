@@ -1,23 +1,7 @@
-import { Buffer } from '../array/Buffer';
+import { GraphBuffer } from './GraphBuffer';
 import { incArray, arrayTimes } from '../array/ArrayUtils';
 import { Pool } from '../array/Pool';
 import { Reactive } from '../Reactive';
-
-/**
- * Графы задают топологию объекта (какие вершины соединять отрезком).
- * Face-топология (треугольники, чтобы трехмерный объект не был вайрфреймным)
- *   где-то прикостыляна, но я не знаю точно, где.
- * Идея с array + length та же, что и у простого Buffer: отделение аллоцированного
- *   размера массива от используемого + совместимость с THREE.
- * pointCount -- число вершин в графе.
- * Данные хранятся в GL-формате: ребра (e_11, e_12), ..., (e_n1, e_n2) разложены
- *   в массиве как [e_11,e_12, ..., e_n1,e_n2]
- */
-export interface GraphBuffer {
-    array: Uint32Array;
-    pointCount: number;
-    length: number;
-}
 
 /**
  * pathGraph кладет в target.array граф-путь на target.pointCount вершинах.
@@ -29,9 +13,9 @@ export interface GraphBuffer {
  * @param  {GraphBuffer} target, в который кладется результат.
  * @return {void}
  */
-function pathGraph(srcDummy: any, target: GraphBuffer) {
+export function pathGraph(srcDummy: any, target: GraphBuffer) {
     var edgeCount = target.pointCount - 1;
-    Buffer.resize(target, edgeCount * 2);
+    GraphBuffer.resize(target, edgeCount * 2);
     var data = target.array;
     for (var i = 0, j = 0; i < edgeCount; i++, j += 2) {
         data[j] = i;
@@ -48,8 +32,8 @@ function pathGraph(srcDummy: any, target: GraphBuffer) {
  * @param  {GraphBuffer} target, в который кладётся результат.
  * @return {void}
  */
-function emptyGraph(srcDummy: any, target: GraphBuffer) {
-    Buffer.resize(target, 0);
+export function emptyGraph(srcDummy: any, target: GraphBuffer) {
+    GraphBuffer.resize(target, 0);
 }
 
 
@@ -75,7 +59,7 @@ function cartesianGraphProd2(src: [GraphBuffer, GraphBuffer], target: GraphBuffe
     const nodeCount2 = src[1].pointCount;
 
     // reactive of course these should be!
-    Buffer.resize(target, (edgeCount1 * nodeCount2 + edgeCount2 * nodeCount1) * 2);
+    GraphBuffer.resize(target, (edgeCount1 * nodeCount2 + edgeCount2 * nodeCount1) * 2);
     target.pointCount = nodeCount1 * nodeCount2;
 
     let pos = 0;
@@ -105,7 +89,7 @@ function cartesianGraphProd2(src: [GraphBuffer, GraphBuffer], target: GraphBuffe
  * TODO: как минимум, нужно выделять массивы не через конструктор, а брать в Pool.
  * TODO: в идеальном мире нужно явным образом обобщить алгоритм на n графов, а редьюсить по два.
  */
-function cartesianGraphProd(src: GraphBuffer[], target: GraphBuffer) {
+export function cartesianGraphProd(src: GraphBuffer[], target: GraphBuffer) {
     const accum: GraphBuffer = {
         array: new Uint32Array(0),
         pointCount: 1,
@@ -118,7 +102,7 @@ function cartesianGraphProd(src: GraphBuffer[], target: GraphBuffer) {
     }
 
     // перекладываем в target
-    Buffer.resize(target, accum.length);
+    GraphBuffer.resize(target, accum.length);
     target.array.set(accum.array);
     target.pointCount = accum.pointCount;
 };
@@ -141,7 +125,7 @@ function makeFaces2(src: [GraphBuffer, GraphBuffer], target: GraphBuffer) {
     const nodeCount2 = src[1].pointCount;
 
     // reactive of course these should be!
-    Buffer.resize(target, edgeCount1 * edgeCount2 * 2 * 3);
+    GraphBuffer.resize(target, edgeCount1 * edgeCount2 * 2 * 3);
     const targArray = target.array;
     target.pointCount = nodeCount1 * nodeCount2;
 
@@ -177,11 +161,11 @@ function makeFaces2(src: [GraphBuffer, GraphBuffer], target: GraphBuffer) {
  * @param  {type} target куда положить результат
  * @return {void}
  */
-function makeFaces(src: GraphBuffer[], target) {
+export function makeFaces(src: GraphBuffer[], target) {
     const nonEmpty = src.filter(src => src.length !== 0);
 
     if (nonEmpty.length !== 2) {
-        Buffer.resize(target, 0);
+        GraphBuffer.resize(target, 0);
         return;
     }
 
@@ -202,7 +186,7 @@ function makeFaces(src: GraphBuffer[], target) {
     let nodeCount1 = nonEmpty[0].pointCount;
     let buffer = new Uint32Array(nonEmpty[0].array);
 
-    Buffer.resize(accum, edgeCount1 * leftStretch * 2);
+    GraphBuffer.resize(accum, edgeCount1 * leftStretch * 2);
     accum.pointCount = leftStretch * nodeCount1;
 
     arrayTimes(leftStretch, buffer, buffer);
@@ -215,7 +199,7 @@ function makeFaces(src: GraphBuffer[], target) {
     nodeCount1 = accum.pointCount;
     buffer = new Uint32Array(accum.array);
 
-    Buffer.resize(accum, edgeCount1 * midStretch * 2);
+    GraphBuffer.resize(accum, edgeCount1 * midStretch * 2);
     accum.pointCount = midStretch * nodeCount1;
 
     for (var i = 0, pos = 0; i < midStretch; i++, pos += 2 * edgeCount1) {
@@ -234,14 +218,7 @@ function makeFaces(src: GraphBuffer[], target) {
         cartesianGraphProd([accum, rightPad], accum)
     }
 
-    Buffer.resize(target, accum.length);
+    GraphBuffer.resize(target, accum.length);
     target.array.set(accum.array);
     target.pointCount = accum.pointCount;
 };
-
-export {
-    emptyGraph,
-    pathGraph,
-    cartesianGraphProd,
-    makeFaces
-}

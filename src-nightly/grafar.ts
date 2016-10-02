@@ -76,7 +76,6 @@ const grafar = {
     refresh: () => Pin.refresh(),
 
     pin(vars: string[][] | string[], panel) {
-        // only works for single graph
         const axes = normalizeNames(vars, 3);
         const pin = new Pin(axes, panel);
 
