@@ -95,7 +95,8 @@ function matHelper(type: 'point' | 'line' | 'mesh', col) {
             size: config.particleRadius,
             transparent: true,
             opacity: 0.5,
-            sizeAttenuation: false
+            sizeAttenuation: false,
+            vertexColors: THREE.VertexColors
         });
     }
     if (type === 'line') {

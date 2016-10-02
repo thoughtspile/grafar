@@ -30,4 +30,14 @@ export class Buffer {
             }
         }
     }
+
+    static assign(target: BufferLike, source: BufferLike) {
+        target.array = source.array;
+        target.length = source.length;
+    }
+
+    static clone(target: BufferLike, source: BufferLike) {
+        Buffer.resize(target, source.length);
+        target.array.set(source.array);
+    }
 }
