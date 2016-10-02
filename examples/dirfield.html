@@ -30,9 +30,9 @@
         grafar.pin([x, y], pan3d);
 
 		pan3d.camera.position.set(0, 5, 0);
-        var t = 0;
+        var time = 0;
         (function up() {
-            var ang = 2.7 * Math.pow(Math.sin(t / 50), 3);
+            var ang = 2.7 * Math.pow(Math.sin(time / 50), 3);
             grafar.constrain({ what: [x, y], using: [p, q, e, t], as: (data, l) => {
                 for (var i = 0; i < l; i++) {
                     var n = Math.sqrt(1 + Math.pow(ang * data[p][i], 2));
@@ -42,7 +42,7 @@
             }});
             grafar.refresh();
 
-            t++;
+            time++;
             window.requestAnimationFrame(up);
         }());
 	</script>
