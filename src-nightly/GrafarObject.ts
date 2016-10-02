@@ -6,7 +6,7 @@ import { emptyGraph, pathGraph, cartesianGraphProd } from './topology';
 import { Style } from './Style';
 import { nunion } from './setUtils';
 import { Reactive } from './Reactive';
-import { Graph } from './Graph';
+import { Graph, Slice } from './Graph';
 import { TopoRegistry } from './TopoRegistry';
 import * as _ from 'lodash';
 
@@ -22,7 +22,7 @@ export class GrafarObject{
     constructor(opts?: any) {}
 
     datasets: { [name: string]: Graph } = {};
-    projections: { [nameHash: string]: Graph[] } = {};
+    projections: { [nameHash: string]: Slice } = {};
 
     constrain(constraint: Constraint) {
         const names = asArray(constraint.what || []);
@@ -48,16 +48,16 @@ export class GrafarObject{
                 }
                 as(data, out.length, {});
             })
-            .bind(sources.map(src => src.data));
+            .bind(sources.data);
 
         const edges = isFree
             ? new Reactive({ array: new Uint32Array(0), length: 0, pointCount: maxlen })
                 .lift(discrete? emptyGraph: pathGraph)
-            : sources[0].edges;
+            : sources.edges;
 
         const base = isFree
             ? TopoRegistry.free(edges, data)
-            : sources[0].base;
+            : sources.base;
 
         names.forEach((name, i) => {
             this.datasets[name] = this.datasets[name] || new Graph();
@@ -66,11 +66,11 @@ export class GrafarObject{
             dataset.base = base;
             dataset.edges = edges;
             // faces?
-            dataset.data.lift((src, target) => {
-                    target.length = src[0].buffers[i].length;
-                    target.array = src[0].buffers[i].array;
+            dataset.data.lift(([ data ], target) => {
+                    target.length = data.buffers[i].length;
+                    target.array = data.buffers[i].array;
                 })
-                .bind([data]);
+                .bind([ data ]);
         });
 
         return this;

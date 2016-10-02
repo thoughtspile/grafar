@@ -25,12 +25,12 @@ export class Pin {
         const instance = this.glinstance;
         const axes = this.selection;
         const tab = registry.project(axes);
-        if (tab.every(col => col.data.isValid)) {
+        if (tab.data.every(col => col.isValid)) {
             return this;
         }
 
-        const computed = tab.map(c => c.data.value());
-        const normalizedComputed = tab.length === 2
+        const computed = tab.data.map(col => col.value());
+        const normalizedComputed = tab.data.length === 2
             ? [ computed[0], null, computed[1] ]
             : computed;
         interleave(normalizedComputed, instance.position, 3);
@@ -39,14 +39,14 @@ export class Pin {
         // reactiveness!
         //interleave([tab[0].colors.value()], instance.color);
 
-        interleave([tab[0].edges.value()], instance.segments);
-        interleave([tab[0].faces.value()], instance.faces);
+        interleave([tab.edges.value()], instance.segments);
+        interleave([tab.faces.value()], instance.faces);
 
-        resizeBuffer(instance.normals, tab[0].data.value().length * 3);
+        resizeBuffer(instance.normals, tab.data[0].value().length * 3);
         instance.object.children[2].geometry.computeVertexNormals();
 
-        const hasEdges = tab[0].edges.value().length > 0;
-        const hasFaces = tab[0].faces.value().length > 0;
+        const hasEdges = tab.edges.value().length > 0;
+        const hasFaces = tab.faces.value().length > 0;
         instance.object.children[0].visible = !hasEdges && !hasFaces;
 
         return this;
@@ -67,7 +67,7 @@ export class Pin {
             data[sourceName] = registry.datasets[sourceName].data.value().array;
         });
         const buf = this.glinstance.color;
-        const len = registry.project(this.selection)[0].data.value().length;
+        const len = registry.project(this.selection).data[0].value().length;
         resizeBuffer(buf, len * 3);
 
         as(buf.array, data, len);

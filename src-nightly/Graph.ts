@@ -7,6 +7,13 @@ import { nunion } from './setUtils';
 import { Reactive } from './Reactive';
 import { TopoRegistry } from './TopoRegistry';
 
+export interface Slice {
+    data: Reactive<Buffer>[];
+    edges: Reactive<GraphBuffer>;
+    faces: Reactive<GraphBuffer>;
+    base: Reactive<any>;
+}
+
 export class Graph {
     constructor() {}
 
@@ -39,29 +46,22 @@ export class Graph {
         }).bind([ this.data, this.base, targetBase ]);
     }
 
-    static unify(cols: Graph[]) {
+    static unify(cols: Graph[]): Slice {
         const targetBase = TopoRegistry.derive(cols.map(col => col.base));
 
         const baseEdges = new Reactive([])
             .lift(([ bases ], targ) => bases.map(base => base.edges))
             .bind([ targetBase ]);
 
-        const targetEdges = new Reactive({ array: new Uint32Array(0), length: 0, pointCount: 0 })
-            .lift(([ dimEdges ], targ) => cartesianGraphProd(dimEdges, targ))
-            .bind([ baseEdges ]);
-        const targetFaces = new Reactive({ array: new Uint32Array(0), length: 0, pointCount: 0 })
-            .lift(([ dimEdges ], targ) => makeFaces(dimEdges, targ))
-            .bind([ baseEdges ]);
-
-        return cols.map(col => {
-            const unified = new Graph();
-
-            unified.data = col.contextify(targetBase);
-            unified.base = targetBase;
-            unified.edges = targetEdges;
-            unified.faces = targetFaces;
-
-            return unified;
-        });
+        return {
+            data: cols.map(col => col.contextify(targetBase)),
+            base: targetBase,
+            edges: new Reactive({ array: new Uint32Array(0), length: 0, pointCount: 0 })
+                .lift(([ dimEdges ], targ) => cartesianGraphProd(dimEdges, targ))
+                .bind([ baseEdges ]),
+            faces: new Reactive({ array: new Uint32Array(0), length: 0, pointCount: 0 })
+                .lift(([ dimEdges ], targ) => makeFaces(dimEdges, targ))
+                .bind([ baseEdges ])
+        };
     }
 }
