@@ -1,6 +1,6 @@
 import { resizeBuffer } from '../glUtils';
-import { incArray, timesArray } from '../arrayUtils';
-import { pool } from '../arrayPool';
+import { incArray, arrayTimes } from '../array/ArrayUtils';
+import { Pool } from '../array/Pool';
 import { Reactive } from '../Reactive';
 
 /**
@@ -62,7 +62,7 @@ function emptyGraph(srcDummy: any, target: GraphBuffer) {
  * @param  {type} target куда кладем результат
  * @return {void}
  *
- * TODO: нужно выделять массивы не через конструктор, а брать в pool
+ * TODO: нужно выделять массивы не через конструктор, а брать в Pool
  * TODO: не уверен, но, возможно, операции на графах не реактивны, то есть нельзя динамически менять размер (количество точек) и топологию объектов.
  */
 function cartesianGraphProd2(src: [GraphBuffer, GraphBuffer], target: GraphBuffer) {
@@ -86,7 +86,7 @@ function cartesianGraphProd2(src: [GraphBuffer, GraphBuffer], target: GraphBuffe
     }
 
     let buffer2 = new Uint32Array(arr2);
-    timesArray(nodeCount1, buffer2);
+    arrayTimes(nodeCount1, buffer2, buffer2);
     for (let i = 0; i < nodeCount1; i++, pos += 2 * edgeCount2) {
         target.array.set(buffer2, pos);
         incArray(buffer2, 1);
@@ -102,7 +102,7 @@ function cartesianGraphProd2(src: [GraphBuffer, GraphBuffer], target: GraphBuffe
  * @param  {GraphBuffer} target куда положить результат
  * @return {void}
  *
- * TODO: как минимум, нужно выделять массивы не через конструктор, а брать в pool.
+ * TODO: как минимум, нужно выделять массивы не через конструктор, а брать в Pool.
  * TODO: в идеальном мире нужно явным образом обобщить алгоритм на n графов, а редьюсить по два.
  */
 function cartesianGraphProd(src: GraphBuffer[], target: GraphBuffer) {
@@ -205,7 +205,7 @@ function makeFaces(src: GraphBuffer[], target) {
     resizeBuffer(accum, edgeCount1 * leftStretch * 2);
     accum.pointCount = leftStretch * nodeCount1;
 
-    timesArray(leftStretch, buffer);
+    arrayTimes(leftStretch, buffer, buffer);
     for (var i = 0, pos = 0; i < leftStretch; i++, pos += 2 * edgeCount1) {
         accum.array.set(buffer, pos);
         incArray(buffer, 1);

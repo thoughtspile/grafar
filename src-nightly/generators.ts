@@ -1,4 +1,4 @@
-import { arraySum, arrayTimes, zeros } from './arrayUtils';
+import { zeros } from './arrayUtils';
 import { extractUid } from './utils';
 import { config as fullConfig } from './config';
 import { ConstraintData } from './GrafarObject';
@@ -50,7 +50,7 @@ export function constant(nameGen: () => string, val: number): ConstraintData {
 /**
  * Дискретное графар-измерение из целых чисел на отрезке [start, end].
  */
-export export function ints(nameGen: () => string, start: number, end: number): ConstraintData {
+export function ints(nameGen: () => string, start: number, end: number): ConstraintData {
     const name = extractUid(nameGen);
     start = Math.ceil(Number(start));
     end = Math.floor(Number(end));

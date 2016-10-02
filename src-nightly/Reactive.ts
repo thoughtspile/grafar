@@ -1,5 +1,4 @@
 import { isExisty } from './utils';
-import { repeatArray, blockRepeat, repeatPoints } from './arrayUtils';
 import { setPush, setPop } from './math/SetUtils';
 
 /**

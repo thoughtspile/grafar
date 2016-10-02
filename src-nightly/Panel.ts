@@ -4,7 +4,7 @@ import * as Stats from 'stats.js';
 import * as OrbitControls from '../libs/OrbitControls';
 
 import { isExisty, makeID } from './utils';
-import { pool } from './arrayPool';
+import { Pool } from './array/Pool';
 import { config } from './config';
 
 const Renderer = THREE.WebGLRenderer.bind(null, {antialias: config.antialias});
@@ -82,7 +82,7 @@ export class Panel {
             this.axisObject = new THREE.Object3D();
 
             const axisGeometry = new THREE.BufferGeometry();
-            axisGeometry.addAttribute('position', new THREE.BufferAttribute(pool.get(Float32Array, 18), 3));
+            axisGeometry.addAttribute('position', new THREE.BufferAttribute(Pool.get(Float32Array, 18), 3));
             this.axisObject.add(new THREE.Line(
                 axisGeometry,
                 new THREE.LineBasicMaterial({color: 0x888888}),
@@ -150,7 +150,7 @@ export class Panel {
             const pos = this._axes.indexOf(axis);
 
             const geometry = new THREE.BufferGeometry();
-            geometry.addAttribute('position', new THREE.BufferAttribute(pool.get(Float32Array, 3), 3));
+            geometry.addAttribute('position', new THREE.BufferAttribute(Pool.get(Float32Array, 3), 3));
             geometry.getAttribute('position').array[pos] = distance;
 
             const textObject = new THREE.PointCloud(geometry, new THREE.PointCloudMaterial({

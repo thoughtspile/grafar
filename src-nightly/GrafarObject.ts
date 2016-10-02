@@ -1,12 +1,11 @@
+import * as _ from 'lodash';
+
 import { isExisty, asArray } from './utils';
 import { InstanceGL, interleave, resizeBuffer } from './glUtils';
-import { Buffer } from './arrayUtils';
-import { pool } from './arrayPool';
-import { Style } from './Style';
+import { Buffer } from './array/ArrayUtils';
 import { Reactive } from './Reactive';
 import { Graph, Slice } from './Graph';
 import { TopoRegistry } from './topology/TopoRegistry';
-import * as _ from 'lodash';
 
 export interface ConstraintData {
     what: string | string[];

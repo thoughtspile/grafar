@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 import { resizeBuffer } from './glUtils';
-import { Buffer, blockRepeat } from './arrayUtils';
+import { Buffer, blockRepeat } from './array/ArrayUtils';
 import { Reactive } from './Reactive';
 import { GraphBuffer, TopoRegistry } from './topology/TopoRegistry';
 

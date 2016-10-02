@@ -1,9 +1,9 @@
-import { isExisty } from './utils';
+import { isExisty } from '../utils';
 
 /*
  * Хранит выделенные массивы, чтобы снизить снизить затраты на аллокацию и сборку мусора
  */
-export class pool {
+export class Pool {
     static pool: { [ className: string ]: { [length: string]: any[] } } = {}
 
     /*
@@ -14,7 +14,7 @@ export class pool {
     static get<T>(Constructor: new(length: number) => T, length: number): T {
         const classKey = Constructor.toString();
         const constructorKey = length.toString();
-        const classPool = pool.pool[classKey];
+        const classPool = Pool.pool[classKey];
 
         if (isExisty(classPool) && isExisty(classPool[constructorKey]) && classPool[constructorKey].length !== 0) {
             return classPool[constructorKey].pop();
@@ -32,21 +32,21 @@ export class pool {
         const classKey = obj.constructor.toString();
         const constructorKey = obj.length.toString();
 
-        if (!isExisty(pool.pool[classKey])) {
-            pool.pool[classKey] = {};
+        if (!isExisty(Pool.pool[classKey])) {
+            Pool.pool[classKey] = {};
         }
 
-        if (!isExisty(pool.pool[classKey][constructorKey])) {
-            pool.pool[classKey][constructorKey] = [];
+        if (!isExisty(Pool.pool[classKey][constructorKey])) {
+            Pool.pool[classKey][constructorKey] = [];
         }
 
-        pool.pool[classKey][constructorKey].push(obj);
+        Pool.pool[classKey][constructorKey].push(obj);
     }
 
     /*
      * Очистить пул
      */
     static flush() {
-        pool.pool = {};
+        Pool.pool = {};
     }
 };

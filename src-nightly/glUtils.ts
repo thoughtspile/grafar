@@ -1,6 +1,6 @@
 import * as _T from '../libs/three.min';
 import * as _ from 'lodash';
-import { pool } from './arrayPool';
+import { Pool } from './array/Pool';
 import { Panel } from './Panel';
 import { config } from './config';
 
@@ -52,15 +52,15 @@ export function interleave(tab: { array: Float32Array; length: number }[], buffe
 
 /*
  * Изменить размер буфера (работает для Three.Buffer и Buffer)
- * Старый массив сдается в pool, новый берется оттуда же.
+ * Старый массив сдается в Pool, новый берется оттуда же.
  * Если размер не изменился, ничего не произойдет.
  */
 export function resizeBuffer(buffer: { array: Float32Array; length: number }, size) {
     const type: any = buffer.array.constructor;
-    // TODO: pool сам разрулит такой случай: сдал массив, получил его же.
+    // TODO: Pool сам разрулит такой случай: сдал массив, получил его же.
     if (size !== buffer.array.length) {
-        pool.push(buffer.array);
-        buffer.array = <any>pool.get(type, size);
+        Pool.push(buffer.array);
+        buffer.array = <any>Pool.get(type, size);
         if (buffer.hasOwnProperty('length')) {
             buffer.length = size;
         }
@@ -104,12 +104,12 @@ export class InstanceGL {
     lineGeometry = new BufferGeometry();
     meshGeometry = new BufferGeometry();
 
-    position = new BufferAttribute(pool.get(Float32Array, 0), 3);
-    segments = new BufferAttribute(pool.get(Uint32Array, 0), 2);
-    faces = new BufferAttribute(pool.get(Uint32Array, 0), 3);
+    position = new BufferAttribute(Pool.get(Float32Array, 0), 3);
+    segments = new BufferAttribute(Pool.get(Uint32Array, 0), 2);
+    faces = new BufferAttribute(Pool.get(Uint32Array, 0), 3);
 
-    normals = new BufferAttribute(pool.get(Float32Array, 0), 3);
-    color = new BufferAttribute(pool.get(Float32Array, 0), 3);
+    normals = new BufferAttribute(Pool.get(Float32Array, 0), 3);
+    color = new BufferAttribute(Pool.get(Float32Array, 0), 3);
 
     object = new Object3D();
 }
