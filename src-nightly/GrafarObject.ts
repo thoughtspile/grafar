@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 
 import { isExisty, asArray } from './utils';
 import { InstanceGL, interleave, resizeBuffer } from './glUtils';
-import { Buffer } from './array/ArrayUtils';
+import { Buffer } from './array/Buffer';
 import { Reactive } from './Reactive';
 import { Graph, Slice } from './Graph';
 import { TopoRegistry } from './topology/TopoRegistry';

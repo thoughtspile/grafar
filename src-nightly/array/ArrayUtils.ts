@@ -1,6 +1,5 @@
-// На самом деле любой типизированный массив, но в TS у них нет общего интерфейса)
+/** На самом деле любой типизированный массив, но в TS у них нет общего интерфейса) */
 type TypedArray = Float32Array;
-
 
 /**
  * Заполнить l первых элементов массива arr нулями.
@@ -14,7 +13,7 @@ export function zeros(arr: number[] | TypedArray, l: number) {
     return arr;
 };
 
-/*
+/**
  * Умножить каждый элемент b на n, сложить результат в out.
  * b и out могут быть одним и тем же массивом.
  * Обрабатывает столько элементов, сколько есть в самом маленьком массиве, то есть
@@ -28,7 +27,7 @@ export function arrayTimes(n: number, b: TypedArray, out: TypedArray) {
     return out;
 }
 
-/*
+/**
  * times раз повторить первые len элементов массива arr.
  * Например:
  *   repeatArray(new Float32Array([1, 2, 3, 4, 5]), 2, 2) == [1,2, 1,2, 5].
@@ -43,7 +42,7 @@ export function repeatArray(arr: TypedArray, len: number, times: number) {
     return arr;
 }
 
-/*
+/**
  * times раз повторить каждый из len первых элементов массива arr.
  * Например:
  *   repeatPoints(new Float32Array([1, 2, 3, 4, 5]), 2, 2) == [1,1, 2,2, 5].
@@ -59,7 +58,7 @@ export function repeatPoints(arr: TypedArray, len: number, times: number) {
     return arr;
 }
 
-/*
+/**
  * Повторяет blockCount первых блоков по blockSize элементов из массива source по repCount раз.
  * Кладёт результат в target.
  * Возможно, важно, чтобы target и source были разными массивами.
@@ -111,7 +110,7 @@ export function blockRepeat(source: TypedArray, blockSize: number, blockCount: n
     }
 }
 
-/*
+/**
  * Увеличить каждый элемент массива arr на by.
  * Например, incArray([ 1, 2 ], 3) == [ 4, 5 ]
  */
@@ -120,14 +119,4 @@ export function incArray(arr: TypedArray, by: number) {
         arr[i] += by;
     }
     return arr;
-}
-
-/*
- * Float32Array + length.
- * Удобно, потому что у Float32Array статичная длина, а хочется разделить
- *   аллоцированный размер массива и количество значимых элементов.
- */
-export class Buffer {
-    array = new Float32Array(0)
-    length = 0
 }

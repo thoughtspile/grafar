@@ -1,21 +1,9 @@
-import * as _T from '../libs/three.min';
+import * as THREE from '../libs/three.min';
 import * as _ from 'lodash';
+
 import { Pool } from './array/Pool';
 import { Panel } from './Panel';
 import { config } from './config';
-
-const Object3D = _T.Object3D;
-const PointCloud = _T.PointCloud;
-const Line = _T.Line;
-const LinePieces = _T.LinePieces;
-const BufferGeometry = _T.BufferGeometry;
-const BufferAttribute = _T.BufferAttribute;
-
-const PointCloudMaterial = _T.PointCloudMaterial;
-const LineBasicMaterial = _T.LineBasicMaterial;
-const MeshLambertMaterial = _T.MeshLambertMaterial;
-const MeshPhongMaterial = _T.MeshPhongMaterial;
-const DoubleSide = _T.DoubleSide;
 
 /*
  * Переложить элементы из нескольких Buffer в один Three.Buffer:
@@ -71,7 +59,7 @@ export function resizeBuffer(buffer: { array: Float32Array; length: number }, si
  * Обертка для Three-штучек:
  *   слой спрайтов, слой линий, слой граней.
  *   также нормали и цвета.
- *   все собирается в Three.Object3D
+ *   все собирается в THREE.Object3D
  * добавить на Panel (в <Panel>.scene: THREE.Scene)
  */
 export class InstanceGL {
@@ -79,9 +67,9 @@ export class InstanceGL {
         this.linkAttributes();
         this.linkColor();
 
-        this.object.add(new PointCloud(this.pointGeometry, matHelper('point', col)))
-            .add(new Line(this.lineGeometry, matHelper('line', col), LinePieces))
-            .add(new _T.Mesh(this.meshGeometry, matHelper('mesh', col)));
+        this.object.add(new THREE.PointCloud(this.pointGeometry, matHelper('point', col)))
+            .add(new THREE.Line(this.lineGeometry, matHelper('line', col), THREE.LinePieces))
+            .add(new THREE.Mesh(this.meshGeometry, matHelper('mesh', col)));
         panel.scene.add(this.object);
     }
 
@@ -100,18 +88,18 @@ export class InstanceGL {
         this.meshGeometry.addAttribute('color', this.color);
     }
 
-    pointGeometry = new BufferGeometry();
-    lineGeometry = new BufferGeometry();
-    meshGeometry = new BufferGeometry();
+    pointGeometry = new THREE.BufferGeometry();
+    lineGeometry = new THREE.BufferGeometry();
+    meshGeometry = new THREE.BufferGeometry();
 
-    position = new BufferAttribute(Pool.get(Float32Array, 0), 3);
-    segments = new BufferAttribute(Pool.get(Uint32Array, 0), 2);
-    faces = new BufferAttribute(Pool.get(Uint32Array, 0), 3);
+    position = new THREE.BufferAttribute(Pool.get(Float32Array, 0), 3);
+    segments = new THREE.BufferAttribute(Pool.get(Uint32Array, 0), 2);
+    faces = new THREE.BufferAttribute(Pool.get(Uint32Array, 0), 3);
 
-    normals = new BufferAttribute(Pool.get(Float32Array, 0), 3);
-    color = new BufferAttribute(Pool.get(Float32Array, 0), 3);
+    normals = new THREE.BufferAttribute(Pool.get(Float32Array, 0), 3);
+    color = new THREE.BufferAttribute(Pool.get(Float32Array, 0), 3);
 
-    object = new Object3D();
+    object = new THREE.Object3D();
 }
 
 /*
@@ -119,7 +107,7 @@ export class InstanceGL {
  */
 function matHelper(type: 'point' | 'line' | 'mesh', col) {
     if (type === 'point') {
-        return new PointCloudMaterial({
+        return new THREE.PointCloudMaterial({
             size: config.particleRadius,
             transparent: true,
             opacity: 0.5,
@@ -127,17 +115,17 @@ function matHelper(type: 'point' | 'line' | 'mesh', col) {
         });
     }
     if (type === 'line') {
-        return new LineBasicMaterial({
-            vertexColors: _T.VertexColors
+        return new THREE.LineBasicMaterial({
+            vertexColors: THREE.VertexColors
         });
     }
     if (type === 'mesh') {
-        return new MeshPhongMaterial({
-            side: DoubleSide,
+        return new THREE.MeshPhongMaterial({
+            side: THREE.DoubleSide,
             transparent: true,
             opacity: .7,
-            vertexColors: _T.VertexColors,
-            normalScale: new _T.Vector2(1, 1)
+            vertexColors: THREE.VertexColors,
+            normalScale: new THREE.Vector2(1, 1)
             // depthWrite: false
             // depthTest: false
         });
