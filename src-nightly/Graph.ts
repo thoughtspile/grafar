@@ -12,6 +12,7 @@ export interface Slice {
     edges: Reactive<GraphBuffer>;
     faces: Reactive<GraphBuffer>;
     base: Reactive<any>;
+    length: Reactive<number>;
 }
 
 export class Graph {
@@ -61,7 +62,10 @@ export class Graph {
                 .bind([ baseEdges ]),
             faces: new Reactive({ array: new Uint32Array(0), length: 0, pointCount: 0 })
                 .lift(([ dimEdges ], targ) => makeFaces(dimEdges, targ))
-                .bind([ baseEdges ])
+                .bind([ baseEdges ]),
+            length: new Reactive(0)
+                .lift(([ dims ]) => dims.reduce((prod, dim) => prod * dim.length, 1))
+                .bind([ targetBase ])
         };
     }
 }

@@ -42,7 +42,7 @@ export class Pin {
         interleave([tab.edges.value()], instance.segments);
         interleave([tab.faces.value()], instance.faces);
 
-        resizeBuffer(instance.normals, tab.data[0].value().length * 3);
+        resizeBuffer(instance.normals, tab.length.value() * 3);
         instance.object.children[2].geometry.computeVertexNormals();
 
         const hasEdges = tab.edges.value().length > 0;
@@ -67,7 +67,7 @@ export class Pin {
             data[sourceName] = registry.datasets[sourceName].data.value().array;
         });
         const buf = this.glinstance.color;
-        const len = registry.project(this.selection).data[0].value().length;
+        const len = registry.project(this.selection).length.value();
         resizeBuffer(buf, len * 3);
 
         as(buf.array, data, len);
