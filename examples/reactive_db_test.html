@@ -26,7 +26,7 @@
         var f = grafar.map([x, y], (x, y) => Math.sin(x * y) / 2);
         var z = grafar.map([f, p], (f, p) => f * p);
 
-        grafar.pin([x, y, z], pan3d);
+        grafar.pin({ axes: [x, y, z], color: [y, i, p] }, pan3d);
 
         var t = 0;
         (function up() {

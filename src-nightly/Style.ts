@@ -1,4 +1,4 @@
-import * as THREE from '../libs/three.min';
+import * as THREE from 'three';
 import * as ColorDummy from '../libs/i-color.min';
 const Color = window['Color'] || ColorDummy;
 

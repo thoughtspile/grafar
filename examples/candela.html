@@ -24,23 +24,23 @@
 
         pan3d.camera.position.set(-1.3, .47, .7);
 
-        const r = grafar.logseq(0, 1, 20);
-        const phi = grafar.range(-segAng / 2, segAng / 2, 20);
+        const r = grafar.logseq(0, 1, 50);
+        const phi = grafar.range(-segAng / 2, segAng / 2, 50);
         const rep = grafar.seq(0, 2 * pi, seg, true);
         const layer = grafar.set([0, .02]);
 
-        const z = grafar.map([r, phi, rep, layer],
-            (r, phi, _, layer) => hScale * Math.pow(r, power) * Math.cos(phi) + layer
+        const z = grafar.map([r, phi, layer],
+            (r, phi, layer) => hScale * Math.pow(r, power) * Math.cos(phi) + layer
         );
-        const x = grafar.map([r, phi, rep, layer],
-            (r, phi, rep, _) => Math.cos(rep + angRescale * phi) * r
+        const x = grafar.map([r, phi, rep],
+            (r, phi, rep) => Math.cos(rep + angRescale * phi) * r
         );
-        const y = grafar.map([r, phi, rep, layer],
-            (r, phi, rep, _) => Math.sin(rep + angRescale * phi) * r
+        const y = grafar.map([r, phi, rep],
+            (r, phi, rep) => Math.sin(rep + angRescale * phi) * r
         );
-        const color = [grafar.constant(0), grafar.constant(0), grafar.constant(0)];
+        const l = grafar.map(z, z => Math.sign(Math.cos(z * 30)));
 
-        grafar.pin({ axes: [x, y, z], color }, pan3d);
+        grafar.pin({ axes: [x, y, z], color: [l,l,l] }, pan3d);
 	</script>
 
 	</body>

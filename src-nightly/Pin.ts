@@ -12,7 +12,7 @@ import { constant } from './generators';
  * Связка между графар-переменными и панелью.
  */
 export class Pin {
-    constructor(selection: { axes: string[], color?: [string, string, string] }, panel: Panel) {
+    constructor(selection: { axes: string[], color?: string[] }, panel: Panel) {
         this.axes = [ selection.axes[1], selection.axes[2], selection.axes[0] ];
         // No need for color?
         this.glinstance = new InstanceGL(panel, Style.randColor());
@@ -54,14 +54,33 @@ export class Pin {
             ? [ computedPos[0], null, computedPos[1] ]
             : computedPos;
         interleave(normalizedComputed, instance.position, 3);
+        instance.position.setDynamic(true);
+        instance.position.version++;
+        instance.position.count = tab.length.value() * 3;
 
         interleave(col.map(col => col.value()), instance.color, 3);
+        instance.color.setDynamic(true);
+        instance.color.version++;
+        instance.color.count = tab.length.value() * 3;
 
         /** Как-нибудь можно попробовать шеллоу, если не цеплять одни edges и faces к разным GL-контекстам */
         Buffer.clone(instance.segments, tab.edges.value());
+        instance.segments.needsUpdate = true;
+        instance.segments.setDynamic(true);
+        instance.segments.version++;
+        instance.segments.count = tab.edges.value().length;
+
         Buffer.clone(instance.faces, tab.faces.value());
+        instance.faces.needsUpdate = true;
+        instance.faces.setDynamic(true);
+        instance.faces.version++;
+        instance.faces.count = tab.faces.value().length;
 
         Buffer.resize(instance.normals, tab.length.value() * 3);
+        instance.normals.needsUpdate = true;
+        instance.normals.setDynamic(true);
+        instance.normals.version++;
+        instance.normals.count = tab.length.value() * 3;
         instance.object.children[2].geometry.computeVertexNormals();
 
         const hasEdges = tab.edges.value().length > 0;

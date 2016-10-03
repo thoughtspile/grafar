@@ -1,4 +1,4 @@
-import * as THREE from '../libs/three.min';
+import * as THREE from 'three';
 import * as _ from 'lodash';
 
 import { Pool } from './array/Pool';
@@ -43,33 +43,38 @@ export function interleave(tab: { array: Float32Array; length: number }[], buffe
  * Обертка для Three-штучек:
  *   слой спрайтов, слой линий, слой граней.
  *   также нормали и цвета.
- *   все собирается в THREE.Object3D
+ *   все собирается в THREE.Group
  * добавить на Panel (в <Panel>.scene: THREE.Scene)
  */
 export class InstanceGL {
     constructor(public panel: Panel, col) {
-        this.linkAttributes();
+        this.linkPosition();
+        this.linkIndex();
         this.linkColor();
 
-        this.object.add(new THREE.PointCloud(this.pointGeometry, matHelper('point', col)))
-            .add(new THREE.Line(this.lineGeometry, matHelper('line', col), THREE.LinePieces))
-            .add(new THREE.Mesh(this.meshGeometry, matHelper('mesh', col)));
+        this.object.add(new THREE.Points(this.pointGeometry, matHelper.point()));
+        this.object.add(new THREE.LineSegments(this.lineGeometry, matHelper.line()));
+        this.object.add(new THREE.Mesh(this.meshGeometry, matHelper.mesh()));
+
         panel.scene.add(this.object);
     }
 
-    linkAttributes() {
+    linkPosition() {
         this.pointGeometry.addAttribute('position', this.position);
         this.lineGeometry.addAttribute('position', this.position);
         this.meshGeometry.addAttribute('position', this.position);
-        this.lineGeometry.addAttribute('index', this.segments);
-        this.meshGeometry.addAttribute('index', this.faces);
-        this.meshGeometry.addAttribute('normal', this.normals);
     }
 
     linkColor() {
         this.pointGeometry.addAttribute('color', this.color);
         this.lineGeometry.addAttribute('color', this.color);
         this.meshGeometry.addAttribute('color', this.color);
+        this.meshGeometry.addAttribute('normal', this.normals);
+    }
+
+    linkIndex() {
+        this.lineGeometry.setIndex(this.segments);
+        this.meshGeometry.setIndex(this.faces);
     }
 
     pointGeometry = new THREE.BufferGeometry();
@@ -77,34 +82,34 @@ export class InstanceGL {
     meshGeometry = new THREE.BufferGeometry();
 
     position = new THREE.BufferAttribute(Pool.get(Float32Array, 0), 3);
-    segments = new THREE.BufferAttribute(Pool.get(Uint32Array, 0), 2);
-    faces = new THREE.BufferAttribute(Pool.get(Uint32Array, 0), 3);
+    segments = new THREE.BufferAttribute(Pool.get(Uint16Array, 0), 2);
+    faces = new THREE.BufferAttribute(Pool.get(Uint16Array, 0), 3);
 
     normals = new THREE.BufferAttribute(Pool.get(Float32Array, 0), 3);
     color = new THREE.BufferAttribute(Pool.get(Float32Array, 0), 3);
 
-    object = new THREE.Object3D();
+    object = new THREE.Group();
 }
 
 /*
  * Фабрика THREE-материалов.
  */
-function matHelper(type: 'point' | 'line' | 'mesh', col) {
-    if (type === 'point') {
-        return new THREE.PointCloudMaterial({
+const matHelper = {
+    point() {
+        return new THREE.PointsMaterial({
             size: config.particleRadius,
             transparent: true,
             opacity: 0.5,
             sizeAttenuation: false,
             vertexColors: THREE.VertexColors
         });
-    }
-    if (type === 'line') {
+    },
+    line() {
         return new THREE.LineBasicMaterial({
             vertexColors: THREE.VertexColors
         });
-    }
-    if (type === 'mesh') {
+    },
+    mesh() {
         return new THREE.MeshPhongMaterial({
             side: THREE.DoubleSide,
             transparent: true,

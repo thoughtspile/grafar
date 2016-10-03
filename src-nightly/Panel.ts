@@ -1,4 +1,4 @@
-import * as THREE from '../libs/three.min';
+import * as THREE from 'three';
 import Detector from '../libs/Detector';
 import * as Stats from 'stats.js';
 import * as OrbitControls from '../libs/OrbitControls';
@@ -79,20 +79,19 @@ export class Panel {
 
     drawAxes(len) {
         if (!isExisty(this.axisObject)) {
-            this.axisObject = new THREE.Object3D();
+            this.axisObject = new THREE.Group();
 
             const axisGeometry = new THREE.BufferGeometry();
             axisGeometry.addAttribute('position', new THREE.BufferAttribute(Pool.get(Float32Array, 18), 3));
-            this.axisObject.add(new THREE.Line(
+            this.axisObject.add(new THREE.LineSegments(
                 axisGeometry,
                 new THREE.LineBasicMaterial({color: 0x888888}),
-                THREE.LinePieces
             ));
 
             for (var i = 0; i < 3; i++) {
                 const geometry = new THREE.BufferGeometry();
                 geometry.addAttribute('position', new THREE.BufferAttribute(axisGeometry.getAttribute('position').array.subarray(i * 6 + 3, i * 6 + 6), 3));
-                this.axisObject.add(new THREE.PointCloud(geometry, new THREE.PointCloudMaterial({
+                this.axisObject.add(new THREE.Points(geometry, new THREE.PointsMaterial({
                     alphaTest: 0.17        // vaccarium.TODO: this is a horrible hack, see SOverflow #27042683
                 })));
             }
@@ -153,7 +152,7 @@ export class Panel {
             geometry.addAttribute('position', new THREE.BufferAttribute(Pool.get(Float32Array, 3), 3));
             geometry.getAttribute('position').array[pos] = distance;
 
-            const textObject = new THREE.PointCloud(geometry, new THREE.PointCloudMaterial({
+            const textObject = new THREE.Points(geometry, new THREE.PointsMaterial({
                 alphaTest: 0.17        // vaccarium.TODO: this is a horrible hack, see SOverflow #27042683
             }));
             drawTextLabel(textObject.material, distance || '');

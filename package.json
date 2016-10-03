@@ -17,6 +17,7 @@
     "microseconds": "^0.1.0",
     "nanotimer": "^0.3.14",
     "stats.js": "^0.16.0",
+    "three": "^0.81.2",
     "tslint": "^3.15.1",
     "tslint-loader": "^2.1.5"
   },
