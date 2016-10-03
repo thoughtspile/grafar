@@ -1,4 +1,4 @@
-var THREE = require('./three.min');
+var THREE = require('three');
 
 /**
  * @author qiao / https://github.com/qiao

@@ -11,7 +11,7 @@ export const config = {
     axes: ['x', 'y', 'z'],
     axisLength: 2,
 
-    particleRadius: 4,
+    particleRadius: .05,
 
     tweenTime: 900,
     tweenFunction: function(s, e, t) {

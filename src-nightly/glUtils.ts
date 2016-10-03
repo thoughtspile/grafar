@@ -100,7 +100,7 @@ const matHelper = {
             size: config.particleRadius,
             transparent: true,
             opacity: 0.5,
-            sizeAttenuation: false,
+            sizeAttenuation: true,
             vertexColors: THREE.VertexColors
         });
     },

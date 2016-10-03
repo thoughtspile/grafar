@@ -17,7 +17,6 @@ export class Pin {
         // No need for color?
         this.glinstance = new InstanceGL(panel, Style.randColor());
         // set sprite size: should be configurable
-        this.glinstance.object.children[0].material.size = 2;
 
         this.colors = selection.color || _([0 / 255, 140 / 255, 240 / 255])
             .map(cmp => registry.extern(constant(makeID, cmp)))
@@ -56,12 +55,12 @@ export class Pin {
         interleave(normalizedComputed, instance.position, 3);
         instance.position.setDynamic(true);
         instance.position.version++;
-        instance.position.count = tab.length.value() * 3;
+        instance.position.count = tab.length.value();
 
         interleave(col.map(col => col.value()), instance.color, 3);
         instance.color.setDynamic(true);
         instance.color.version++;
-        instance.color.count = tab.length.value() * 3;
+        instance.color.count = tab.length.value();
 
         /** Как-нибудь можно попробовать шеллоу, если не цеплять одни edges и faces к разным GL-контекстам */
         Buffer.clone(instance.segments, tab.edges.value());
@@ -80,7 +79,7 @@ export class Pin {
         instance.normals.needsUpdate = true;
         instance.normals.setDynamic(true);
         instance.normals.version++;
-        instance.normals.count = tab.length.value() * 3;
+        instance.normals.count = tab.length.value();
         instance.object.children[2].geometry.computeVertexNormals();
 
         const hasEdges = tab.edges.value().length > 0;
