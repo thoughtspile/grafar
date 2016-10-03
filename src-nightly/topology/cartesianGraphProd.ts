@@ -15,11 +15,7 @@ import { Pool } from '../array/Pool';
  * TODO: в идеальном мире нужно явным образом обобщить алгоритм на n графов, а редьюсить по два.
  */
 export function cartesianGraphProd(src: GraphBuffer[], target: GraphBuffer) {
-    const accum: GraphBuffer = {
-        array: new Uint32Array(0),
-        pointCount: 1,
-        length: 0
-    };
+    const accum = new GraphBuffer(2, 1);
 
     // редьюсим
     for (var i = 0; i < src.length; i++) {
@@ -27,7 +23,7 @@ export function cartesianGraphProd(src: GraphBuffer[], target: GraphBuffer) {
     }
 
     // перекладываем в target
-    GraphBuffer.resize(target, accum.length);
+    GraphBuffer.resize(target, accum.count);
     target.array.set(accum.array);
     target.pointCount = accum.pointCount;
 };
@@ -46,15 +42,18 @@ export function cartesianGraphProd(src: GraphBuffer[], target: GraphBuffer) {
  */
 function cartesianGraphProd2(src: [GraphBuffer, GraphBuffer], target: GraphBuffer) {
     const arr1 = src[0].array;
-    const edgeCount1 = src[0].length / 2;
+    const edgeCount1 = src[0].count;
     const nodeCount1 = src[0].pointCount;
 
     const arr2 = src[1].array;
-    const edgeCount2 = src[1].length / 2;
+    const edgeCount2 = src[1].count;
     const nodeCount2 = src[1].pointCount;
 
-    // reactive of course these should be!
-    GraphBuffer.resize(target, (edgeCount1 * nodeCount2 + edgeCount2 * nodeCount1) * 2);
+    if (target.itemSize !== 2) {
+        throw new Error(`Invalid itemSize of segment index array: expected 2, got ${ target.itemSize }`);
+    }
+
+    GraphBuffer.resize(target, (edgeCount1 * nodeCount2 + edgeCount2 * nodeCount1));
     target.pointCount = nodeCount1 * nodeCount2;
 
     let pos = 0;

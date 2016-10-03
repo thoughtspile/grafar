@@ -20,10 +20,10 @@ export class Graph {
     private _data = new Reactive(new Buffer());
     get data() { return this._data };
 
-    private _edges = new Reactive<GraphBuffer>({ array: new Uint32Array(0), length: 0, pointCount: 0 });
+    private _edges = new Reactive(new GraphBuffer(2));
     get edges() { return this._edges };
 
-    private _faces = new Reactive<GraphBuffer>({ array: new Uint32Array(0), length: 0, pointCount: 0 });
+    private _faces = new Reactive(new GraphBuffer(3));
     get faces() { return this._faces };
 
     private _base = TopoRegistry.free(this.edges, new Reactive(0).lift(data => data.length).bind([ this.data ]));
@@ -35,7 +35,7 @@ export class Graph {
                 .map(item => item.length)
                 .reduce((prod, len) => prod * len, 1);
             let blockSize = 1;
-            let len = data.length;
+            let len = data.count;
 
             Buffer.resize(out, totalLength);
             const res = out.array;

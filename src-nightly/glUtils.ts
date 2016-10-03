@@ -2,34 +2,39 @@ import * as THREE from 'three';
 import * as _ from 'lodash';
 
 import { Pool } from './array/Pool';
-import { Buffer } from './array/Buffer';
+import { Buffer, BufferLike } from './array/Buffer';
 import { Panel } from './Panel';
 import { config } from './config';
 
-/*
+/**
  * Переложить элементы из нескольких Buffer в один Three.Buffer:
  *   например, из [x1,x2], [y1,y2], [z1,z2] получится [x1,y1,z1,  x2,y2,z2]
  * @param itemsize -- размерность, чтобы можно было сложить два массива в трехмерный общий.
  *   например, если itemsize === 3, из [x1,x2], [y1,y2] получится [x1,y1,0,  x2,y2,0]
  *   более того, можно передать tab = [x_buff, null, z_buff], получится [x1,0,z1,  x2,0,z2]
  */
-export function interleave(tab: { array: Float32Array; length: number }[], buffer: { array: Float32Array; length: number; needsUpdate: boolean }, itemsize?: number) {
+export function interleave(tab: BufferLike[], buffer: THREE.BufferAttribute, itemsize?: number) {
     itemsize = itemsize || tab.length;
-    const srcLen = tab[0].length;
-    Buffer.resize(buffer, itemsize * srcLen);
-    const target = buffer.array;
+
+    if (itemsize !== buffer.itemSize) {
+        throw new Error(`Cannot interleave ${ itemsize } buffers into attribute with itemSize ${ buffer.itemSize }`);
+    }
+
+    const srcLen = tab[0].count;
+    Buffer.resize(buffer, srcLen);
+    const target = <Float32Array>buffer.array;
     const existyIndices = _.range(itemsize).filter(i => !!tab[i]);
 
-    // Скопировать настоящие значения из tab
+    /** Скопировать настоящие значения из tab */
     existyIndices.forEach(j => {
         const colData = tab[j].array;
-        const len = tab[j].length;
+        const len = tab[j].count;
         for (var i = 0, k = j; i < len; i++, k += itemsize) {
             target[k] = colData[i];
         }
     });
 
-    // Заполнить остальные нулями
+    /** Заполнить остальные нулями */
     _.difference(_.range(itemsize), existyIndices).forEach(j => {
         for (var i = 0, k = j; i < srcLen; i++, k += itemsize) {
             target[k] = 0;
@@ -39,7 +44,7 @@ export function interleave(tab: { array: Float32Array; length: number }[], buffe
     buffer.needsUpdate = true;
 }
 
-/*
+/**
  * Обертка для Three-штучек:
  *   слой спрайтов, слой линий, слой граней.
  *   также нормали и цвета.
@@ -59,20 +64,20 @@ export class InstanceGL {
         panel.scene.add(this.object);
     }
 
-    linkPosition() {
+    private linkPosition() {
         this.pointGeometry.addAttribute('position', this.position);
         this.lineGeometry.addAttribute('position', this.position);
         this.meshGeometry.addAttribute('position', this.position);
     }
 
-    linkColor() {
+    private linkColor() {
         this.pointGeometry.addAttribute('color', this.color);
         this.lineGeometry.addAttribute('color', this.color);
         this.meshGeometry.addAttribute('color', this.color);
         this.meshGeometry.addAttribute('normal', this.normals);
     }
 
-    linkIndex() {
+    private linkIndex() {
         this.lineGeometry.setIndex(this.segments);
         this.meshGeometry.setIndex(this.faces);
     }
@@ -81,12 +86,12 @@ export class InstanceGL {
     lineGeometry = new THREE.BufferGeometry();
     meshGeometry = new THREE.BufferGeometry();
 
-    position = new THREE.BufferAttribute(Pool.get(Float32Array, 0), 3);
-    segments = new THREE.BufferAttribute(Pool.get(Uint16Array, 0), 2);
-    faces = new THREE.BufferAttribute(Pool.get(Uint16Array, 0), 3);
+    position = new THREE.BufferAttribute(Pool.get(Float32Array, 0), 3).setDynamic(true);
+    segments = new THREE.BufferAttribute(Pool.get(Uint16Array, 0), 2).setDynamic(true);
+    faces = new THREE.BufferAttribute(Pool.get(Uint16Array, 0), 3).setDynamic(true);
 
-    normals = new THREE.BufferAttribute(Pool.get(Float32Array, 0), 3);
-    color = new THREE.BufferAttribute(Pool.get(Float32Array, 0), 3);
+    normals = new THREE.BufferAttribute(Pool.get(Float32Array, 0), 3).setDynamic(true);
+    color = new THREE.BufferAttribute(Pool.get(Float32Array, 0), 3).setDynamic(true);
 
     object = new THREE.Group();
 }

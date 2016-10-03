@@ -12,7 +12,7 @@ import { cartesianGraphProd } from './cartesianGraphProd';
  * target -- куда положить результат
  */
 export function makeFaces(src: GraphBuffer[], target: GraphBuffer) {
-    const nonEmpty = src.filter(src => src.length !== 0);
+    const nonEmpty = src.filter(src => src.count !== 0);
 
     if (nonEmpty.length !== 2) {
         GraphBuffer.resize(target, 0);
@@ -26,17 +26,13 @@ export function makeFaces(src: GraphBuffer[], target: GraphBuffer) {
     const rightStretch = src.slice(src.indexOf(nonEmpty[1]) + 1)
         .reduce((pv, cv) => pv * cv.pointCount, 1);
 
-    const accum = {
-        array: new Uint32Array(0),
-        pointCount: leftStretch,
-        length: 0
-    };
+    const accum = new GraphBuffer(2, leftStretch);
 
-    let edgeCount1 = nonEmpty[0].length / 2;
+    let edgeCount1 = nonEmpty[0].count;
     let nodeCount1 = nonEmpty[0].pointCount;
     let buffer = new Uint32Array(nonEmpty[0].array);
 
-    GraphBuffer.resize(accum, edgeCount1 * leftStretch * 2);
+    GraphBuffer.resize(accum, edgeCount1 * leftStretch);
     accum.pointCount = leftStretch * nodeCount1;
 
     arrayTimes(leftStretch, buffer, buffer);
@@ -45,11 +41,11 @@ export function makeFaces(src: GraphBuffer[], target: GraphBuffer) {
         incArray(buffer, 1);
     }
 
-    edgeCount1 = accum.length / 2;
+    edgeCount1 = accum.count;
     nodeCount1 = accum.pointCount;
     buffer = new Uint32Array(accum.array);
 
-    GraphBuffer.resize(accum, edgeCount1 * midStretch * 2);
+    GraphBuffer.resize(accum, edgeCount1 * midStretch);
     accum.pointCount = midStretch * nodeCount1;
 
     for (var i = 0, pos = 0; i < midStretch; i++, pos += 2 * edgeCount1) {
@@ -57,18 +53,23 @@ export function makeFaces(src: GraphBuffer[], target: GraphBuffer) {
         incArray(buffer, nodeCount1);
     }
 
+    accum.itemSize = 3;
     makeFaces2([accum, nonEmpty[1]], accum);
 
     if (rightStretch !== 1) {
-        const rightPad = {
-            array: new Uint32Array(0),
-            pointCount: rightStretch,
-            length: 0
-        };
-        cartesianGraphProd([accum, rightPad], accum)
+        /** TODO: упаковать в функцию: это же просто повторение массива */
+        let buffer = new Uint32Array(accum.array);
+        GraphBuffer.resize(accum, accum.count * rightStretch);
+
+        for (let i = 0, pos = 0; i < rightStretch; i++, pos += buffer.length) {
+            accum.array.set(buffer, pos);
+            incArray(buffer, accum.pointCount);
+        }
+
+        accum.pointCount *= rightStretch;
     }
 
-    GraphBuffer.resize(target, accum.length);
+    GraphBuffer.resize(target, accum.count);
     target.array.set(accum.array);
     target.pointCount = accum.pointCount;
 };
@@ -84,14 +85,17 @@ export function makeFaces(src: GraphBuffer[], target: GraphBuffer) {
  */
 function makeFaces2(src: [GraphBuffer, GraphBuffer], target: GraphBuffer) {
     const arr1 = src[0].array;
-    const edgeCount1 = src[0].length / 2;
+    const edgeCount1 = src[0].count;
     const nodeCount1 = src[0].pointCount;
     const arr2 = src[1].array;
-    const edgeCount2 = src[1].length / 2;
+    const edgeCount2 = src[1].count;
     const nodeCount2 = src[1].pointCount;
 
-    // reactive of course these should be!
-    GraphBuffer.resize(target, edgeCount1 * edgeCount2 * 2 * 3);
+    if (target.itemSize !== 3) {
+        throw new Error('invalid face index array supplied: itemSize must be 3');
+    }
+
+    GraphBuffer.resize(target, edgeCount1 * edgeCount2 * 2);
     const targArray = target.array;
     target.pointCount = nodeCount1 * nodeCount2;
 

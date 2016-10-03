@@ -53,37 +53,29 @@ export class Pin {
             ? [ computedPos[0], null, computedPos[1] ]
             : computedPos;
         interleave(normalizedComputed, instance.position, 3);
-        instance.position.setDynamic(true);
-        instance.position.version++;
         instance.position.count = tab.length.value();
 
         interleave(col.map(col => col.value()), instance.color, 3);
-        instance.color.setDynamic(true);
-        instance.color.version++;
         instance.color.count = tab.length.value();
 
         /** Как-нибудь можно попробовать шеллоу, если не цеплять одни edges и faces к разным GL-контекстам */
         Buffer.clone(instance.segments, tab.edges.value());
+        /** Three не определился: count -- количество элементов массива, или раз по itemSize */
+        instance.segments.count = tab.edges.value().count * 2;
         instance.segments.needsUpdate = true;
-        instance.segments.setDynamic(true);
-        instance.segments.version++;
-        instance.segments.count = tab.edges.value().length;
 
         Buffer.clone(instance.faces, tab.faces.value());
+
+        instance.faces.count = tab.faces.value().count * 3;
         instance.faces.needsUpdate = true;
-        instance.faces.setDynamic(true);
-        instance.faces.version++;
-        instance.faces.count = tab.faces.value().length;
 
         Buffer.resize(instance.normals, tab.length.value() * 3);
         instance.normals.needsUpdate = true;
-        instance.normals.setDynamic(true);
-        instance.normals.version++;
         instance.normals.count = tab.length.value();
         instance.object.children[2].geometry.computeVertexNormals();
 
-        const hasEdges = tab.edges.value().length > 0;
-        const hasFaces = tab.faces.value().length > 0;
+        const hasEdges = tab.edges.value().count > 0;
+        const hasFaces = tab.faces.value().count > 0;
         instance.object.children[0].visible = !hasEdges && !hasFaces;
 
         return this;

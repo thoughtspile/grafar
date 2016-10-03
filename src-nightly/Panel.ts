@@ -85,7 +85,7 @@ export class Panel {
             axisGeometry.addAttribute('position', new THREE.BufferAttribute(Pool.get(Float32Array, 18), 3));
             this.axisObject.add(new THREE.LineSegments(
                 axisGeometry,
-                new THREE.LineBasicMaterial({color: 0x888888}),
+                new THREE.LineBasicMaterial({color: 0x888888})
             ));
 
             for (var i = 0; i < 3; i++) {

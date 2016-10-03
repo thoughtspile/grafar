@@ -57,7 +57,7 @@ export class GrafarObject{
             dataset.edges.assign(edges);
             // faces?
             dataset.data.lift(([ data, length ], target) => {
-                    target.length = length;
+                    target.count = length;
                     target.array = data[i].array;
                 })
                 .bind([ data, length ]);

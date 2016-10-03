@@ -30,7 +30,7 @@ export class TopoRegistry {
     }
 
     static freeEdges(discrete: boolean, length: Reactive<number>) {
-        return new Reactive(new GraphBuffer())
+        return new Reactive(new GraphBuffer(2))
             .lift(([ length ], edges) => {
                 edges.pointCount = length;
                 return discrete? emptyGraph(null, edges): pathGraph(null, edges);
@@ -39,13 +39,13 @@ export class TopoRegistry {
     }
 
     static deriveEdges(baseEdges: Reactive<GraphBuffer[]>) {
-        return new Reactive(new GraphBuffer())
+        return new Reactive(new GraphBuffer(2))
             .lift(([ dimEdges ], targ) => cartesianGraphProd(dimEdges, targ))
             .bind([ baseEdges ]);
     }
 
     static deriveFaces(baseEdges: Reactive<GraphBuffer[]>) {
-        return new Reactive(new GraphBuffer())
+        return new Reactive(new GraphBuffer(3))
             .lift(([ dimEdges ], targ) => makeFaces(dimEdges, targ))
             .bind([ baseEdges ]);
     }

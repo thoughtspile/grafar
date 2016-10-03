@@ -11,5 +11,9 @@ import { Buffer } from '../array/Buffer';
  *   в массиве как [e_11,e_12, ..., e_n1,e_n2]
  */
 export class GraphBuffer extends Buffer {
-    pointCount = 0
+    constructor(public itemSize: number, public pointCount = 0) {
+        super();
+    }
+
+    array = new Uint32Array(this.count * this.itemSize)
 }

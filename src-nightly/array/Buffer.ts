@@ -1,8 +1,9 @@
 import { Pool } from './Pool';
 
 export interface BufferLike {
-    array: Float32Array;
-    length: number;
+    array: ArrayLike<number>;
+    count: number;
+    itemSize: number
 }
 
 /**
@@ -12,32 +13,37 @@ export interface BufferLike {
  */
 export class Buffer {
     array = new Float32Array(0)
-    length = 0
+    count = 0
+    itemSize = 1
 
     /**
-     * Изменить размер буфера (работает для Three.Buffer и Buffer)
+     * Изменить размер буфера, чтобы в него влезало count * buffer.itemSize элементов
+     * Работает для Three.Buffer и Buffer
      * Старый массив сдается в Pool, новый берется оттуда же.
      * Если размер не изменился, ничего не произойдет.
      */
-    static resize(buffer: BufferLike, size: number) {
+    static resize(buffer: BufferLike, count: number) {
         const type: any = buffer.array.constructor;
+        const length = count * buffer.itemSize;
         // TODO: Pool сам разрулит такой случай: сдал массив, получил его же.
-        if (size !== buffer.array.length) {
+        if (length !== buffer.array.length) {
             Pool.push(buffer.array);
-            buffer.array = <any>Pool.get(type, size);
-            if (buffer.hasOwnProperty('length')) {
-                buffer.length = size;
+            buffer.array = <any>Pool.get(type, length);
+            if (buffer.hasOwnProperty('count')) {
+                buffer.count = count;
             }
         }
     }
 
     static assign(target: BufferLike, source: BufferLike) {
         target.array = source.array;
-        target.length = source.length;
+        target.count = source.count;
+        target.itemSize = source.itemSize;
     }
 
     static clone(target: BufferLike, source: BufferLike) {
-        Buffer.resize(target, source.length);
-        target.array.set(source.array);
+        target.itemSize = source.itemSize;
+        Buffer.resize(target, source.count);
+        (<Float32Array>target.array).set(source.array);
     }
 }

@@ -12,7 +12,7 @@ import { GraphBuffer } from './GraphBuffer';
  */
 export function pathGraph(srcDummy: any, target: GraphBuffer) {
     var edgeCount = target.pointCount - 1;
-    GraphBuffer.resize(target, edgeCount * 2);
+    GraphBuffer.resize(target, edgeCount);
     var data = target.array;
     for (var i = 0, j = 0; i < edgeCount; i++, j += 2) {
         data[j] = i;
