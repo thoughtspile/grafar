@@ -71,7 +71,7 @@ export function constant(val: number) {
 }
 
 /**
- * Дискретное графар-измерение из целых чисел на отрезке [start, end].
+ * Дискретное графар-измерение из целых чисел в отрезке [start, end].
  */
 export function ints(start: number, end: number) {
     start = Math.ceil(Number(start));
@@ -194,7 +194,6 @@ export function vsolve(f: (pt: number[]) => number, size: number, dof: number) {
     function constructor(data, l: number, names, extras) {
         const flatData = names.map(name => data[name]);
 
-        var s = performance.now();
         estimator(flatData, l);
 
         if (realSize === 0 && !isEmpty) {
@@ -228,7 +227,6 @@ export function vsolve(f: (pt: number[]) => number, size: number, dof: number) {
 
         extras.continuous = false;
     };
-    constructor['id'] = thisid;
 
     return new Generator({
         dimension: dof,
