@@ -15,13 +15,9 @@
 	<script type="text/javascript" src="../build/grafar.js"></script>
 	<script type="text/javascript">
 		var pan3d = new grafar.Panel(document.getElementById('render'));
-
-		var xyz = grafar.vsolve(
-            v => Math.max(v[0] * v[0] + v[1] * v[1] - 1, -v[0]),
-            5000,
-            3
-        ).select();
-
+		var xyz = grafar
+            .vsolve(v => Math.max(v[0] * v[0] + v[1] * v[1] - 1, -v[0]), 5000, 3)
+            .select();
         grafar.pin(xyz, pan3d);
 	</script>
 

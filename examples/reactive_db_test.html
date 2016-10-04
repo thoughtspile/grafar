@@ -17,10 +17,10 @@
 	<script type="text/javascript">
         var pan3d = new grafar.Panel(document.getElementById('render'));
 
-        var i = grafar.set([-1, 1]);
-        var t = grafar.range(0, 1, 30);
-        var p = grafar.constant(0);
-        var y = grafar.range(-1, 1, 60);
+        var i = grafar.set([-1, 1]).select();
+        var t = grafar.range(0, 1, 30).select();
+        var p = grafar.constant(0).select();
+        var y = grafar.range(-1, 1, 60).select();
 
         var x = grafar.map([i, t], (i, t) => i + t);
         var f = grafar.map([x, y], (x, y) => Math.sin(x * y) / 2);
@@ -31,7 +31,7 @@
         var t = 0;
         (function up() {
             t += .025;
-            grafar.constrain(grafar.generators.constant(p, Math.pow(Math.sin(t), 3)));
+            grafar.constant(Math.pow(Math.sin(t), 3)).into(p);
             grafar.refresh();
 
             window.requestAnimationFrame(up);
