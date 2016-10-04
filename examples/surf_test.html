@@ -16,9 +16,9 @@
 	<script type="text/javascript">
         var pan3d = new grafar.Panel(document.getElementById('render'));
 
-        var i = grafar.seq(-1, 1, 2)
-        var t = grafar.range(0, 1, 20);
-        var y = grafar.range(0, 1, 20);
+        var i = grafar.seq(-1, 1, 2).select();
+        var t = grafar.range(0, 1, 20).select();
+        var y = grafar.range(0, 1, 20).select();
 
         var x = grafar.map([i, t], (i, t) => i + t);
         var z = grafar.map([x, y], (x, y) => x * y);

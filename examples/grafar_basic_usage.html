@@ -26,8 +26,8 @@
         var outr = 2;
         var inr = .6;
 
-        var a = grafar.range(0, 2 * Math.PI, 100)
-        var b = grafar.range(0, 2 * Math.PI, 100);
+        var a = grafar.range(0, 2 * Math.PI, 100).select();
+        var b = grafar.range(0, 2 * Math.PI, 100).select();
 
         var x = grafar.map([a, b], (a, b) => outr * Math.sin(3 * a) / (2 + Math.cos(b)));
         var y = grafar.map([a, b], (a, b) => outr * (Math.sin(a) + 2 * Math.sin(2 * a)) / (2 + Math.cos(b + Math.PI * 2 / 3)));

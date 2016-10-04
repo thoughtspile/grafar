@@ -16,8 +16,8 @@
 	<script type="text/javascript">
 		var pan3d = new grafar.Panel(document.getElementById('render'));//.setAxes(['x','y']),
 
-		var ang = grafar.range(-Math.PI, Math.PI, 40);
-        var dist = grafar.range(0, Math.atan(60), 40, 'dist');
+		var ang = grafar.range(-Math.PI, Math.PI, 40).select();
+        var dist = grafar.range(0, Math.atan(60), 40, 'dist').select();
 
         var x = grafar.map([ang, dist], (ang, dist) => Math.sin(ang) * Math.tan(dist));
         var y = grafar.map([ang, dist], (ang, dist) => Math.cos(ang) * Math.tan(dist));

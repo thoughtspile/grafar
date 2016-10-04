@@ -17,8 +17,8 @@
 		var pan3d = new grafar.Panel(document.getElementById('render')).setAxes(['x','y']);
 
         var eps = .00001;
-		var i = grafar.ints(-5, 5);
-        var t = grafar.range(-Math.PI / 2 + eps, Math.PI / 2 - eps, 30);
+		var i = grafar.ints(-5, 5).select();
+        var t = grafar.range(-Math.PI / 2 + eps, Math.PI / 2 - eps, 30).select();
 
         var x = grafar.map([i, t], (i, t) => Math.PI * i + t);
         var y = grafar.map([x], x => Math.tan(x));
