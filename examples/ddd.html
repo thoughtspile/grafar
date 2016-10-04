@@ -15,10 +15,10 @@
 		var pan3d = new grafar.Panel(document.getElementById('render'));
 
         grafar.pin(grafar.vsolve(
-            v => v[0] * v[0] * v[0] + v[1] * v[1] + v[2] * v[2] - 2,
+            v => Math.pow(v[0], 3) + Math.pow(v[1], 2) + Math.pow(v[2], 2) - 2,
             50000,
             3
-        ), pan3d);
+        ).select(), pan3d);
 	</script>
 
 	</body>

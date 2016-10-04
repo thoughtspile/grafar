@@ -176,7 +176,7 @@ export function vsolve(f: (pt: number[]) => number, size: number, dof: number) {
         }
     }
 
-    function constructor(data, l: number, extras) {
+    function constructor(data, l: number, names, extras) {
         const flatData = names.map(name => data[name]);
 
         var s = performance.now();
@@ -216,6 +216,7 @@ export function vsolve(f: (pt: number[]) => number, size: number, dof: number) {
     constructor['id'] = thisid;
 
     return new Generator({
+        dimension: dof,
         discrete: true,
         maxlen: size,
         using: [],
