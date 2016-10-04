@@ -12,21 +12,17 @@
         var s = performance.now();
         var l = 0;
 
-        var xyz = grafar.vsolve(
-            v => v[0] * v[0] + v[1] * v[1] + v[2] * v[2] * Math.sin(l) - 2,
-            12000,
-            3
-        );
+        var xyz = grafar
+            .vsolve(v => v[0] * v[0] + v[1] * v[1] + v[2] * v[2] * Math.sin(l) - 2, 12000, 3)
+            .select();
+        grafar.pin(xyz, pan);
 
         window.requestAnimationFrame(function frame() {
             l = (performance.now() - s) / 2000;
 
-            grafar.constrain(grafar.generators.vsolve(
-                xyz,
-                v => v[0] * v[0] + v[1] * v[1] + v[2] * v[2] * Math.sin(l) - 2,
-                12000,
-                3
-            ));
+            grafar
+                .vsolve(v => v[0] * v[0] + v[1] * v[1] + v[2] * v[2] * Math.sin(l) - 2, 12000, 3)
+                .into(xyz);
             grafar.refresh();
 
             if (l < duration) {

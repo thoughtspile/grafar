@@ -136,7 +136,6 @@ export function logseq(a: number, b: number, size: number) {
             for (var i = 1; i < l + 1; i++) {
                 data[name][i] = a + Math.log(i) * step;
             }
-            extras['continuous'] = true;
         }
     });
 }
@@ -224,8 +223,6 @@ export function vsolve(f: (pt: number[]) => number, size: number, dof: number) {
                 }
             }
         }
-
-        extras.continuous = false;
     };
 
     return new Generator({
