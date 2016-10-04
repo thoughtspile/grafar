@@ -14,10 +14,11 @@
 
     <script type="text/javascript" src="../build/grafar.js"></script>
 	<script type="text/javascript">
-        var pan3d = new grafar.Panel(document.getElementById('render'));
-        var stage = 0;
+        var pan3d = new grafar.Panel(document.getElementById('render'))
+            .setAxes(['x', 'y']);
         var start = Date.now();
-        var n = 3;
+        var nExt = 3;
+        var t = grafar.constant(0).select();
 
         // graph.glinstances.forEach(function(gli) {
         //     gli.object.children[2].material.transparent = false;
@@ -27,7 +28,6 @@
         // point.glinstances[0].object.children[0].material.radius = 10;
 
         function drawSurf() {
-            stage = 2;
             pan3d.setAxes(['x', 'y', 'p']);
 
             var r = grafar.range(0, 2, 5).select();
@@ -41,11 +41,6 @@
         }
 
         function drawArea() {
-            stage = 1;
-            pan3d.setAxes(['x', 'y']);
-
-            // graph.glinstances[0].object.children[0].visible = false;
-
             var r = grafar.range(0, 1, 5).select();
             var phi = grafar.range(0, 2 * Math.PI, 70).select();
 
@@ -56,12 +51,6 @@
         }
 
         function drawCurve() {
-            stage = 0;
-            pan3d.setAxes(['x', 'y']);
-
-            // graph.glinstances[0].object.children[0].visible = false;
-            // graph.glinstances[0].object.children[1].visible = true;
-
             var r = grafar.range(1, 1, 5).select();
             var phi = grafar.range(0, 8 * Math.PI, 7000).select();
 
@@ -72,36 +61,23 @@
         }
 
         function drawPoint() {
-            stage = 0;
-            pan3d.setAxes(['x', 'y']);
+            var n = grafar.constant(nExt).select();
 
-            // point.glinstances[0].object.children[0].visible = true;
-            // point.glinstances[0].object.children[0].material.size = 5;
-            // point.glinstances[0].object.children[1].visible = false;
+            var x = grafar.map([t], (r, t) => Math.cos(t))
+            var y = grafar.map([t, n], (r, t, n) => Math.sin(t) * Math.cos(n * t));
 
-            point.constrain('t', grafar.constant(0, 't'), {maxlen: 1})
-                .constrain('r', grafar.constant(1, 'r'), {maxlen: 1})
-                .constrain('n', grafar.constant(n, 'n'), {maxlen: 1})
-                .constrain('x: r, t', function(data, l) {
-                    for (var i = 0; i < l; i++)
-                        data.x[i] = Math.cos(data.t[i]) * data.r[i];
-                })
-                .constrain('y: r, t, n', function(data, l) {
-                    for (var i = 0; i < l; i++)
-                        data.y[i] = Math.sin(data.t[i]) * (Math.cos(data.n[i] * data.t[i]) + data.r[i]);
-                });
+            grafar.pin([x, y], pan3d);
         }
 
         function up() {
-            var time = (Date.now() - start) / 1500;
-            graph.constrain('t', grafar.constant(time, 't'), {maxlen: 1})
-                .refresh();
+            grafar.constant((Date.now() - start) / 1500).into(t);
+            grafar.refresh();
             window.requestAnimationFrame(up);
         };
 
         drawCurve();
         //drawSurf();
-        //drawPoint();
+        drawPoint();
         //setTimeout(drawCurve, 5000);
         //setTimeout(drawArea, 20000);
         //setTimeout(drawSurf, 1300000);
