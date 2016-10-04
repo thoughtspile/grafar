@@ -8,9 +8,10 @@ import { Graph, Slice } from './Graph';
 import { TopoRegistry } from './topology/TopoRegistry';
 
 export interface ConstraintData {
-    what: string | string[];
+    dimension?: number;
+    what?: string | string[];
     using?: string | string[];
-    as: (data, l: number, extras?: { [key: string]: any }) => any;
+    as: (data, l: number, names: string[], extras?: { [key: string]: any }) => any;
     maxlen?: number;
     discrete?: boolean;
 }
@@ -42,7 +43,7 @@ export class GrafarObject{
                     _.zipObject(using, par.map(col => col.array)),
                     _.zipObject(names, out.map(col => col.array))
                 );
-                as(namedData, lengthHack, {});
+                as(namedData, lengthHack, names, {});
             })
             .bind(sources.data);
 

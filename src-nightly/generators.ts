@@ -1,72 +1,77 @@
 import { zeros } from './array/ArrayUtils';
-import { extractUid } from './utils';
+import { isExisty, extractUid, makeID } from './utils';
 import { config as fullConfig } from './config';
 import { ConstraintData } from './GrafarObject';
 import { newton } from './math/newton';
 import { grad } from './math/grad';
 import { randomize } from './math/randomize';
 import * as _ from 'lodash';
+import { registry } from './registry';
 
 const config = fullConfig.grafaryaz;
+
+export class Generator {
+    constructor(private anonymousConstraint: ConstraintData) {
+    }
+
+    select() {
+        const constraintDim = this.anonymousConstraint.dimension;
+        const names = _.range(isExisty(constraintDim)? constraintDim: 1)
+            .map(() => makeID());
+        this.anonymousConstraint.what = names;
+        return registry.extern(this.anonymousConstraint);
+    }
+}
 
 /**
  * Обернуть числа из массива set для графара.
  * @discrete -- использовать дискретную топологию (не соединять точки)
  *   @default true
  */
-export function set(nameGen: () => string, set: any[], discrete: boolean = true) {
-    const name = extractUid(nameGen);
-    return {
-        what: name,
+export function set(set: any[], discrete: boolean = true) {
+    return new Generator({
         using: [],
         discrete,
         maxlen: set.length,
-        as: function(data, l, extras) {
+        as: function(data, l, [name], extras) {
             data[name].set(set);
-            extras['continuous'] = true;
         }
-    };
+    });
 }
 
 /**
  * Обернуть одно число для графара.
  */
-export function constant(nameGen: () => string, val: number): ConstraintData {
-    const name = extractUid(nameGen);
-    return {
-        what: name,
+export function constant(val: number) {
+    return new Generator({
         using: [],
         discrete: true,
         maxlen: 1,
-        as: function(data, l, extras) {
+        as: function(data, l, [name], extras) {
             for (var i = 0; i < l ; i++) {
                 data[name][i] = val;
             }
-            extras['continuous'] = true;
         }
-    };
+    });
 }
 
 /**
  * Дискретное графар-измерение из целых чисел на отрезке [start, end].
  */
-export function ints(nameGen: () => string, start: number, end: number): ConstraintData {
-    const name = extractUid(nameGen);
+export function ints(start: number, end: number) {
     start = Math.ceil(Number(start));
     end = Math.floor(Number(end));
     const size = Math.abs(end + 1 - start);
-    return {
-        what: name,
+    return new Generator({
         using: [],
         maxlen: size,
         discrete: true,
-        as: function(data, l, extras) {
+        as: function(data, l, [name], extras) {
             for (var i = 0; i <= size; i++) {
                 data[name][i] = start + i;
             }
-            extras['continuous'] = false;
         }
-    }
+    });
 }
 
 /**
@@ -76,67 +81,56 @@ export function ints(nameGen: () => string, start: number, end: number): Constra
  * При closed = true шаг немного уменьшается, и последний элемент не упирается в b.
  * TODO: зачем?
  */
-export function seq(nameGen: () => string, a: number, b: number, size: number, closed: boolean = false, discrete: boolean = true): ConstraintData {
-    const name = extractUid(nameGen);
+export function seq(a: number, b: number, size: number, closed: boolean = false, discrete: boolean = true) {
     a = Number(a);
     b = Number(b);
     const closeFix = (closed? 0: 1);
-    return {
-        what: name,
+    return new Generator({
         using: [],
         maxlen: size,
         discrete,
-        as: (data, l, extras) => {
+        as: (data, l, [name], extras) => {
             var step = (b - a) / (l - closeFix);
             for (var i = 0; i < l; i++) {
                 data[name][i] = a + i * step;
             }
-            extras['continuous'] = !discrete;
         }
-    };
+    });
 }
 
 /**
  * Отрезок [a, b] (топология отрезка).
  * Внутри использует seq.
  */
-export function range(nameGen: () => string, a: number, b: number, size: number): ConstraintData {
-    return seq(nameGen, a, b, size, false, false);
+export function range(a: number, b: number, size: number) {
+    return seq(a, b, size, false, false);
 }
 
 /**
  * Логарифмическая последовательность чисел между a и b (больше чисел ближе к a).
  */
-export function logseq(nameGen: () => string, a: number, b: number, size: number): ConstraintData {
-    const name = extractUid(nameGen);
+export function logseq(a: number, b: number, size: number) {
     a = Number(a);
     b = Number(b);
-    return {
-        what: name,
+    return new Generator({
         using: [],
         maxlen: size,
         discrete: false,
-        as: (data, l, extras) => {
-            var step = (b - a) / Math.log(l);
+        as: (data, l, [name], extras) => {
+            const step = (b - a) / Math.log(l);
             for (var i = 1; i < l + 1; i++) {
                 data[name][i] = a + Math.log(i) * step;
             }
             extras['continuous'] = true;
         }
-    };
+    });
 }
 
 /*
  * Графар-измерение из size нулей функции f: R^dof -> R.
  * Использует метод Ньютона.
  */
-export function vsolve(nameGen: string[], f: (pt: number[]) => number, size: number, dof: number): ConstraintData;
-export function vsolve(nameGen: () => string, f: (pt: number[]) => number, size: number, dof: number): ConstraintData;
-export function vsolve(nameGen: any, f: (pt: number[]) => number, size: number, dof: number): ConstraintData {
-    const names: string[] = nameGen instanceof Array
-        ? _.flatten(<any[]>nameGen)
-        : _.range(dof).map(() => extractUid(nameGen));
-
+export function vsolve(f: (pt: number[]) => number, size: number, dof: number) {
     const tol = config.tol;
     const gradf = grad(f, dof);
     const probeSize = 100;
@@ -221,11 +215,10 @@ export function vsolve(nameGen: any, f: (pt: number[]) => number, size: number, 
     };
     constructor['id'] = thisid;
 
-    return {
-        what: names,
+    return new Generator({
         discrete: true,
         maxlen: size,
         using: [],
         as: constructor
-    };
+    });
 }

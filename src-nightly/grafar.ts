@@ -84,12 +84,7 @@ const grafar = {
 }
 
 Object.keys(generators).forEach(key => {
-    grafar[key] = (...args) => {
-        // only works for 1-d generators
-        const uid = () => makeID();
-        const constraint = generators[key](uid, ...args);
-        return registry.extern(constraint);
-    };
+    grafar[key] = generators[key];
 });
 
 // bootstrap

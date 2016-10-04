@@ -24,10 +24,10 @@
 
         pan3d.camera.position.set(-1.3, .47, .7);
 
-        const r = grafar.logseq(0, 1, 50);
-        const phi = grafar.range(-segAng / 2, segAng / 2, 50);
-        const rep = grafar.seq(0, 2 * pi, seg, true);
-        const layer = grafar.set([0, .02]);
+        const r = grafar.logseq(0, 1, 50).select();
+        const phi = grafar.range(-segAng / 2, segAng / 2, 50).select();
+        const rep = grafar.seq(0, 2 * pi, seg, true).select();
+        const layer = grafar.set([0, .02]).select();
 
         const z = grafar.map([r, phi, layer],
             (r, phi, layer) => hScale * Math.pow(r, power) * Math.cos(phi) + layer

@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import { isExisty, asArray, makeID } from './utils';
 
 import { InstanceGL, interleave } from './glUtils';
 import { Buffer } from './array/Buffer';
@@ -19,7 +18,7 @@ export class Pin {
         // set sprite size: should be configurable
 
         this.colors = selection.color || _([0 / 255, 140 / 255, 240 / 255])
-            .map(cmp => registry.extern(constant(makeID, cmp)))
+            .map(cmp => constant(cmp).select())
             .flatten<string>()
             .value();
 
