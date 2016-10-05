@@ -1,0 +1,54 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<title>testbox</title>
+
+	<link rel="stylesheet" type="text/css" href="stylesheets/testbox_style.css" media="screen" />
+
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+</head>
+
+<body>
+    <figure style = 'height: 100%'>
+        <figure id = "render" style = 'display: inline-block; min-width: 45%; width: 45%; height: 100%;'></figure>
+        <figure id = "render2d" style = 'display: inline-block; min-width: 45%; width: 45%; height: 100%;'></figure>
+	</figure>
+
+    <script type="text/javascript" src="../build/grafar.js"></script>
+    <script type="text/javascript">
+        var graph = new grafar.Panel(document.getElementById('render'));
+        var graph2d = new grafar.Panel(document.getElementById('render2d')).setAxes(['x', 'y']);
+
+        var fun = (x, y) => x * Math.log(Math.pow(y, 2) + 1) + x / 2;
+        var funl = a => (v => fun(v[0], v[1]) - a);
+
+        var x = grafar.range(-2, 2, 30).select();
+        var y = grafar.range(-2, 2, 30).select();
+        // Функция
+        var zf = grafar.map([x, y], fun);
+        grafar.pin([x, y, zf], graph);
+
+        // Плоскость уровня
+        var zl = grafar.constant(0).select();
+        grafar.pin([x, y, zl], graph);
+
+        // Линия уровня
+        var levelset = grafar.vsolve(funl(0), 7000, 3).select();
+        grafar.pin([levelset, zl], graph2d);
+
+        var t = 0;
+        (function up() {
+            t += .005;
+            p = Math.sin(t);
+
+            grafar.vsolve(funl(p), 7000, 3).into(levelset);
+            grafar.constant(p).into(zl);
+            grafar.refresh();
+
+            window.requestAnimationFrame(up);
+        }());
+	</script>
+
+	</body>
+</html>
