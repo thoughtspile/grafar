@@ -1,0 +1,36 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<title>grafar interface test page</title>
+	<style>
+		body, figure {
+			margin: 0px;
+		}
+		#plot_area {
+			overflow: hidden;
+		}
+	</style>
+</head>
+
+<body>
+	<figure class="panel" id="plot_area"></figure>
+
+    <script type="text/javascript" src="../build/grafar.js"></script>
+	<script type="text/javascript">
+		grafar.config.antialias = false;
+
+		var mainPan = new grafar.Panel(document.getElementById('plot_area'));
+
+        var x = grafar.range(-20, 20, 1000).select();
+        var y = grafar.range(-20, 20, 1000).select();
+		new grafar.Process(new grafar.Timer(1000), function (t) {
+			context.set('x @= [-20, 20] & y @= [-20, 20] & z == sin(x) * cos(y * x + $e)'.replace(/\$e/g, t));
+		}).start();
+
+		window.setTimeout(function() {
+			anim.stop();
+		}, 30000);
+	</script>
+</body>
+</html>
