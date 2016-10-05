@@ -35,17 +35,17 @@
         grafar.pin([x, y, zl], graph);
 
         // Линия уровня
-        var levelset = grafar.vsolve(funl(0), 1000, 3).select();
+        var levelset = grafar.vsolve(funl(0), 1000, 2).select();
         // WTF?
-        grafar.pin([levelset[0], levelset[1]], graph2d);
-        grafar.pin([levelset[0], levelset[1], zl], graph);
+        grafar.pin(levelset, graph2d);
+        grafar.pin([levelset, zl], graph);
 
         var t = 0;
         (function up() {
             t += .005;
             p = Math.sin(t);
 
-            grafar.vsolve(funl(p), 1000, 3).into(levelset);
+            grafar.vsolve(funl(p), 1000, 2).into(levelset);
             grafar.constant(p).into(zl);
             grafar.refresh();
 

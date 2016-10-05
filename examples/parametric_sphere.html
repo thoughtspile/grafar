@@ -10,21 +10,21 @@
 </head>
 
 <body>
-	<div id="render"></div>
+	<div id = "render">
+    </script>
 
 	<script type="text/javascript" src="../build/grafar.js"></script>
 	<script type="text/javascript">
         var pan3d = new grafar.Panel(document.getElementById('render'));
 
-        var i = grafar.set([ -1, 1 ]);
-		console.log(i)
-        // var t = grafar.range(-5, 5, 30);
-        // var p = grafar.range(0, 5, 30);
-        // var x = grafar.map([ t ], t => t);
-		// var y = grafar.map([ i, t, p ], (i, t, p) => t + i * p);
-        // var z = grafar.map([ x, y ], (x, y) => 1 / (x - y));
-		//
-		// grafar.pin({ x, y, z }, pan3d);
+        var t = grafar.range(0, Math.PI, 30).select();
+        var p = grafar.range(-Math.PI, Math.PI, 50).select();
+
+        grafar.pin([
+            grafar.map([t, p], (t, p) => Math.sin(t) * Math.sin(p)),
+            grafar.map([t, p], (t, p) => Math.cos(t) * Math.sin(p)),
+            grafar.map([t, p], (t, p) => Math.cos(p))
+        ], pan3d);
 	</script>
 
 	</body>
