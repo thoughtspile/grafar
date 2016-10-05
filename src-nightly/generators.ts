@@ -152,6 +152,7 @@ export function vsolve(f: (pt: number[]) => number, size: number, dof: number) {
     const mean = [];
     const spread = [];
     const pt = [];
+
     let realSize = 0;
     let isEmpty = false;
     let needsReshuffle = true;
@@ -217,7 +218,7 @@ export function vsolve(f: (pt: number[]) => number, size: number, dof: number) {
                 for (let j = 0; j < dof; j++) {
                     pt[j] = flatData[j][i];
                 }
-                newton(pt, f, gradf, false, 30);
+                newton(pt, f, gradf, true, 30);
                 for (let j = 0; j < dof; j++) {
                     flatData[j][i] = pt[j];
                 }
