@@ -91,5 +91,9 @@ Object.keys(generators).forEach(key => {
 grafar.update();
 
 // export
-export = grafar;
-window['grafar'] = grafar;
+if (typeof module !== 'undefined') {
+    module.exports = grafar;
+} else if (typeof window !== 'undefined') {
+    window['grafar'] = grafar;
+}
+export default grafar;

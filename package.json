@@ -4,15 +4,12 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "build": "browserify src/grafar.js -o build/grafar.js -t [ babelify --presets [ es2015 ] --sourceMaps true ]",
-    "watch": "watchify src/grafar.js -o build/grafar.js -v -t [ babelify --presets [ es2015 ] --sourceMaps true ]",
-    "build-nightly": "browserify src-nightly/grafar.js -o build/grafar.js -t [ babelify --presets [ es2015 ] --sourceMaps true ]",
-    "watch-nightly": "watchify src-nightly/grafar.js -o build/grafar.js -v -t [ babelify --presets [ es2015 ] --sourceMaps true ]",
-    "c-v3": "babel --presets es2015 src-v3 -d compiled",
-    "v3": "npm run c-v3 && browserify compiled/demo--canvas.js -o compiled/bundle.js"
+    "prepare": "npm install && typings install",
+    "build": "webpack",
+    "dev": "webpack --watch"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "microseconds": "^0.1.0",
     "nanotimer": "^0.3.14",
@@ -30,6 +27,7 @@
     "tslint-eslint-rules": "^1.5.0",
     "typescript": "^1.8.10",
     "typings": "^1.3.1",
-    "watchify": "^3.7.0"
+    "watchify": "^3.7.0",
+    "webpack": "^1.13.2"
   }
 }
