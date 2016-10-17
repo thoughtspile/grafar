@@ -1,8 +1,8 @@
 {
-  "name": "sheet-bld",
-  "version": "1.0.1",
+  "name": "grafar",
+  "version": "4.5.2",
   "description": "",
-  "main": "server.js",
+  "main": "build/grafar.js",
   "scripts": {
     "prepare": "npm install && typings install",
     "build": "webpack",
