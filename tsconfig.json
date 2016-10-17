@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es5"
+    "target": "es5",
+    "declaration": true,
+    "outDir": "build"
   },
   "exclude": [
     "node_modules",
