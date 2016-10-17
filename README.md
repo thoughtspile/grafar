@@ -54,7 +54,7 @@ var grafar = require('grafar');
 var x = grafar.range(1, 2, 100).select();
 ```
 
-### <script> tag (not cool)
+### &lt;script&gt; tag (not cool)
 
 Download the distro, then include it into your HTML and use normally.
 
