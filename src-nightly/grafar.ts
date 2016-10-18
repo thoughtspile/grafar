@@ -16,7 +16,7 @@ const normalizeNames = (names: string[] | string[][], forceDim?: number) => {
     return forceDim? _.range(forceDim).map(i => flatVars[i] || null): flatVars;
 }
 
-export const grafar = {
+const grafar = {
     version: '4.01r',
 
     update() {
@@ -95,3 +95,4 @@ grafar.update();
 if (typeof window !== 'undefined') {
     window['grafar'] = grafar;
 }
+export default grafar;
