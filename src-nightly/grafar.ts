@@ -95,4 +95,4 @@ const grafar = {
 // bootstrap
 grafar.update();
 
-export = grafar;
+export default grafar;

@@ -16,7 +16,7 @@ export interface ConstraintData {
     discrete?: boolean;
 }
 
-export class GrafarObject{
+export class GrafarObject {
     constructor(opts?: any) {}
 
     datasets: { [name: string]: Graph } = {};

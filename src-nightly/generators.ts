@@ -1,7 +1,7 @@
 import { zeros } from './array/ArrayUtils';
 import { isExisty, extractUid, makeID } from './utils';
 import { config as fullConfig } from './config';
-import { ConstraintData } from './GrafarObject';
+import { GrafarObject, ConstraintData } from './GrafarObject';
 import { newton } from './math/newton';
 import { grad } from './math/grad';
 import { randomize } from './math/randomize';

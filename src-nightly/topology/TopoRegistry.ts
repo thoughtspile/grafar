@@ -9,7 +9,7 @@ import { GraphBuffer } from './GraphBuffer';
 
 export { GraphBuffer };
 
-interface DimDescriptor {
+export interface DimDescriptor {
     id: string;
     edges: GraphBuffer;
     length: number;
