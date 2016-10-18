@@ -90,14 +90,17 @@ const grafar = {
     range: generators.range,
     logseq: generators.logseq,
     vsolve: generators.vsolve
-}
+};
 
 // bootstrap
 grafar.update();
+
+export default grafar;
 
 // global export
 
 if (typeof window !== 'undefined') {
     window['grafar'] = grafar;
+} else if (typeof module !== undefined) {
+    module.exports = grafar;
 }
-export default grafar;
