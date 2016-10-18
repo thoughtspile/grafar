@@ -16,7 +16,7 @@ const normalizeNames = (names: string[] | string[][], forceDim?: number) => {
     return forceDim? _.range(forceDim).map(i => flatVars[i] || null): flatVars;
 }
 
-const grafar = {
+export const grafar = {
     version: '4.01r',
 
     update() {
@@ -90,11 +90,8 @@ Object.keys(generators).forEach(key => {
 // bootstrap
 grafar.update();
 
-// export
+// global export
 
 if (typeof window !== 'undefined') {
     window['grafar'] = grafar;
-} else if (typeof module !== 'undefined') {
-    module.exports = grafar;
 }
-export default grafar;
