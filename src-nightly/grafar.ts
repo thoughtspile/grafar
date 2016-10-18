@@ -95,12 +95,10 @@ const grafar = {
 // bootstrap
 grafar.update();
 
-export default grafar;
+export = grafar;
 
 // global export
 
 if (typeof window !== 'undefined') {
     window['grafar'] = grafar;
-} else if (typeof module !== undefined) {
-    module.exports = grafar;
 }
