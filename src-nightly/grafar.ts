@@ -80,12 +80,17 @@ const grafar = {
         pin.refresh();
     },
 
-    frameId: 0
-}
+    frameId: 0,
 
-Object.keys(generators).forEach(key => {
-    grafar[key] = generators[key];
-});
+    // real generators: explicit transfer to preserve typings
+    set: generators.set,
+    constant: generators.constant,
+    ints: generators.ints,
+    seq: generators.seq,
+    range: generators.range,
+    logseq: generators.logseq,
+    vsolve: generators.vsolve
+}
 
 // bootstrap
 grafar.update();
