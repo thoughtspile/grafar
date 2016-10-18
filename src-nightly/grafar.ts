@@ -96,9 +96,3 @@ const grafar = {
 // grafar.update();
 
 export = grafar;
-
-// global export
-
-if (typeof window !== 'undefined') {
-    window['grafar'] = grafar;
-}

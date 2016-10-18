@@ -4,7 +4,10 @@ module.exports = {
     entry: { grafar: './src-nightly/grafar.ts' },
     output: {
         path: path.join(__dirname, 'build'),
-        filename: "[name].js"
+        filename: "[name].js",
+        library: "grafar",
+        libraryTarget: 'umd',
+        umdNamedDefine: true
     },
     resolve: { extensions: ['', '.ts', '.js'] },
     module: {
