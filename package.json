@@ -1,6 +1,6 @@
 {
   "name": "grafar",
-  "version": "4.5.11",
+  "version": "4.5.12",
   "description": "",
   "main": "build/grafar.js",
   "scripts": {
