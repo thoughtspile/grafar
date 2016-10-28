@@ -3,7 +3,7 @@ import { Pool } from './Pool';
 export interface BufferLike {
     array: ArrayLike<number>;
     count: number;
-    itemSize: number
+    itemSize: number;
 }
 
 /**
