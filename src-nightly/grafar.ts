@@ -3,10 +3,10 @@ import * as _ from 'lodash';
 import { UI } from './UI';
 
 import { config } from './config';
-import { registry } from './registry';
+import { registry } from './core/registry';
 import { Style } from './Style';
 import { Panel, panels } from './rendering/Panel';
-import { GrafarObject, ConstraintData } from './GrafarObject';
+import { GrafarObject, ConstraintData } from './core/GrafarObject';
 import * as generators from './generators';
 import { Generator } from './Generator';
 import * as timers from './timers';

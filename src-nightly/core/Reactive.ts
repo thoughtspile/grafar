@@ -1,5 +1,5 @@
-import { isExisty } from './utils';
-import { setPush, setPop } from './math/SetUtils';
+import { isExisty } from '../utils';
+import { setPush, setPop } from '../math/SetUtils';
 
 /**
  * Реактивная переменная.

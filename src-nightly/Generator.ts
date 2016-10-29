@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
 
-import { GrafarObject, ConstraintData } from './GrafarObject';
-import { isExisty, extractUid, makeID } from './utils';
-import { registry } from './registry';
+import { GrafarObject, ConstraintData } from './core/GrafarObject';
+import { isExisty, makeID } from './utils';
+import { registry } from './core/registry';
 
 export class Generator {
     constructor(private anonymousConstraint: ConstraintData) {

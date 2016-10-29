@@ -1,5 +1,5 @@
 import { GraphBuffer } from './GraphBuffer';
-import { incArray, arrayTimes } from '../array/ArrayUtils';
+import { incArray, arrayTimes } from '../../array/ArrayUtils';
 import { cartesianGraphProd } from './cartesianGraphProd';
 
 /**

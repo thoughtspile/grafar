@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
-import { isExisty, asArray } from './utils';
-import { Buffer } from './array/Buffer';
+import { isExisty, asArray } from '../utils';
+import { Buffer } from '../array/Buffer';
 import { Reactive } from './Reactive';
 import { Graph, Slice } from './Graph';
 import { TopoRegistry } from './topology/TopoRegistry';

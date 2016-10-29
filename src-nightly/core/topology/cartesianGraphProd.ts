@@ -1,6 +1,6 @@
 import { GraphBuffer } from './GraphBuffer';
-import { incArray, arrayTimes } from '../array/ArrayUtils';
-import { Pool } from '../array/Pool';
+import { incArray, arrayTimes } from '../../array/ArrayUtils';
+import { Pool } from '../../array/Pool';
 
 /**
  * cartesianGraphProd декартово произведение n графов. (https://en.wikipedia.org/wiki/Cartesian_product_of_graphs)

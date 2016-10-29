@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 import { Reactive } from '../Reactive';
-import { makeID } from '../utils';
+import { makeID } from '../../utils';
 import { emptyGraph, pathGraph } from './free';
 import { cartesianGraphProd } from './cartesianGraphProd';
 import { makeFaces } from './face';

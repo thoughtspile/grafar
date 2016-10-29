@@ -1,4 +1,4 @@
-import { Buffer } from '../array/Buffer';
+import { Buffer } from '../../array/Buffer';
 
 /**
  * Графы задают топологию объекта (какие вершины соединять отрезком).
