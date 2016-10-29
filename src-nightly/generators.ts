@@ -1,42 +1,11 @@
 import { zeros } from './array/ArrayUtils';
-import { isExisty, extractUid, makeID } from './utils';
 import { config as fullConfig } from './config';
-import { GrafarObject, ConstraintData } from './GrafarObject';
 import { newton } from './math/newton';
 import { grad } from './math/grad';
 import { randomize } from './math/randomize';
-import * as _ from 'lodash';
-import { registry } from './registry';
+import { Generator } from './Generator';
 
 const config = fullConfig.grafaryaz;
-
-export class Generator {
-    constructor(private anonymousConstraint: ConstraintData) {
-    }
-
-    select() {
-        const names = _.range(this.getDimension())
-            .map(() => makeID());
-        this.anonymousConstraint.what = names;
-        return registry.extern(this.anonymousConstraint);
-    }
-
-    into(names: string[]) {
-        /** TODO normalize names */
-        const expectDim = this.getDimension();
-        if (names.length !== expectDim) {
-            throw new Error(`Cannot apply generator: expected ${ expectDim }-dimensional selection, got ${ names.length }`);
-        }
-
-        this.anonymousConstraint.what = names;
-        return registry.constrain(this.anonymousConstraint);
-    }
-
-    private getDimension() {
-        const constraintDim = this.anonymousConstraint.dimension;
-        return isExisty(constraintDim)? constraintDim: 1;
-    }
-}
 
 /**
  * Обернуть числа из массива set для графара.

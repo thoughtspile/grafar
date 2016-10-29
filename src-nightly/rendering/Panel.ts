@@ -1,11 +1,11 @@
 import * as THREE from 'three';
-import Detector from '../libs/Detector';
+import Detector from '../../libs/Detector';
 import * as Stats from 'stats.js';
-import * as OrbitControls from '../libs/OrbitControls';
+import * as OrbitControls from '../../libs/OrbitControls';
 
-import { isExisty, makeID } from './utils';
-import { Pool } from './array/Pool';
-import { config } from './config';
+import { isExisty, makeID } from '../utils';
+import { Pool } from '../array/Pool';
+import { config } from '../config';
 
 const Renderer = THREE.WebGLRenderer.bind(null, {antialias: config.antialias});
 // FIXME detect

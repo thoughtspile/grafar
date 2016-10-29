@@ -5,11 +5,13 @@ import { UI } from './UI';
 import { config } from './config';
 import { registry } from './registry';
 import { Style } from './Style';
-import { Panel, panels } from './Panel';
+import { Panel, panels } from './rendering/Panel';
 import { GrafarObject, ConstraintData } from './GrafarObject';
 import * as generators from './generators';
+import { Generator } from './Generator';
+import * as timers from './timers';
 import { makeID, asArray } from './utils';
-import { Pin } from './Pin';
+import { Pin } from './rendering/Pin';
 
 const normalizeNames = (names: string[] | string[][], forceDim?: number) => {
     const flatVars = _.flatten(names);
@@ -19,6 +21,7 @@ const normalizeNames = (names: string[] | string[][], forceDim?: number) => {
 export const version = '4.01r';
 
 export const update = () => {
+    Pin.refresh();
     panels.forEach(panel => panel.update());
     window.requestAnimationFrame(update);
 };
@@ -89,6 +92,9 @@ export const seq = generators.seq;
 export const range = generators.range;
 export const logseq = generators.logseq;
 export const vsolve = generators.vsolve;
+
+export const ms = timers.ms;
+export const frame = timers.frame;
 
 // bootstrap
 update();

@@ -1,7 +1,6 @@
 import * as _ from 'lodash';
 
 import { isExisty, asArray } from './utils';
-import { InstanceGL, interleave } from './glUtils';
 import { Buffer } from './array/Buffer';
 import { Reactive } from './Reactive';
 import { Graph, Slice } from './Graph';

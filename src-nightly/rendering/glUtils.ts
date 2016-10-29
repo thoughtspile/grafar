@@ -1,10 +1,10 @@
 import * as THREE from 'three';
 import * as _ from 'lodash';
 
-import { Pool } from './array/Pool';
-import { Buffer, BufferLike } from './array/Buffer';
+import { Pool } from '../array/Pool';
+import { Buffer, BufferLike } from '../array/Buffer';
 import { Panel } from './Panel';
-import { config } from './config';
+import { config } from '../config';
 
 /**
  * Переложить элементы из нескольких Buffer в один Three.Buffer:

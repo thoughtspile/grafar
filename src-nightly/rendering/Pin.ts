@@ -1,11 +1,11 @@
 import * as _ from 'lodash';
 
 import { InstanceGL, interleave } from './glUtils';
-import { Buffer } from './array/Buffer';
+import { Buffer } from '../array/Buffer';
 import { Panel } from './Panel';
-import { registry } from './registry';
-import { Style } from './Style';
-import { constant } from './generators';
+import { registry } from '../registry';
+import { Style } from '../Style';
+import { constant } from '../generators';
 
 /*
  * Связка между графар-переменными и панелью.

@@ -19,23 +19,16 @@
 
         var i = grafar.set([-1, 1]).select();
         var t = grafar.range(0, 1, 30).select();
-        var p = grafar.constant(0).select();
         var y = grafar.range(-1, 1, 60).select();
+
+        var time = grafar.ms();
+        var p = grafar.map(time, t => Math.pow(Math.sin(t / 640), 3));
 
         var x = grafar.map([i, t], (i, t) => i + t);
         var f = grafar.map([x, y], (x, y) => Math.sin(x * y) / 2);
         var z = grafar.map([f, p], (f, p) => f * p);
 
         grafar.pin({ axes: [x, y, z], color: [y, i, p] }, pan3d);
-
-        var t = 0;
-        (function up() {
-            t += .025;
-            grafar.constant(Math.pow(Math.sin(t), 3)).into(p);
-            grafar.refresh();
-
-            window.requestAnimationFrame(up);
-        }());
 	</script>
 
 	</body>
