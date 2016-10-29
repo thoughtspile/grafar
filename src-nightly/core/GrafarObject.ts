@@ -96,6 +96,13 @@ export class GrafarObject {
 }
 
 const compile = (ptMap: (...args: number[]) => number, vars, out): ConstraintData => {
+    console.log(`
+        ${ vars.map(name => `var ${ name };`).join('\n') }
+        for (var __i__ = 0; __i__ < l; __i__++) {
+            ${ vars.map(name => `${ name } = data["${ name }"][__i__];`).join('') }
+            data["${ out }"][__i__] = fn(${ vars.join(',') })
+        }
+    `)
     const unbound = new Function('data', 'l', 'fn', `
         ${ vars.map(name => `var ${ name };`).join('\n') }
         for (var __i__ = 0; __i__ < l; __i__++) {
@@ -103,6 +110,7 @@ const compile = (ptMap: (...args: number[]) => number, vars, out): ConstraintDat
             data["${ out }"][__i__] = fn(${ vars.join(',') })
         }
     `);
+
 
     return {
         what: out,
