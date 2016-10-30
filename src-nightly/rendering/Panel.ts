@@ -25,7 +25,9 @@ export class Panel {
 
         container = container || config.container;
         const containerStyle = window.getComputedStyle(container);
-        const bgcolor = containerStyle.backgroundColor;
+        const bgcolor = containerStyle.backgroundColor === 'transparent'
+            ? 'white'
+            : containerStyle.backgroundColor;
         const width = parseInt(containerStyle.width);
         const height = parseInt(containerStyle.height);
 
