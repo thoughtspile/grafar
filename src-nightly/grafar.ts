@@ -82,6 +82,7 @@ export const pin = (vars: any, panel) => {
     };
     const pin = new Pin(props, panel);
     pin.refresh();
+    return pin;
 };
 
 // explicit generator enumeration to preserve typings
