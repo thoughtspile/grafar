@@ -20,6 +20,11 @@ export function newton(pt: number[], f: (pt: number[]) => number, gradf: (pt0: n
 
     for (let i = 0; i < maxIter; i++) {
         val = f(pt);
+
+        if (acceptNeg && val <= 0) {
+            return pt;
+        }
+
         gradf(pt, val, nabla);
         // Постериорная оценка ошибки (как далеко от решения мы находимся)
         posterr = -val / dot(nabla, nabla);
