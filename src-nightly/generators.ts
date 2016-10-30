@@ -1,4 +1,5 @@
 import { zeros } from './array/ArrayUtils';
+import * as _ from 'lodash';
 import { config as fullConfig } from './config';
 import { newton } from './math/newton';
 import { grad } from './math/grad';
@@ -109,11 +110,15 @@ export function logseq(a: number, b: number, size: number) {
     });
 }
 
+
+interface SolverOps {
+    neq?: boolean;
+}
 /*
  * Графар-измерение из size нулей функции f: R^dof -> R.
  * Использует метод Ньютона.
  */
-export function vsolve(f: (pt: number[]) => number, size: number, dof: number) {
+export function vsolve(f: (pt: number[]) => number, size: number, dof: number, options: SolverOps = {}) {
     const tol = config.tol;
     const gradf = grad(f, dof);
     const probeSize = 100;
@@ -121,6 +126,7 @@ export function vsolve(f: (pt: number[]) => number, size: number, dof: number) {
     const mean = [];
     const spread = [];
     const pt = [];
+    const acceptNeg = _.get(options, 'neq', false);
 
     let realSize = 0;
     let isEmpty = false;
@@ -187,7 +193,7 @@ export function vsolve(f: (pt: number[]) => number, size: number, dof: number) {
                 for (let j = 0; j < dof; j++) {
                     pt[j] = flatData[j][i];
                 }
-                newton(pt, f, gradf, true, 30);
+                newton(pt, f, gradf, acceptNeg, 30);
                 for (let j = 0; j < dof; j++) {
                     flatData[j][i] = pt[j];
                 }
