@@ -14,5 +14,6 @@ config.plugins = (config.plugins || []).concat([
         }
     })
 ]);
+delete config.devtool;
 
 module.exports = config;

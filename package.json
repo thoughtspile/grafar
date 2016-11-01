@@ -8,7 +8,7 @@
     "build": "webpack",
     "dev": "webpack --watch",
     "prepublish": "npm run build",
-    "dist": "webpack --config webpack.config.dist.js"
+    "dist": "webpack --config webpack.config.dist.js && rm -rf ./dist/build"
   },
   "author": "Vladimir Klepov",
   "license": "Proprietary",
