@@ -14,11 +14,11 @@ to basic math primitives, fun stuff like statistics, DSP,  and  coming someday!
 set of curves from `[0, 1] x {0, 1, 2}`.
 - Ability to plug in any low-level buffer transform to do some crazy stuff.
 
-[Proprietary](LICENSE.txt)
+[This is not an open-source project! Look but don't touch.](LICENSE.txt)
 
 ## Installation
 
-Get the latest build from [](./dist/grafar.js/raw) or use `npm install grafar`.
+Get the latest build from ./dist/grafar.js/raw or use `npm install grafar`.
 
 ## Goals
 
