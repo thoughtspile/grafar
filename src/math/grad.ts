@@ -1,7 +1,5 @@
-import { config as fullConfig } from '../config';
+import { config } from '../config';
 import { dot, norm } from './Vector';
-
-const config = fullConfig.grafaryaz;
 
 /**
  * Градиент функции fa: R^nargs -> R.
