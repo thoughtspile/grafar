@@ -14,58 +14,14 @@ to basic math primitives, fun stuff like statistics, DSP,  and  coming someday!
 set of curves from `[0, 1] x {0, 1, 2}`.
 - Ability to plug in any low-level buffer transform to do some crazy stuff.
 
-[MIT License](LICENSE.txt)
+[Proprietary](LICENSE.txt)
 
-## Installation and Usage (none of this works yet)
+## Installation
 
-### ES6 via npm
-
-```sh
-npm install grafar
-```
-
-and then, somewhere in your code:
-
-```js
-import * as grafar from 'grafar';
-
-const x = grafar.range(1, 2, 100).select();
-```
-
-### TS via npm & typings
-
-Same as ES6, but also:
-
-``` sh
-typings install FIXME
-```
-
-### CommonJS via npm
-
-```sh
-npm install grafar
-```
-
-and then, somewhere in your code:
-
-```js
-var grafar = require('grafar');
-
-var x = grafar.range(1, 2, 100).select();
-```
-
-### &lt;script&gt; tag (not cool)
-
-Download the distro, then include it into your HTML and use normally.
-
-```html
-<script src='/path/to/grafar.js'></script>
-```
+Get the latest build from [](./dist/grafar.js/raw) or use `npm install grafar`.
 
 ## Goals
 
-- Repair npm package.
-- Examples.
 - Have more generators: random numbers, basic signals.
 - Data-based generators: from CSV, JSON, js objects.
 - Advanced transforms (reduce-like) with no forward-declaration of size and possible topology mutation.
@@ -76,10 +32,10 @@ Download the distro, then include it into your HTML and use normally.
 1. Checkout latest stable release: `git clone git@github.com:thoughtspile/Grafar.git`.
 2. Install npm dependencies and typings: `npm run prepare`.
 3. Have fun with my poor selection of npm scripts (`npm run <script name>`), ignore the warnings:
-  - `dev`: build into `/build/grafar.js` and watch. No server, no live-reloading.
-  - `build`: build ES5 into `/build/grafar.js`.
-Both scripts output a single file that works with ES6 modules, `require` and exports
-global `grafar` when included into HTML.
+  - `dev`: build into `/build/grafar.js` and watch. No server.
+  - `build`: build into `/build/grafar.js`.
+  - `dist`: minified build into `/dist/grafar.js`
+All the methods produce a UMD module.
 4. No automatic tests yet (and not in any priority), so do occasionally check
 the examples (in `/examples`) to see if they still work.
 

@@ -1,7 +1,8 @@
 var path = require('path');
+var webpack = require('webpack');
 
 module.exports = {
-    entry: { grafar: './src-nightly/grafar.ts' },
+    entry: { grafar: './src/grafar.ts' },
     output: {
         path: path.join(__dirname, 'build'),
         filename: "[name].js",

@@ -7,26 +7,20 @@
     "prepare": "npm install && typings install",
     "build": "webpack",
     "dev": "webpack --watch",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "dist": "webpack --config webpack.config.dist.js"
   },
-  "author": "",
-  "license": "MIT",
+  "author": "Vladimir Klepov",
+  "license": "Proprietary",
   "dependencies": {
-    "microseconds": "^0.1.0",
-    "nanotimer": "^0.3.14",
+    "lodash": "^4.16.6",
     "stats.js": "^0.16.0",
     "three": "^0.81.2"
   },
   "devDependencies": {
-    "babel-cli": "^6.14.0",
-    "babel-preset-es2015": "^6.14.0",
-    "babelify": "^7.3.0",
-    "handlebars": "^4.0.5",
     "ts-loader": "^0.9.1",
-    "tslint-eslint-rules": "^1.5.0",
     "typescript": "^1.8.10",
     "typings": "^1.3.1",
-    "watchify": "^3.7.0",
     "webpack": "^1.13.2"
   },
   "typings": "./build/build/grafar.d.ts"

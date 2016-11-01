@@ -2,6 +2,6 @@ build
 node_modules
 typings
 compiled
-src-nightly/**/*.js
+src/**/*.js
 .DS_Store
 npm-debug.log
