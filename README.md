@@ -18,7 +18,7 @@ set of curves from `[0, 1] x {0, 1, 2}`.
 
 ## Installation
 
-Get the latest build from ./dist/grafar.js/raw or use `npm install grafar`.
+Get the latest build from [./dist/grafar.js](./dist/grafar.js/raw) or use `npm install grafar`.
 
 ## Goals
 
