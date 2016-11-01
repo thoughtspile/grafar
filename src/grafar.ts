@@ -1,7 +1,5 @@
 import * as _ from 'lodash';
 
-import { UI } from './UI';
-
 import { config } from './config';
 import { registry } from './core/registry';
 import { Style } from './Style';
@@ -10,7 +8,7 @@ import { GrafarObject, ConstraintData } from './core/GrafarObject';
 import * as generators from './generators';
 import { Generator } from './Generator';
 import * as timers from './timers';
-import { makeID, asArray } from './utils';
+import { makeID } from './utils';
 import { Pin } from './rendering/Pin';
 
 const normalizeNames = (names: string[] | string[][], forceDim?: number) => {
@@ -26,43 +24,13 @@ export const update = () => {
     window.requestAnimationFrame(update);
 };
 
-export const setup = (changes, target) => {
-    target = target || config;
-    Object.keys(changes).forEach(name => {
-        if (!target.hasOwnProperty(name)) {
-            return;
-        }
-        if (name === 'grafaryaz') {
-            setup(changes[name], config.grafaryaz);
-            return;
-        }
-        target[name] = changes[name];
-    });
+export const setup = (changes) => {
+    _.merge(config, changes);
 };
 
-export {
-    config,
-    panels,
-    Style,
-    Panel,
-    generators,
+export { Panel };
 
-    // ugly legacy
-    UI,
-};
-
-export const ui = (mockup, opts) => {
-    opts = opts || {};
-    var container = opts.container || document;
-    if (typeof(container) === 'string')
-        container = document.getElementById(container);
-    if (mockup instanceof Array)
-        mockup = {init: mockup, type: 'group'};
-
-    UI.push(mockup, container);
-
-    return this;
-};
+export const panel = (container: any, opts?: any) => new Panel(container, opts);
 
 export const map = (using, fn) => {
     const uid = makeID(Object.keys(registry.datasets));
@@ -95,7 +63,6 @@ export const logseq = generators.logseq;
 export const vsolve = generators.vsolve;
 
 export const ms = timers.ms;
-export const frame = timers.frame;
 
-// bootstrap
+// run update loop
 update();

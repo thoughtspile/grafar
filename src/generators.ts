@@ -1,12 +1,10 @@
 import { zeros } from './array/ArrayUtils';
 import * as _ from 'lodash';
-import { config as fullConfig } from './config';
+import { config } from './config';
 import { newton } from './math/newton';
 import { grad } from './math/grad';
 import { randomize } from './math/randomize';
 import { Generator } from './Generator';
-
-const config = fullConfig.grafaryaz;
 
 /**
  * Обернуть числа из массива set для графара.

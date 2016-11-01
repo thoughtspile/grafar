@@ -20,6 +20,8 @@ set of curves from `[0, 1] x {0, 1, 2}`.
 
 Get the latest build from [./dist/grafar.js](./dist/grafar.js?raw=true) or use `npm install grafar`.
 
+## API reference [по-русски](./docs/api.md)
+
 ## Goals
 
 - Have more generators: random numbers, basic signals.
