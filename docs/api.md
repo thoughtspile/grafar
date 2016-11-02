@@ -15,10 +15,10 @@ let z = grafar.map([x, y], (x, y) => x * y);
 ```
 
 #### `grafar.pin(s: Selection, panel: <Panel>): Pin`
-Отобразить графар-переменные `selection` на графике `pan`.
+Отобразить графар-переменные `s` на панели `panel`.
 
 #### `grafar.pin({ axes: Selection, color: Selection }, panel: <Panel>): Pin`
-Отобразить графар-переменные `axes` на графике `pan`, раскрасить в цвета из графар-переменных `color`.
+Отобразить графар-переменные `axes` на панели `panel`, раскрасить в цвета из графар-переменных `color`.
 
 #### `grafar.version: number`
 счетчик версий.
@@ -28,17 +28,17 @@ let z = grafar.map([x, y], (x, y) => x * y);
 
 ### Генераторы
 
-#### `grafar.set(data: Array<number>): Generator`
-Обернуть числа из массива `data`.
+#### `grafar.set(data: Array<number>, disrcete = true): Generator`
+Числа из массива `data`. Соединять, если `discrete === false`.
 
 #### `grafar.constant(val: number): Generator`
-Обернуть одно число.
+Одно число, `val`.
 
 #### `grafar.ints(min: number, max: number): Generator`
 Все целые числа между `min` и `max` включительно.
 
 #### `grafar.seq(min: number, max: number, n: number): Generator`
-`n` чисел, расположенных равномерно между `min` и `max`. Не соединять их.
+`n` чисел, расположенных равномерно между `min` и `max`. Не соединять.
 
 #### `grafar.range(min: number, max: number, n: number): Generator`
 `n` чисел, расположенных равномерно между `min` и `max`. Соединить.
