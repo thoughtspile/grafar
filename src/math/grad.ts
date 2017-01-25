@@ -14,7 +14,7 @@ import { dot, norm } from './Vector';
 export const grad = (fa: (pt: number[]) => number, nargs: number) => {
     const diffStep = config.diffStep;
     return (pt: number[], val: number, out: number[]) => {
-        for (var i = 0; i < nargs; i++) {
+        for (let i = 0; i < nargs; i++) {
             // Оптимизационный трюк, чтобы не выделять память и не копировать массив.
             pt[i] += diffStep;
             out[i] = (fa(pt) - val) / diffStep;

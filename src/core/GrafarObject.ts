@@ -15,9 +15,10 @@ export interface ConstraintData {
     discrete?: boolean;
 }
 
+/**
+ * Контейнер графара - здесь хранятся все объекты
+ */
 export class GrafarObject {
-    constructor(opts?: any) {}
-
     datasets: { [name: string]: Graph } = {};
     projections: { [nameHash: string]: Slice } = {};
 

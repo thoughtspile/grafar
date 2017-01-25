@@ -1,10 +1,9 @@
 /**
  * dot - скалярное произведение <a, b>
  */
-function dot(a: ArrayLike<number>, b: ArrayLike<number>) {
+export function dot(a: ArrayLike<number>, b: ArrayLike<number>) {
     let temp = 0;
-    const l = Math.min(a.length, b.length);
-    for (let i = 0; i < l; i++) {
+    for (let i = 0; i < Math.min(a.length, b.length); i++) {
         temp += a[i] * b[i];
     }
     return temp;
@@ -15,10 +14,9 @@ function dot(a: ArrayLike<number>, b: ArrayLike<number>) {
  * L1, а не нормальная норма, потому что быстрее, но, возможно, это херня.
  * Нормальная Евклидова норма -- в norm2
  */
-function norm(a: ArrayLike<number>) {
+export function norm(a: ArrayLike<number>) {
     let aNorm = 0;
-    const l = a.length;
-    for (let i = 0; i < l; i++) {
+    for (let i = 0; i < a.length; i++) {
         aNorm += Math.abs(a[i]);
     }
     return aNorm;
@@ -28,10 +26,9 @@ function norm(a: ArrayLike<number>) {
  * Норма (нормальная, Евклидова, L2-норма) вектора a.
  * L1-норма -- в norm
  */
-function norm2(a: ArrayLike<number>) {
+export function norm2(a: ArrayLike<number>) {
     let aNorm2 = 0;
-    const l = a.length;
-    for (let i = 0; i < l; i++) {
+    for (let i = 0; i < a.length; i++) {
         aNorm2 += a[i] * a[i];
     }
     return Math.sqrt(aNorm2);
@@ -41,18 +38,10 @@ function norm2(a: ArrayLike<number>) {
  * L1-расстояние между векторами a, b.
  * TODO: проверить, не смешиваются ли где-нибудь L1 и L2, неловко получится.
  */
-function dist(a: ArrayLike<number>, b: ArrayLike<number>) {
+export function dist(a: ArrayLike<number>, b: ArrayLike<number>) {
     let abDist = 0;
-    const l = Math.min(a.length, b.length);
-    for (let i = 0; i < l; i++) {
+    for (let i = 0; i < Math.min(a.length, b.length); i++) {
         abDist += Math.abs(a[i] - b[i]);
     }
     return abDist;
-}
-
-export {
-    dot,
-    norm,
-    norm2,
-    dist
 }
