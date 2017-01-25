@@ -35,12 +35,18 @@ export class Buffer {
         }
     }
 
+    /**
+     * Шеллоу-копия
+     */
     static assign(target: BufferLike, source: BufferLike) {
         target.array = source.array;
         target.count = source.count;
         target.itemSize = source.itemSize;
     }
 
+    /**
+     * Глубокая копия
+     */
     static clone(target: BufferLike, source: BufferLike) {
         target.itemSize = source.itemSize;
         Buffer.resize(target, source.count);

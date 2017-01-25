@@ -4,7 +4,6 @@ import { InstanceGL, interleave } from './glUtils';
 import { Buffer } from '../array/Buffer';
 import { Panel } from './Panel';
 import { registry } from '../core/registry';
-import { Style } from '../Style';
 import { constant } from '../generators';
 
 /*
@@ -14,7 +13,7 @@ export class Pin {
     constructor(selection: { axes: string[], color?: string[] }, panel: Panel) {
         this.axes = [ selection.axes[1], selection.axes[2], selection.axes[0] ];
         // No need for color?
-        this.glinstance = new InstanceGL(panel, Style.randColor());
+        this.glinstance = new InstanceGL(panel, '0x000000');
         // set sprite size: should be configurable
 
         this.colors = selection.color || _([0 / 255, 140 / 255, 240 / 255])

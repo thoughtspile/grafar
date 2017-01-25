@@ -2,7 +2,6 @@ import * as _ from 'lodash';
 
 import { config } from './config';
 import { registry } from './core/registry';
-import { Style } from './Style';
 import { Panel, panels } from './rendering/Panel';
 import { GrafarObject, ConstraintData } from './core/GrafarObject';
 import * as generators from './generators';
@@ -33,7 +32,7 @@ export { Panel };
 export const panel = (container: any, opts?: any) => new Panel(container, opts);
 
 export const map = (using, fn) => {
-    const uid = makeID(Object.keys(registry.datasets));
+    const uid = makeID();
     return registry.map(uid, using, fn);
 };
 

@@ -1,35 +1,36 @@
 <!doctype html>
 
 <html lang="en">
+
 <head>
-	<title>testbox</title>
+  <title>testbox</title>
 
-	<link rel="stylesheet" type="text/css" href="stylesheets/testbox_style.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/testbox_style.css" media="screen" />
 
-    <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+  <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 </head>
 
 <body>
-	<div id = "render">
+  <div id="render">
     </script>
 
-	<script type="text/javascript" src="../build/grafar.js"></script>
-	<script type="text/javascript">
-        var pan3d = new grafar.Panel(document.getElementById('render'));
+    <script type="text/javascript" src="../build/grafar.js"></script>
+    <script type="text/javascript">
+      var pan3d = new grafar.Panel(document.getElementById('render'));
 
-        var i = grafar.set([-1, 1]).select();
-        var t = grafar.range(0, 1, 30).select();
-        var y = grafar.range(-1, 1, 60).select();
+      var i = grafar.set([-1, 1]).select();
+      var t = grafar.range(0, 1, 30).select();
+      var y = grafar.range(-1, 1, 60).select();
 
-        var time = grafar.ms();
-        var p = grafar.map(time, t => Math.pow(Math.sin(t / 640), 3));
+      var time = grafar.ms();
+      var p = grafar.map(time, t => Math.pow(Math.sin(t / 640), 3));
 
-        var x = grafar.map([i, t], (i, t) => i + t);
-        var f = grafar.map([x, y], (x, y) => Math.sin(x * y) / 2);
-        var z = grafar.map([f, p], (f, p) => f * p);
+      var x = grafar.map([i, t], (i, t) => i + t);
+      var f = grafar.map([x, y], (x, y) => Math.sin(x * y) / 2);
+      var z = grafar.map([f, p], (f, p) => f * p);
 
-        grafar.pin({ axes: [x, y, z], color: [y, i, p] }, pan3d);
-	</script>
+      grafar.pin({ axes: [x, y, z], color: [y, i, p] }, pan3d);
+    </script>
+</body>
 
-	</body>
 </html>

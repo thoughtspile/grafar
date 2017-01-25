@@ -115,7 +115,7 @@ export function blockRepeat(source: TypedArray, blockSize: number, blockCount: n
  * Например, incArray([ 1, 2 ], 3) == [ 4, 5 ]
  */
 export function incArray(arr: TypedArray, by: number) {
-    for (var i = 0; i < arr.length; i++) {
+    for (let i = 0; i < arr.length; i++) {
         arr[i] += by;
     }
     return arr;
