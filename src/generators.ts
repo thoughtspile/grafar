@@ -4,7 +4,7 @@ import { config } from './config';
 import { newton } from './math/newton';
 import { grad } from './math/grad';
 import { randomize } from './math/randomize';
-import { Generator } from './Generator';
+import { Generator } from './core/Generator';
 
 /**
  * Обернуть числа из массива set для графара.
@@ -109,7 +109,7 @@ export function logseq(a: number, b: number, size: number) {
 }
 
 
-interface SolverOps {
+export interface SolverOps {
     neq?: boolean;
 }
 /*

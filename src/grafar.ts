@@ -5,7 +5,7 @@ import { registry } from './core/registry';
 import { Panel, panels } from './rendering/Panel';
 import { GrafarObject, ConstraintData } from './core/GrafarObject';
 import * as generators from './generators';
-import { Generator } from './Generator';
+import { Generator } from './core/Generator';
 import * as timers from './timers';
 import { makeID } from './utils';
 import { Pin } from './rendering/Pin';

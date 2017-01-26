@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
 
-import { GrafarObject, ConstraintData } from './core/GrafarObject';
-import { isExisty, makeID } from './utils';
-import { registry } from './core/registry';
+import { GrafarObject, ConstraintData } from './GrafarObject';
+import { isExisty, makeID } from '../utils';
+import { registry } from './registry';
 
 /**
  * Генератор - не-материализованное описание измерения.

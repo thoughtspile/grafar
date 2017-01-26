@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { Generator } from './Generator';
+import { Generator } from './core/Generator';
 import { constant } from './generators';
 
 /**
