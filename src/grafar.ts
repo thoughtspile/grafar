@@ -4,9 +4,7 @@ import { config } from './config';
 import { registry } from './core/registry';
 import { Panel, panels } from './rendering/Panel';
 import { GrafarObject, ConstraintData } from './core/GrafarObject';
-import * as generators from './generators';
 import { Generator } from './core/Generator';
-import * as timers from './timers';
 import { makeID } from './utils';
 import { Pin } from './rendering/Pin';
 
@@ -39,13 +37,13 @@ export const map = (using, fn) => {
 export const constrain = (constraint: ConstraintData) => registry.constrain(constraint);
 
 export const refresh = () => {
-  console.log('grafar: explicit grafar.refresh() is deprecated.')
+  console.log('grafar: explicit grafar.refresh() is deprecated.');
   Pin.refresh();
 };
 
 // pin(vars: { axes: string[][] | string[]; color: string[][] | string[]}, panel: Panel)
 // pin(vars: string[][] | string[], panel)
-export const pin = (vars: any, panel) => {
+export const pin = (vars: any, panel: Panel) => {
     const props = {
         axes: normalizeNames(vars.axes || vars, 3),
         color: vars.color? normalizeNames(vars.color, 3): null
@@ -55,16 +53,8 @@ export const pin = (vars: any, panel) => {
     return pin;
 };
 
-// explicit generator enumeration to preserve typings
-export const set = generators.set;
-export const constant = generators.constant;
-export const ints = generators.ints;
-export const seq = generators.seq;
-export const range = generators.range;
-export const logseq = generators.logseq;
-export const vsolve = generators.vsolve;
-
-export const ms = timers.ms;
+export * from './generators';
+export * from './timers';
 
 // run update loop
 update();

@@ -16,12 +16,8 @@ const defColor = () => (
 export class Pin {
     constructor(selection: { axes: string[], color?: string[] }, panel: Panel) {
         this.axes = [ selection.axes[1], selection.axes[2], selection.axes[0] ];
-        // No need for color?
         this.glinstance = new InstanceGL(panel);
-        // set sprite size: should be configurable
-
         this.colors = selection.color || defColor();
-
         Pin.pins.push(this);
     }
 
@@ -91,6 +87,7 @@ export class Pin {
         return this;
     }
 
+    // TODO: remove static updates, use self-pulling reactives
     static pins: Pin[] = []
     static refresh() {
         Pin.pins.forEach(pin => pin.refresh());
