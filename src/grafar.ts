@@ -38,7 +38,10 @@ export const map = (using, fn) => {
 
 export const constrain = (constraint: ConstraintData) => registry.constrain(constraint);
 
-export const refresh = () => Pin.refresh();
+export const refresh = () => {
+  console.log('grafar: explicit grafar.refresh() is deprecated.')
+  Pin.refresh();
+};
 
 // pin(vars: { axes: string[][] | string[]; color: string[][] | string[]}, panel: Panel)
 // pin(vars: string[][] | string[], panel)
