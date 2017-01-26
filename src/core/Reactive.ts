@@ -8,7 +8,7 @@ import { setPush, setPop } from '../math/SetUtils';
  */
 export class Reactive<T> {
     /** data - кеш для значений. */
-    constructor(public data: T) {}
+    constructor(public data?: T) {}
 
     /** Зависимость от родительских значений (src). targ -- кеш, потому что в графаре много дорогих операций. */
     private fn: (src, targ) => any = () => {};

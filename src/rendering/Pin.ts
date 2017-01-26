@@ -1,6 +1,7 @@
 import { flatten } from 'lodash';
 
 import { InstanceGL, interleave } from './glUtils';
+import { Reactive } from '../core/Reactive';
 import { Buffer } from '../array/Buffer';
 import { Panel } from './Panel';
 import { registry } from '../core/registry';
@@ -19,6 +20,8 @@ export class Pin {
         this.glinstance = new InstanceGL(panel);
         this.colors = selection.color || defColor();
         Pin.pins.push(this);
+
+        this.bind();
     }
 
     glinstance: InstanceGL;
@@ -26,7 +29,7 @@ export class Pin {
     axes: string[] = [];
     colors: string[] = [];
 
-    refresh() {
+    bind() {
         const instance = this.glinstance;
         /** FIXME проблемы с порядком */
         const dim = this.axes.filter(Boolean).length;
@@ -34,46 +37,73 @@ export class Pin {
         const pos = tab.data.slice(0, dim);
         const col = tab.data.slice(dim);
 
-        /**
-         * FIXME
-         * 1. нужно обновлять и при изменении топологии
-         * 2. Возможно, данные уже провалидированы где-то еще
-         */
-        if (tab.data.every(col => col.isValid)) {
-            return this;
+        this.reactives = {
+          color: new Reactive(instance.color)
+            .bind(col)
+            .lift((cols, targ) => {
+              interleave(cols, targ, 3);
+              // FIXME this is some hack
+              targ.count = tab.length.value();
+            }),
+          position: new Reactive(instance.position)
+            .bind(pos)
+            .lift((pos, targ) => {
+              const orderedPos = dim === 2 ? [ pos[0], null, pos[1] ] : pos;
+              interleave(orderedPos, targ, 3);
+              targ.count = tab.length.value();
+            }),
+          edges: new Reactive(instance.segments)
+            .bind([tab.edges])
+            .lift(([edges], targ) => {
+              // Как-нибудь можно попробовать шеллоу, если не цеплять
+              // одни edges и faces к разным GL-контекстам
+              Buffer.clone(targ, edges);
+              // Three не определился: count -- количество элементов массива,
+              // или раз по itemSize
+              targ.count = edges.count * 2;
+              targ.needsUpdate = true;
+            }),
+          faces: new Reactive(instance.faces)
+            .bind([tab.faces])
+            .lift(([faces], targ) => {
+              Buffer.clone(targ, faces);
+              targ.count = faces.count * 3;
+              targ.needsUpdate = true;
+            }),
         }
 
-        const computedPos = pos.map(col => col.value());
-        const normalizedComputed = dim === 2
-            ? [ computedPos[0], null, computedPos[1] ]
-            : computedPos;
-        interleave(normalizedComputed, instance.position, 3);
-        instance.position.count = tab.length.value();
-
-        interleave(col.map(col => col.value()), instance.color, 3);
-        instance.color.count = tab.length.value();
-
-        /** Как-нибудь можно попробовать шеллоу, если не цеплять одни edges и faces к разным GL-контекстам */
-        Buffer.clone(instance.segments, tab.edges.value());
-        /** Three не определился: count -- количество элементов массива, или раз по itemSize */
-        instance.segments.count = tab.edges.value().count * 2;
-        instance.segments.needsUpdate = true;
-
-        Buffer.clone(instance.faces, tab.faces.value());
-
-        instance.faces.count = tab.faces.value().count * 3;
-        instance.faces.needsUpdate = true;
-
-        Buffer.resize(instance.normals, tab.length.value() * 3);
-        instance.normals.needsUpdate = true;
-        instance.normals.count = tab.length.value();
-        instance.object.children[2].geometry.computeVertexNormals();
-
-        const hasEdges = tab.edges.value().count > 0;
-        const hasFaces = tab.faces.value().count > 0;
-        instance.object.children[0].visible = !hasEdges && !hasFaces;
-
         return this;
+    }
+
+    refresh() {
+      const instance = this.glinstance;
+      /** FIXME проблемы с порядком */
+      const dim = this.axes.filter(Boolean).length;
+      const tab = registry.project(this.axes.concat(this.colors));
+      const pos = tab.data.slice(0, dim);
+      const col = tab.data.slice(dim);
+      const len = tab.length.value();
+
+      this.reactives.color.validate();
+      this.reactives.position.validate();
+      this.reactives.edges.validate();
+      this.reactives.faces.validate();
+
+      const hasEdges = tab.edges.value().count > 0;
+      const hasFaces = tab.faces.value().count > 0;
+
+      // update when anything updates, but only if faces present
+      if (hasFaces) {
+          Buffer.resize(instance.normals, len * 3);
+          instance.normals.needsUpdate = true;
+          instance.normals.count = len;
+          instance.object.children[2].geometry.computeVertexNormals();
+      }
+
+      // update when topology updates
+      instance.object.children[0].visible = !hasEdges && !hasFaces;
+
+      return this;
     }
 
     run() {
@@ -93,4 +123,11 @@ export class Pin {
         Pin.pins.forEach(pin => pin.refresh());
         return this;
     }
+
+    reactives: {
+      color: Reactive<THREE.BufferAttribute>;
+      position: Reactive<THREE.BufferAttribute>;
+      edges: Reactive<THREE.BufferAttribute>;
+      faces: Reactive<THREE.BufferAttribute>;
+    };
 }
