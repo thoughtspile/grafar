@@ -52,7 +52,7 @@ export function interleave(tab: BufferLike[], buffer: THREE.BufferAttribute, ite
  * добавить на Panel (в <Panel>.scene: THREE.Scene)
  */
 export class InstanceGL {
-    constructor(public panel: Panel, col) {
+    constructor(public panel: Panel) {
         this.linkPosition();
         this.linkIndex();
         this.linkColor();

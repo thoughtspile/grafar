@@ -1,10 +1,14 @@
-import * as _ from 'lodash';
+import { flatten } from 'lodash';
 
 import { InstanceGL, interleave } from './glUtils';
 import { Buffer } from '../array/Buffer';
 import { Panel } from './Panel';
 import { registry } from '../core/registry';
 import { constant } from '../generators';
+
+const defColor = () => (
+  flatten([0 / 255, 140 / 255, 240 / 255].map(cmp => constant(cmp).select()))
+);
 
 /*
  * Связка между графар-переменными и панелью.
@@ -13,13 +17,10 @@ export class Pin {
     constructor(selection: { axes: string[], color?: string[] }, panel: Panel) {
         this.axes = [ selection.axes[1], selection.axes[2], selection.axes[0] ];
         // No need for color?
-        this.glinstance = new InstanceGL(panel, '0x000000');
+        this.glinstance = new InstanceGL(panel);
         // set sprite size: should be configurable
 
-        this.colors = selection.color || _([0 / 255, 140 / 255, 240 / 255])
-            .map(cmp => constant(cmp).select())
-            .flatten<string>()
-            .value();
+        this.colors = selection.color || defColor();
 
         Pin.pins.push(this);
     }
