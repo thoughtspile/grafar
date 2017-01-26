@@ -1,51 +1,57 @@
 <!doctype html>
 
 <html lang="en">
+
 <head>
-	<title>testbox</title>
+  <title>testbox</title>
 
-	<link rel="stylesheet" type="text/css" href="stylesheets/testbox_style.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/testbox_style.css" media="screen" />
 
-    <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+  <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 </head>
 
 <body>
-	<div id = "render">
+  <div id="render">
 
-	<script type="text/javascript" src="../build/grafar.js"></script>
-	<script type="text/javascript">
-        grafar.config.debug = true;
-    		var pan3d = new grafar.Panel(document.getElementById('render')).setAxes(['x','y']);
-        var len = .05;
+    <script type="text/javascript" src="../build/grafar.js"></script>
+    <script type="text/javascript">
+      grafar.setup({ debug: true });
+      var pan3d = new grafar.Panel(document.getElementById('render')).setAxes(['x', 'y']);
+      var len = .05;
 
-    		var q = grafar.seq(-2.1, 2.1, 30).select();
-        var p = grafar.seq(-2.1, 2.1, 30).select();
-        var e = grafar.range(-len, len, 2).select();
-        var t = grafar.constant(0).select();
+      var q = grafar.seq(-2.1, 2.1, 30).select();
+      var p = grafar.seq(-2.1, 2.1, 30).select();
+      var e = grafar.range(-len, len, 2).select();
+      var t = grafar.constant(0).select();
 
-        var n = grafar.map([ q ], q => Math.sqrt(1 + q * q));
-        var x = grafar.map([ p, q, e, t, n ], (p, q, e, t, n) => q + e / n);
-        var y = grafar.map([ p, q, e, t, n ], (p, q, e, t, n) => q + e * q / n);
+      var n = grafar.map([q], q => Math.sqrt(1 + q * q));
+      var x = grafar.map([p, q, e, t, n], (p, q, e, t, n) => q + e / n);
+      var y = grafar.map([p, q, e, t, n], (p, q, e, t, n) => q + e * q / n);
 
-        grafar.pin([x, y], pan3d);
+      grafar.pin([x, y], pan3d);
 
-		pan3d.camera.position.set(0, 5, 0);
-        var time = 0;
-        (function up() {
-            var ang = 2.7 * Math.pow(Math.sin(time / 50), 3);
-            grafar.constrain({ what: [x, y], using: [p, q, e, t], as: (data, l) => {
-                for (var i = 0; i < l; i++) {
-                    var n = Math.sqrt(1 + Math.pow(ang * data[p][i], 2));
-                    data[x][i] = data[q][i] + data[e][i] / n;
-                    data[y][i] = data[p][i] + ang * data[e][i] * data[p][i] / n;
-                }
-            }});
-            grafar.refresh();
+      pan3d.camera.position.set(0, 5, 0);
+      var time = 0;
+      (function up() {
+        var ang = 2.7 * Math.pow(Math.sin(time / 50), 3);
+        grafar.constrain({
+          what: [x, y],
+          using: [p, q, e, t],
+          as: (data, l) => {
+            for (var i = 0; i < l; i++) {
+              var n = Math.sqrt(1 + Math.pow(ang * data[p][i], 2));
+              data[x][i] = data[q][i] + data[e][i] / n;
+              data[y][i] = data[p][i] + ang * data[e][i] * data[p][i] / n;
+            }
+          }
+        });
+        grafar.refresh();
 
-            time++;
-            window.requestAnimationFrame(up);
-        }());
-	</script>
+        time++;
+        window.requestAnimationFrame(up);
+      }());
+    </script>
 
-	</body>
+</body>
+
 </html>

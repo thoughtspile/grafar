@@ -5,6 +5,9 @@ import { Buffer } from '../array/Buffer';
 import { Reactive } from './Reactive';
 import { GraphBuffer, TopoRegistry, DimDescriptor } from './topology/TopoRegistry';
 
+/**
+ * Набор из нескольких графар-измерний с общей топологией
+ */
 export interface Slice {
     data: Reactive<Buffer>[];
     edges: Reactive<GraphBuffer>;
@@ -13,6 +16,11 @@ export interface Slice {
     length: Reactive<number>;
 }
 
+/**
+ * Графар-измерение:
+ *   - 1-мерные данные
+ *   - топология: ребра, грани, база
+ */
 export class Graph {
     constructor() {}
 
