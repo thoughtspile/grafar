@@ -16,11 +16,12 @@
 
     <script type="text/javascript" src="../build/grafar.js"></script>
     <script type="text/javascript">
+      grafar.setup({ debug: true });
       var pan3d = new grafar.Panel(document.getElementById('render'));
 
       var i = grafar.set([-1, 1]).select();
-      var t = grafar.range(0, 1, 30).select();
-      var y = grafar.range(-1, 1, 60).select();
+      var t = grafar.range(0, 1, 200).select();
+      var y = grafar.range(-1, 1, 400).select();
 
       var time = grafar.ms();
       var p = grafar.map(time, t => Math.pow(Math.sin(t / 640), 3));

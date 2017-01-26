@@ -87,8 +87,8 @@ export class InstanceGL {
     meshGeometry = new THREE.BufferGeometry();
 
     position = new THREE.BufferAttribute(Pool.get(Float32Array, 0), 3).setDynamic(true);
-    segments = new THREE.BufferAttribute(Pool.get(Uint16Array, 0), 2).setDynamic(true);
-    faces = new THREE.BufferAttribute(Pool.get(Uint16Array, 0), 3).setDynamic(true);
+    segments = new THREE.BufferAttribute(Pool.get(Uint32Array, 0), 2).setDynamic(true);
+    faces = new THREE.BufferAttribute(Pool.get(Uint32Array, 0), 3).setDynamic(true);
 
     normals = new THREE.BufferAttribute(Pool.get(Float32Array, 0), 3).setDynamic(true);
     color = new THREE.BufferAttribute(Pool.get(Float32Array, 0), 3).setDynamic(true);

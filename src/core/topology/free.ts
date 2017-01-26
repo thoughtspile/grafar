@@ -13,6 +13,7 @@ import { GraphBuffer } from './GraphBuffer';
 export function pathGraph(srcDummy: any, target: GraphBuffer) {
     var edgeCount = target.pointCount - 1;
     GraphBuffer.resize(target, edgeCount);
+    target.desc = `p${edgeCount}`;
     var data = target.array;
     for (var i = 0, j = 0; i < edgeCount; i++, j += 2) {
         data[j] = i;
@@ -28,5 +29,6 @@ export function pathGraph(srcDummy: any, target: GraphBuffer) {
  * target -- буфер для результата со (HACK) значимым pointCount.
  */
 export function emptyGraph(srcDummy: any, target: GraphBuffer) {
+    target.desc = '';
     GraphBuffer.resize(target, 0);
 }

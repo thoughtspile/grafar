@@ -16,6 +16,7 @@ import { Pool } from '../../array/Pool';
  */
 export function cartesianGraphProd(src: GraphBuffer[], target: GraphBuffer) {
     const accum = new GraphBuffer(2, 1);
+    target.desc = src.map(g => g.desc).join('');
 
     // редьюсим
     for (var i = 0; i < src.length; i++) {

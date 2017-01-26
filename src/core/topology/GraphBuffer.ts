@@ -15,5 +15,10 @@ export class GraphBuffer extends Buffer {
         super();
     }
 
+    eq(other: GraphBuffer) {
+      return this.desc === other.desc && this.pointCount === other.pointCount && this.itemSize === other.itemSize;
+    }
+
+    desc: string = '';
     array = new Uint32Array(this.count * this.itemSize)
 }

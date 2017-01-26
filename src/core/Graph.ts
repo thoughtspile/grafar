@@ -64,8 +64,8 @@ export class Graph {
         const targetBase = TopoRegistry.derive(cols.map(col => col.base));
 
         const baseEdges = new Reactive<GraphBuffer[]>([])
-            .lift(([ bases ], targ) => bases.map(base => base.edges))
-            .bind([ targetBase ]);
+            .bind([ targetBase ])
+            .lift(([ bases ], targ) => bases.map(base => base.edges));
 
         return {
             data: cols.map(col => col.contextify(targetBase)),

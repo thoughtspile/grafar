@@ -47,15 +47,22 @@ export class GrafarObject {
             })
             .bind(sources.data);
 
+        // TODO: do not create if updating and not changed
         const edges = isFree? TopoRegistry.freeEdges(discrete, length): sources.edges;
         const base = isFree? TopoRegistry.free(edges, length): sources.base;
 
         names.forEach((name, i) => {
+            const updating = !!this.datasets[name];
             this.datasets[name] = this.datasets[name] || new Graph();
             const dataset = this.datasets[name];
 
-            dataset.base.assign(base);
-            dataset.edges.assign(edges);
+            const oldBase = dataset.base.value();
+            const newBase = base.value();
+            // TODO: lazy new base materialization
+            if (oldBase.length !== newBase.length || newBase.some((dim, i) => !dim.edges.eq(oldBase[i].edges))) {
+                dataset.base.assign(base);
+                dataset.edges.assign(edges);
+            }
             // faces?
             dataset.data.lift(([ data, length ], target) => {
                     target.count = length;
