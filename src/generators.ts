@@ -26,6 +26,7 @@ export function set(set: any[], discrete: boolean = true) {
  * Обернуть одно число для графара.
  */
 export function constant(val: number) {
+    console.warn('grafar: prefer explicit constant (as in grafar.pin([3, 4, 5], pan)) over grafar.constant(...)');
     return new Generator({
         using: [],
         discrete: true,
