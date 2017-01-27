@@ -22,13 +22,6 @@ Get the latest build from [./dist/grafar.js](./dist/grafar.js?raw=true) or use `
 
 ## API reference [по-русски](./docs/api.md)
 
-## Goals
-
-- Have more generators: random numbers, basic signals.
-- Data-based generators: from CSV, JSON, js objects.
-- Advanced transforms (reduce-like) with no forward-declaration of size and possible topology mutation.
-- GPGPU transforms and generators with custom shaders.
-
 ## Building from source
 
 1. Checkout latest stable release: `git clone git@github.com:thoughtspile/Grafar.git`.
