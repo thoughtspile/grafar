@@ -39,6 +39,23 @@ export class Generator {
         return registry.constrain(this.anonymousConstraint);
     }
 
+    static acceptConst(dim: number | string) {
+      if (typeof dim !== 'number') {
+          return dim;
+      }
+      const gen = new Generator({
+          using: [],
+          discrete: true,
+          maxlen: 1,
+          as: function(data, l, [name], extras) {
+              for (var i = 0; i < l ; i++) {
+                  data[name][i] = dim;
+              }
+          }
+      }).select();
+      return gen[0];
+    }
+
     private getDimension() {
         const constraintDim = this.anonymousConstraint.dimension;
         return isExisty(constraintDim)? constraintDim: 1;

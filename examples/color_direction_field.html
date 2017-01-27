@@ -1,0 +1,45 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+  <title>testbox</title>
+
+  <link rel="stylesheet" type="text/css" href="stylesheets/testbox_style.css" media="screen" />
+
+  <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+</head>
+
+<body>
+  <div id="render">
+
+    <script type="text/javascript" src="../build/grafar.js"></script>
+    <script type="text/javascript">
+      grafar.setup({ debug: true });
+      var pan3d = new grafar.Panel(document.getElementById('render')).setAxes(['x', 'y']);
+      pan3d.camera.position.set(0, 5, 0);
+      var len = .05;
+
+      // координаты центров
+      var q = grafar.seq(-2.1, 2.1, 30).select();
+      var p = grafar.seq(-2.1, 2.1, 30).select();
+      // начало / конец отрезка
+      var e = grafar.range(-len, len, 2).select();
+
+      // зависимость от времени
+      var ang = grafar.map([grafar.ms()], t => 2.7 * Math.pow(Math.sin(t / 700), 3));
+      // нормализация
+      var n = grafar.map([p, ang], (p, ang) => Math.sqrt(1 + Math.pow(ang * p, 2)));
+
+      // координаты краев отрезков
+      var x = grafar.map([q, e, n], (q, e, n) => q + e / n);
+      var y = grafar.map([p, e, ang, n], (p, e, ang, n) => p * (1 + ang * e / n));
+
+      var color = [0, .8, .7];
+
+      grafar.pin({ axes: [x, y], color: color }, pan3d);
+    </script>
+
+</body>
+
+</html>

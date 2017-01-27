@@ -9,9 +9,9 @@ import { makeID, asArray } from './utils';
 import { Pin } from './rendering/Pin';
 
 const normalizeNames = (names: any[] | string, forceDim?: number) => {
-    const flatVars = asArray(names);
+    const flatVars = asArray(names).map(Generator.acceptConst);
     return forceDim? _.range(forceDim).map(i => flatVars[i] || null): flatVars;
-}
+};
 
 export const version = '4.5.18';
 
@@ -37,8 +37,8 @@ export const map = (using, fn) => {
 export const constrain = (constraint: ConstraintData) => registry.constrain(constraint);
 
 export const refresh = () => {
-  console.log('grafar: explicit grafar.refresh() is deprecated.');
-  Pin.refresh();
+    console.log('grafar: explicit grafar.refresh() is deprecated.');
+    Pin.refresh();
 };
 
 // pin(vars: { axes: string[][] | string[]; color: string[][] | string[]}, panel: Panel)
@@ -46,7 +46,7 @@ export const refresh = () => {
 export const pin = (vars: any, panel: Panel) => {
     const props = {
         axes: normalizeNames(vars.axes || vars, 3),
-        color: vars.color? normalizeNames(vars.color, 3): null
+        color: vars.color? normalizeNames(vars.color, 3): null,
     };
     const pin = new Pin(props, panel);
     pin.refresh();

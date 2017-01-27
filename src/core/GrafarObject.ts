@@ -5,6 +5,7 @@ import { Buffer } from '../array/Buffer';
 import { Reactive } from './Reactive';
 import { Graph, Slice } from './Graph';
 import { TopoRegistry } from './topology/TopoRegistry';
+import { Generator } from './Generator';
 
 export interface ConstraintData {
     dimension?: number;
@@ -82,7 +83,7 @@ export class GrafarObject {
     }
 
     map(name: string, using: string | string[], fn: (...args: number[]) => number) {
-        const names = asArray(using);
+        const names = asArray(using).map(Generator.acceptConst);
         const constraint = compile(fn, names, name);
         return this.extern(constraint);
     }
