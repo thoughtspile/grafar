@@ -5,11 +5,11 @@ import { registry } from './core/registry';
 import { Panel, panels } from './rendering/Panel';
 import { GrafarObject, ConstraintData } from './core/GrafarObject';
 import { Generator } from './core/Generator';
-import { makeID } from './utils';
+import { makeID, asArray } from './utils';
 import { Pin } from './rendering/Pin';
 
-const normalizeNames = (names: string[] | string[][], forceDim?: number) => {
-    const flatVars = _.flatten(names);
+const normalizeNames = (names: any[] | string, forceDim?: number) => {
+    const flatVars = asArray(names);
     return forceDim? _.range(forceDim).map(i => flatVars[i] || null): flatVars;
 }
 

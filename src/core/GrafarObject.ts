@@ -23,8 +23,8 @@ export class GrafarObject {
     projections: { [nameHash: string]: Slice } = {};
 
     constrain(constraint: ConstraintData) {
-        const names = asArray(constraint.what || []);
-        const using = asArray(constraint.using || []);
+        const names = asArray(constraint.what);
+        const using = asArray(constraint.using);
         const as = constraint.as || (() => {});
         const maxlen = constraint.maxlen || 40;
         const discrete = constraint.discrete || false;
@@ -75,14 +75,14 @@ export class GrafarObject {
     }
 
     extern(constraint: ConstraintData) {
-        const names = asArray(constraint.what || []);
-        constraint.using = _.flatten(asArray(constraint.using || []));
+        const names = asArray(constraint.what);
+        constraint.using = asArray(constraint.using);
         this.constrain(constraint);
         return names;
     }
 
     map(name: string, using: string | string[], fn: (...args: number[]) => number) {
-        const names = asArray(using || []);
+        const names = asArray(using);
         const constraint = compile(fn, names, name);
         return this.extern(constraint);
     }

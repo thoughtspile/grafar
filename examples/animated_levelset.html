@@ -21,8 +21,6 @@
         var graph2d = new grafar.Panel(document.getElementById('render2d')).setAxes(['x', 'y']);
 
         var fun = (x, y) => x * Math.log(Math.pow(y, 2) + 1) + x / 2;
-        // Обратите внимание, как я собрал два условия: fun(x, y) == a & |y| < 2 в одно
-        var funl = a => (v => Math.abs(fun(v[0], v[1]) - a) + Number(Math.abs(v[1]) >= 2));
 
         var x = grafar.range(-2, 2, 30).select();
         var y = grafar.range(-2, 2, 30).select();
@@ -30,27 +28,19 @@
         var zf = grafar.map([x, y], fun);
         grafar.pin([x, y, zf], graph);
 
-        // Плоскость уровня
-        var zl = grafar.constant(0).select();
-        grafar.pin([x, y, zl], graph);
+
+        var h = grafar.map(grafar.ms(), t => Math.sin(t));
 
         // Линия уровня
-        var levelset = grafar.vsolve(funl(0), 1000, 2).select();
-        // WTF?
+        var funl = new grafar.Reactive().bind([h]).lift(a => (
+          v => Math.abs(fun(v[0], v[1]) - a) + Number(Math.abs(v[1]) >= 2)
+        ));
+        // внимание сюда
+        var levelset = grafar.vsolve(funl, 1000, 2).select();
+
         grafar.pin(levelset, graph2d);
-        grafar.pin([levelset, zl], graph);
-
-        var t = 0;
-        (function up() {
-            t += .005;
-            p = Math.sin(t);
-
-            grafar.vsolve(funl(p), 1000, 2).into(levelset);
-            grafar.constant(p).into(zl);
-            grafar.refresh();
-
-            window.requestAnimationFrame(up);
-        }());
+        grafar.pin([levelset, h], graph);
+        grafar.pin([x, y, h], graph);
 	</script>
 
 	</body>

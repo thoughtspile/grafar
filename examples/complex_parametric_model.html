@@ -29,15 +29,13 @@
         const rep = grafar.seq(0, 2 * pi, seg, true).select();
         const layer = grafar.set([0, .02]).select();
 
+        const ang = grafar.map([rep, phi], (rep, phi) => rep + angRescale * phi);
+
         const z = grafar.map([r, phi, layer],
             (r, phi, layer) => hScale * Math.pow(r, power) * Math.cos(phi) + layer
         );
-        const x = grafar.map([r, phi, rep],
-            (r, phi, rep) => Math.cos(rep + angRescale * phi) * r
-        );
-        const y = grafar.map([r, phi, rep],
-            (r, phi, rep) => Math.sin(rep + angRescale * phi) * r
-        );
+        const x = grafar.map([r, ang], (r, ang) => r * Math.cos(ang));
+        const y = grafar.map([r, ang], (r, ang) => r * Math.sin(ang));
         const l = grafar.map(z, z => Math.sign(Math.cos(z * 30)));
 
         grafar.pin({ axes: [x, y, z], color: [l,l,l] }, pan3d);

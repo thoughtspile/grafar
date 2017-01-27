@@ -1,3 +1,4 @@
+import { flatten } from 'lodash';
 
 const uidRegistry = {};
 /**
@@ -8,7 +9,7 @@ const uidRegistry = {};
  */
 export function makeID() {
     while (true) {
-        const candidate = '__grafar' + Math.random().toString(36).substr(2, 9);
+        const candidate = `__grafar${Math.random().toString(36).substr(2, 9)}`;
         if (!uidRegistry[candidate]) {
             uidRegistry[candidate] = true;
             return candidate;
@@ -41,8 +42,6 @@ export const isExisty = (obj: any) => (
  * Если передать массив, вернет его же, но без null и undefined.
  * Функция нормализовывала имена переменных, чтобы 'x,y', 'x, y' и ['x', 'y'] становились одинаковыми, но теперь, может, уже и не актуально.
  */
-export function asArray(str: string | string[]): string[] {
-    return typeof str === 'string'
-      ? str.replace(/ /g, '').split(',')
-      : str.filter(isExisty);
+export function asArray(str: any[] | string = []): string[] {
+    return Array.isArray(str) ? flatten(str).filter(isExisty) : [str];
 }
