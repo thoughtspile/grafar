@@ -1,0 +1,41 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+  <title>testbox</title>
+
+  <link rel="stylesheet" type="text/css" href="stylesheets/testbox_style.css" media="screen" />
+
+  <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+</head>
+
+<body>
+  <div id="render"></div>
+  <input type="number" id="val-input" style="position: absolute; bottom: 0; left: 0"></input>
+
+  <script type="text/javascript" src="../build/grafar.js"></script>
+  <script type="text/javascript">
+    grafar.setup({ debug: true });
+
+    var time = grafar.constant(0).select();
+    const timeUi = document.getElementById('val-input');
+    timeUi.addEventListener('change', e => { time.set(grafar.constant(e.target.value)) });
+
+    var pan3d = new grafar.Panel(document.getElementById('render'));
+
+    var i = grafar.set([-2, 0]).select();
+    var t = grafar.range(0, 1, 50).select();
+    var y = grafar.range(-1, 1, 100).select();
+
+    var p = grafar.map(time, t => Math.pow(Math.sin(t / 10), 3));
+
+    var x = grafar.map([i, t], (i, t) => i + t);
+    var f = grafar.map([x, y], (x, y) => Math.sin(x * y) / 2);
+    var z = grafar.map([f, p], (f, p) => f * p);
+
+    grafar.pin({ axes: [x, y, z], color: [y, i, p] }, pan3d);
+  </script>
+</body>
+
+</html>

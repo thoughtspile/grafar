@@ -6,6 +6,7 @@ import { Reactive } from './Reactive';
 import { Graph, Slice } from './Graph';
 import { TopoRegistry } from './topology/TopoRegistry';
 import { Generator } from './Generator';
+import compileMap from './compileMap';
 
 export interface ConstraintData {
     dimension?: number;
@@ -15,6 +16,8 @@ export interface ConstraintData {
     maxlen?: number;
     discrete?: boolean;
 }
+
+export type GrafarSelection = string[];
 
 /**
  * Контейнер графара - здесь хранятся все объекты
@@ -75,7 +78,7 @@ export class GrafarObject {
         return this;
     }
 
-    extern(constraint: ConstraintData) {
+    extern(constraint: ConstraintData): GrafarSelection {
         const names = asArray(constraint.what);
         constraint.using = asArray(constraint.using);
         this.constrain(constraint);
@@ -84,8 +87,11 @@ export class GrafarObject {
 
     map(name: string, using: string | string[], fn: (...args: number[]) => number) {
         const names = asArray(using).map(Generator.acceptConst);
-        const constraint = compile(fn, names, name);
-        return this.extern(constraint);
+        return this.extern({
+          what: name,
+          using: names,
+          as: compileMap(fn, names, name),
+        });
     }
 
     project(rawNames: string | string[] = []) {
@@ -102,22 +108,4 @@ export class GrafarObject {
         }
         return this.projections[namesHash];
     }
-}
-
-const compile = (ptMap: (...args: number[]) => number, using, what): ConstraintData => {
-    const it = '__i__';
-    const data = '__data__';
-    const size = '__l__';
-    const fn = '__fn__';
-
-    const unbound = new Function(data, size, fn, `
-        ${ Math.random() }; // random source chunk prevents inlining / deinlining when using multiple maps
-        for (var ${it} = 0; ${it} < ${size}; ${it}++) {
-            ${data}['${what}'][${it}] = ${fn}(
-                ${using.map(name => `${data}['${name}'][${it}]`).join(',\n')}
-            );
-        }
-    `);
-
-    return { what, using, as: (data, l) => unbound(data, l, ptMap) };
 }
