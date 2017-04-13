@@ -1,4 +1,5 @@
 build
+build-test
 node_modules
 typings
 compiled
