@@ -97,7 +97,7 @@ export class Pin {
           Buffer.resize(instance.normals, len * 3);
           instance.normals.needsUpdate = true;
           instance.normals.count = len;
-          instance.object.children[2].geometry.computeVertexNormals();
+          ((instance.object.children[2] as any).geometry as THREE.Geometry).computeVertexNormals();
       }
 
       // update when topology updates

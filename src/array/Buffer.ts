@@ -12,7 +12,7 @@ export interface BufferLike {
  *   аллоцированный размер массива и количество значимых элементов.
  */
 export class Buffer {
-    array = new Float32Array(0)
+    array: Float32Array | Uint32Array = new Float32Array(0)
     count = 0
     itemSize = 1
 

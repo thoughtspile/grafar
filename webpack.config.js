@@ -1,10 +1,11 @@
 var path = require('path');
-var webpack = require('webpack');
+var isProduction = process.env.NODE_ENV === 'production';
 
 module.exports = {
+    mode: isProduction ? 'production' : 'development',
     entry: { grafar: './src/grafar.ts' },
     output: {
-        path: path.join(__dirname, 'build'),
+        path: path.resolve('build'),
         filename: "[name].js",
         library: "grafar",
         libraryTarget: 'umd',
@@ -12,7 +13,9 @@ module.exports = {
     },
     resolve: { extensions: ['', '.ts', '.js'] },
     module: {
-        loaders: [ { test: /\.ts$/, loader: 'ts-loader' } ]
+        rules: [ { test: /\.ts$/, loader: 'ts-loader' } ]
     },
-    devtool: 'inline-sourcemap'
+    optimization: {
+        minimize: false
+    }
 }
