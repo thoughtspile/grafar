@@ -13,7 +13,7 @@ const normalizeNames = (names: any[] | string, forceDim?: number) => {
     return forceDim? _.range(forceDim).map(i => flatVars[i] || null): flatVars;
 };
 
-export const version = '4.5.18';
+export const version = process.env.GRAFAR_VERSION;
 
 export const update = () => {
     Pin.refresh();

@@ -1,5 +1,7 @@
 var path = require('path');
 var isProduction = process.env.NODE_ENV === 'production';
+var { version } = require('./package.json');
+const { DefinePlugin } = require('webpack');
 
 module.exports = {
     mode: isProduction ? 'production' : 'development',
@@ -15,6 +17,11 @@ module.exports = {
     module: {
         rules: [ { test: /\.ts$/, loader: 'ts-loader' } ]
     },
+    plugins: [
+        new DefinePlugin({
+            'process.env.GRAFAR_VERSION': JSON.stringify(version),
+        }),
+    ],
     optimization: {
         minimize: false
     }
