@@ -1,0 +1,33 @@
+name: publish
+on:
+  push:
+    branches:
+      - master
+jobs:
+  npm-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - run: npm install
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+  artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - run: npm install
+      - id: version
+        run: echo "::set-output name=version::$(node -e 'console.log(require(`./package.json`).version)')"
+      - run: npm run build
+      - name: Uploading artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: grafar-v${{steps.version.outputs.version}}
+          path: build/grafar.js

@@ -1,27 +1,30 @@
 {
   "name": "grafar",
-  "version": "4.5.18",
-  "description": "",
+  "version": "4.5.19",
+  "description": "Fastest mathematical visualization",
   "main": "build/grafar.js",
+  "typings": "./build/grafar.d.ts",
   "scripts": {
-    "prepare": "npm install && typings install",
-    "build": "webpack",
+    "clear": "rimraf build",
+    "build:types": "tsc --emitDeclarationOnly --declaration",
+    "build": "npm run clear && NODE_ENV=production webpack",
     "dev": "webpack --watch",
-    "prepublish": "npm run build",
-    "dist": "webpack --config webpack.config.dist.js && rm -rf ./dist/build"
+    "prepublish": "npm run build"
   },
   "author": "Vladimir Klepov",
   "license": "Proprietary",
   "dependencies": {
-    "lodash": "^4.16.6",
+    "lodash": "^4.17.21",
     "stats.js": "^0.16.0",
     "three": "^0.81.2"
   },
   "devDependencies": {
-    "ts-loader": "^0.9.1",
-    "typescript": "^1.8.10",
-    "typings": "^1.3.1",
-    "webpack": "^1.13.2"
-  },
-  "typings": "./build/build/grafar.d.ts"
+    "@types/lodash": "^4.14.168",
+    "@types/three": "^0.81.1",
+    "rimraf": "^3.0.2",
+    "ts-loader": "^9.1.1",
+    "typescript": "^3.9.9",
+    "webpack": "^5.36.2",
+    "webpack-cli": "^4.6.0"
+  }
 }

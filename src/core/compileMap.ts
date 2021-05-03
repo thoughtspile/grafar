@@ -1,4 +1,4 @@
-export default (ptMap: (...args: number[]) => number, using, what): ConstraintData => {
+export default (ptMap: (...args: number[]) => number, using, what) => {
     const it = '__i__';
     const data = '__data__';
     const size = '__l__';

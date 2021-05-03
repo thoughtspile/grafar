@@ -1,5 +1,5 @@
 /** На самом деле любой типизированный массив, но в TS у них нет общего интерфейса) */
-export type TypedArray = Float32Array;
+export type TypedArray = Float32Array | Uint32Array;
 
 /**
  * Заполнить l первых элементов массива arr нулями.
