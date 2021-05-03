@@ -32,7 +32,7 @@ grafar.pin([x, y, z], grafar.panel(document.getElementById('lines')));
 
 ## Explicit curve: x -> y
 
-Obvoiusly, you can apply the same technique to make a 2D plot:
+Obviously, you can apply the same technique to make a 2D plot:
 
 <div data-sample>
   <div id="curve"></div>
@@ -46,7 +46,7 @@ grafar.pin([x, y], grafar.panel(document.getElementById('curve')).setAxes(['x', 
 
 ## Intermediate variables: x -> x', (x, x') -> y
 
-Grafar is smart enough to know that `map([x, map(x)], fn)` is a funcion of `x` with one degree of freedom and not a surface.
+Grafar is smart enough to know that `map([x, map(x)], fn)` is a function of `x` with one degree of freedom and not a surface.
 
 <div data-sample>
   <div id="interim"></div>

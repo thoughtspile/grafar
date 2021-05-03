@@ -52,20 +52,19 @@ In most situations, grafar also treats a JS constant as a generator. Basically, 
 
 ## vsolve
 
-A final generator that we'll cover in more detail later is `vsolve`. It's used to find zeroes of a function (or plot an implicitly defined set, if you please).
+A final generator that we'll cover in more detail [later](tutorial/5-implicit.md) is `vsolve`. It's used to find zeroes of a function (or plot an implicitly defined set, if you please).
 
 <div data-sample>
   <div id="implicit"></div>
 </div>
 
 ```js
-// Найти нули функции.
 const circle = grafar.vsolve(
-  // Функция. Аккуратно, аргументы передаются в массиве, а не как обычно.
+  // the fuction to be solved
   v => Math.pow(v[0], 2) + Math.pow(v[1], 2) - 2,
-  // Сколько решений найти
+  // find 1000 points that match
   1000,
-  // Размерность объекта. Сейчас строим неявную поверхность на плоскости, так что 2.
+  // Dimensionality - here we have a 2D curve
   2
 ).select();
 const iPan = grafar.panel(document.getElementById('implicit')).setAxes(['x', 'y']);

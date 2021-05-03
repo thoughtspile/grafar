@@ -1,4 +1,4 @@
-To show the beautiful visualizations we produce, grafar uses a `Panel`, which is just a WebGL context bound to a canvas inside a DOM node. Grafar magically tracks the updates you make to your data and schedules a panel update. Grafar is not resticted to this rendering method, but currently it works the best.
+To show the beautiful visualizations we produce, grafar uses a `Panel`, which is just a WebGL context bound to a canvas inside a DOM node. Grafar magically tracks the updates you make to your data and schedules a panel update. Grafar is not restricted to this rendering method, but currently it works the best.
 
 ## Our first panel
 

@@ -21,4 +21,4 @@ const surf = grafar.vsolve(
 grafar.pin(surf, grafar.panel(document.getElementById('isurf')));
 ```
 
-`vsolve` is currenly limited to generating point clouds (not a real surface fith faces), and works best for smooth shapes located around zero.
+`vsolve` is currently limited to generating point clouds (not a real surface with faces), and works best for smooth shapes located around zero.
