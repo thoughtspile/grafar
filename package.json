@@ -12,7 +12,7 @@
     "prepublish": "npm run build"
   },
   "author": "Vladimir Klepov",
-  "license": "Proprietary",
+  "license": "MIT",
   "dependencies": {
     "lodash": "^4.17.21",
     "stats.js": "^0.16.0",
