@@ -20,6 +20,6 @@ Use `yarn add grafar` or `npm install grafar`.
 
 ## Next steps
 
-- Get started with the [tutorial](#tutorial/README.md)
-- Browse the [API docs](#api.md)
+- Get started with the [tutorial](tutorial/README.md)
+- Browse the [API docs](api.md)
 - Play with [codesandbox](https://codesandbox.io/s/grafar-template-h1k66)
