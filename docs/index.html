@@ -7,6 +7,31 @@
   <meta name="description" content="Description">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  <style>
+    #cover-grafar {
+      position: absolute;
+      z-index: -1;
+    }
+    .cover-main {
+      position: relative;
+      z-index: 1;
+    }
+    .cover-main, .cover-main .anchor span {
+      color: #fff;
+    }
+    .cover::before, #cover-grafar {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+    .cover::before {
+      background-color: #000;
+      opacity: 0.7;
+    }
+  </style>
 </head>
 <body>
   <div id="app"></div>
@@ -18,10 +43,32 @@
       subMaxLevel: 3,
       coverpage: true,
       ga: 'UA-121445688-1',
-    }
+      plugins: [
+        function (hook, vm) {
+          hook.mounted(function () {
+            renderCoverPlot();
+          });
+        }
+      ]
+    };
   </script>
   <!-- Docsify v4 -->
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/ga.min.js"></script>
+  <script src="assets/grafar.js"></script>
+  <script>
+    function renderCoverPlot() {
+      const cover = document.querySelector('.cover');
+      const container = document.createElement('div');
+      container.id = "cover-grafar";
+      cover.appendChild(container);
+      const x = grafar.range(-10, 5, 100).select();
+      const y = grafar.range(-5, 10, 100).select();
+      const sec = grafar.map(grafar.ms(), t => t / 1000);
+
+      const z = grafar.map([x, y, sec], (x, y, s) => Math.sin(x) * Math.cos(y) * Math.cos(s));
+      grafar.pin([x, y, z], grafar.panel(container));
+    }
+  </script>
 </body>
 </html>

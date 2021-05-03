@@ -9,3 +9,6 @@
 
 [GitHub](https://github.com/thoughtspile/grafar/)
 [Get Started](README.md)
+
+![color](transparent)
+
