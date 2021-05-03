@@ -2,6 +2,10 @@ The final method for generating point sets in grafar is `vsolve` that allows you
 
 ## Implicit surfaces
 
+<div data-sample>
+  <div id="isurf"></div>
+</div>
+
 ```js
 const surf = grafar.vsolve(
     // The function to be solved - a sphere, x^3 + y^2 + z^2 == 2, in this case
@@ -14,7 +18,7 @@ const surf = grafar.vsolve(
 ).select();
 
 // display as usual
-grafar.pin(surf, grafar.panel(document.getElementById('render')));
+grafar.pin(surf, grafar.panel(document.getElementById('isurf')));
 ```
 
 `vsolve` is currenly limited to generating point clouds (not a real surface fith faces), and works best for smooth shapes located around zero.

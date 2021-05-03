@@ -6,6 +6,10 @@ Every grafar app starts with a generator. Generator is a way to fill an array wi
 
 Grafar comes with a built-in selection of generators that cover most use cases.
 
+<div data-sample>
+  <div id="set-gen" style="height: 420px"></div>
+</div>
+
 ```js
 // set is the most basic generator that wraps a numeric array for use in grafar.
 const set = grafar.set([-1, 0, 1]).select();
@@ -32,13 +36,14 @@ const logseq = grafar.logseq(-1, 1, 20).select();
 const ints = grafar.ints(-2, 2.5).select(); // [-2, -1, 0, 1, 2]
 
 // this code paints the chart - ignore it for now
-grafar.setup({ particleRadius: .2 });
-const pan = new grafar.Panel(document.getElementById('render')).setAxes(['x', 'y']);
+grafar.setup({ particleRadius: .08 });
+const pan = new grafar.Panel(document.getElementById('set-gen')).setAxes(['x', 'y']).clearAxes();
 grafar.pin([set, -2], pan);
 grafar.pin([seq, -1], pan);
 grafar.pin([range, 0], pan);
 grafar.pin([logseq, 1], pan);
 grafar.pin([ints, 2], pan);
+grafar.setup({ particleRadius: .05 });
 ```
 
 ## Constant generator
@@ -48,6 +53,10 @@ In most situations, grafar also treats a JS constant as a generator. Basically, 
 ## vsolve
 
 A final generator that we'll cover in more detail later is `vsolve`. It's used to find zeroes of a function (or plot an implicitly defined set, if you please).
+
+<div data-sample>
+  <div id="implicit"></div>
+</div>
 
 ```js
 // Найти нули функции.
@@ -59,6 +68,6 @@ const circle = grafar.vsolve(
   // Размерность объекта. Сейчас строим неявную поверхность на плоскости, так что 2.
   2
 ).select();
-const iPan = new grafar.Panel(document.getElementById('implicit')).setAxes(['x', 'y']);
+const iPan = grafar.panel(document.getElementById('implicit')).setAxes(['x', 'y']);
 grafar.pin(circle, iPan);
 ```

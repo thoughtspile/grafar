@@ -2,6 +2,10 @@ To show the beautiful visualizations we produce, grafar uses a `Panel`, which is
 
 ## Our first panel
 
+<div data-sample>
+  <div id="render"></div>
+</div>
+
 ```js
 // Dismiss this for now, we'll cover generators soon
 const x = grafar.range(-1, 1, 20).select();
@@ -42,10 +46,14 @@ control.addEventListener('change', selectVisible);
 
 Panels have a `setAxes` method that allows you to set axis labels. As a neat side effect, it also allows you to make the panel show 2D graphs:
 
+<div data-sample>
+  <div id="render2d"></div>
+</div>
+
 ```js
 const x = grafar.range(-1, 1, 100).select();
 const y = grafar.map(x, x => 2 * Math.sin(x));
-const pan = grafar.panel(document.getElementById('render'));
+const pan = grafar.panel(document.getElementById('render2d'));
 
 // Passing 2 labels makes the panel 2D
 pan.setAxes(['xs', 'ys']);

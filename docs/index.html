@@ -31,6 +31,10 @@
       background-color: #000;
       opacity: 0.7;
     }
+
+    *[data-sample] > div {
+      height: 50vh;
+    }
   </style>
 </head>
 <body>
@@ -44,9 +48,15 @@
       coverpage: true,
       ga: 'UA-121445688-1',
       plugins: [
-        function (hook, vm) {
-          hook.mounted(function () {
+        function (hook) {
+          hook.doneEach(function () {
             renderCoverPlot();
+            const code = Array.from(document.querySelectorAll('div[data-sample] + pre'));
+            code.forEach(sample => {
+              const script = document.createElement('script');
+              script.innerHTML = '(function() {' + sample.innerText + '})()';
+              document.body.appendChild(script);
+            });
           });
         }
       ]
@@ -57,8 +67,11 @@
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/ga.min.js"></script>
   <script src="assets/grafar.js"></script>
   <script>
+    let hasCoverPlot = false;
     function renderCoverPlot() {
       const cover = document.querySelector('.cover');
+      if (!cover || hasCoverPlot) return;
+      hasCoverPlot = true;
       const container = document.createElement('div');
       container.id = "cover-grafar";
       cover.appendChild(container);
