@@ -1,5 +1,3 @@
-# Grafar 4
-
 Grafar is a javascript library for reactive, 3D mathematical visualization (data
 visualization capabilities coming sometime). Built on top of WebGL (via Three.js).
 If you've ever struggled with displaying lots of stuff with conventional charting
@@ -20,14 +18,8 @@ set of curves from `[0, 1] x {0, 1, 2}`.
 
 Use `yarn add grafar` or `npm install grafar`.
 
-## API reference [по-русски](./docs/api.md)
+## Next steps
 
-## Building from source
-
-1. Checkout latest stable release: `git clone git@github.com:thoughtspile/Grafar.git`.
-2. Install dependencies with `npm install`
-3. Have fun with my poor selection of npm scripts (`npm run <script name>`), ignore the warnings:
-  - `dev`: build into `/build/grafar.js` and watch. No server.
-  - `build`: build into `/build/grafar.js`.
-All the methods produce a UMD module.
-4. No automatic tests yet.
+- Get started with the [tutorial](#tutorial/README.md)
+- Browse the [API docs](#api.md)
+- Play with [codesandbox](https://codesandbox.io/s/grafar-template-h1k66)

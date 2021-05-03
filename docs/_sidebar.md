@@ -1,5 +1,12 @@
 - [Home](/#)
 - [Getting started](README.md)
-- Tutorial
+- [Tutorial](tutorial/README.md)
+    - [Plotting](tutorial/1-plotting.md)
+    - [Generating data](tutorial/2-generators.md)
+    - [Mapping data](tutorial/3-mapping.md)
+    - [Parametric plots](tutorial/4-parametric.md)
+    - [Equation solver](tutorial/5-implicit.md)
+    - [Creating animations](tutorial/6-animations.md)
+    - [Working with user input](tutorial/7-user-input.md)
+    - [Data visualization](tutorial/8-datavis.md)
 - [API Reference](api.md)
-- Demos
