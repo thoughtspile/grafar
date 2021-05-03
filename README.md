@@ -22,7 +22,7 @@ Use `yarn add grafar` or `npm install grafar`.
 
 ## Links
 
-- (Documentation)[https://thoughtspile.github.io/grafar/?new#]
+- [Documentation](https://thoughtspile.github.io/grafar/?new)
 - [API reference](https://thoughtspile.github.io/grafar/?new#api)
 - [Codesandbox](https://codesandbox.io/s/grafar-template-h1k66)
 
