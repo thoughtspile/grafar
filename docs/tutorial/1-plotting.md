@@ -27,6 +27,8 @@ const upperGraph = grafar.pin([x, y, grafar.map(z, z => z + 1)], pan);
 const colorGraph = grafar.pin({ axes: [x, y, z], color: [x, y, z] }, pan);
 ```
 
+You can set the background color of the container via CSS as usual.
+
 ## Toggling plot visibility
 
 `pin()` returns an object that allows you to show or hide the graphs independently via `hide()` method:
