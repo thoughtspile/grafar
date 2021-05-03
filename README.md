@@ -20,7 +20,11 @@ set of curves from `[0, 1] x {0, 1, 2}`.
 
 Use `yarn add grafar` or `npm install grafar`.
 
-## API reference [по-русски](./docs/api.md)
+## Links
+
+- (Documentation)[https://thoughtspile.github.io/grafar/?new#]
+- [API reference](https://thoughtspile.github.io/grafar/?new#api)
+- [Codesandbox](https://codesandbox.io/s/grafar-template-h1k66)
 
 ## Building from source
 
