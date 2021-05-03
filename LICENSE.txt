@@ -1,3 +1,0 @@
-Copyright (c) 2016 Vladimir Klepov
-
-You can not use this software without permission.

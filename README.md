@@ -14,25 +14,20 @@ to basic math primitives, fun stuff like statistics, DSP,  and  coming someday!
 set of curves from `[0, 1] x {0, 1, 2}`.
 - Ability to plug in any low-level buffer transform to do some crazy stuff.
 
-[This is not an open-source project! Look but don't touch.](LICENSE.txt)
+[MIT License](LICENSE)
 
 ## Installation
 
-Get the latest build from [./dist/grafar.js](./dist/grafar.js?raw=true) or use `npm install grafar`.
+Use `yarn add grafar` or `npm install grafar`.
 
 ## API reference [по-русски](./docs/api.md)
 
 ## Building from source
 
 1. Checkout latest stable release: `git clone git@github.com:thoughtspile/Grafar.git`.
-2. Install npm dependencies and typings: `npm run prepare`.
+2. Install dependencies with `npm install`
 3. Have fun with my poor selection of npm scripts (`npm run <script name>`), ignore the warnings:
   - `dev`: build into `/build/grafar.js` and watch. No server.
   - `build`: build into `/build/grafar.js`.
-  - `dist`: minified build into `/dist/grafar.js`
 All the methods produce a UMD module.
-4. No automatic tests yet (and not in any priority), so do occasionally check
-the examples (in `/examples`) to see if they still work.
-
-If you develop in atom, you would enjoy `atom-typescript`. If you develop in
-something else, find a package yourself, I really don't know.
+4. No automatic tests yet.
