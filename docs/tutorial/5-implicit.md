@@ -1,3 +1,5 @@
+# Equation solving
+
 The final method for generating point sets in grafar is `vsolve` that allows you to sample a zero set of a function (plot an implicit function, if you please). `vsolve` uses newton's method internally.
 
 ## Implicit surfaces

@@ -1,3 +1,5 @@
+# Parametric plots
+
 Picking up where we left off in [the map() section](tutorial/map.md), we'll see how easy it is to create parametric plots in grafar.
 
 ## Parametric curve: t -> (x, y)

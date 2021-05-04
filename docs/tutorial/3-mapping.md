@@ -1,3 +1,5 @@
+# Mapping data
+
 Once we've defined the free   with [generators,](tutorial/2-generators.md) it's time to map them and make someting cool. Grafar is smart enough to track the dependencies of the variables passed to `map()` and produce the object that makes sense.
 
 ## Explicit surface: (x, y) -> z

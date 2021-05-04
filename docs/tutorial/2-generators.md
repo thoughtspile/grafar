@@ -1,3 +1,5 @@
+# Generating data
+
 Every grafar app starts with a generator. Generator is a way to fill an array with numbers and tell grafar how to connect the points on a plot (emulating set topology). We use generators to define free variables, and other variables can depend on their output.
 
 !> Normally, you call `select()` on the output of a generator. This is a technical detail to support some advanced use cases.

@@ -1,3 +1,5 @@
+# Animations
+
 Grafar relies on reactive programming to manage updates. It tracks the dependencies of each variable to decide when a plot should be updated, and what data it should recompute.
 
 The most convenient way to animate something in grafar is to use a `ms()` generator. Every frame it self-invalidates and schedules the update of any dependent variables.  __Note__ that, unlike other generators, it calls its own `select()` internally, so there's no need to do it yourself.

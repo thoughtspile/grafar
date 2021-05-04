@@ -1,3 +1,5 @@
+# User input
+
 User interactions are treated much like animations in grafar, albeit with a weird syntax.
 
 <div data-sample>
