@@ -1,3 +1,5 @@
+# Tutorial
+
 This section will quickly walk you through the basic concepts of grafar so that you can jump to building your own cool stuff. To give you a bird's eye view of the architecture, normal grafar apps are structured as follows:
 
 - Free variables are created using generators

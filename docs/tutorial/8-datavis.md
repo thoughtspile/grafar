@@ -1,5 +1,3 @@
-# Data visualization
-
 While data visualization was not among the original design goals, the sheer number crunching power of grafar makes it capable of rendering scatter plots with millions of points at smooth frame rates.
 
 <div data-sample>

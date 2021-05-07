@@ -36,6 +36,18 @@
       height: 50vh;
       background: white;
     }
+
+    @media (max-width: 768px) {
+      .markdown-section pre, *[data-sample] {
+        margin-left: calc(-10vw - 15px);
+        margin-right: calc(-10vw - 15px);
+        padding: 0;
+      }
+      .markdown-section pre code {
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -48,7 +60,11 @@
       subMaxLevel: 3,
       coverpage: true,
       auto2top: true,
+      autoHeader: true,
       ga: 'UA-121445688-1',
+      pagination: {
+        crossChapter: true,
+      },
       plugins: [
         function (hook) {
           hook.doneEach(function () {
@@ -67,6 +83,7 @@
   <!-- Docsify v4 -->
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/ga.min.js"></script>
+  <script src="//unpkg.com/docsify-pagination/dist/docsify-pagination.min.js"></script>
   <script>
     let hasCoverPlot = false;
     function renderCoverPlot() {

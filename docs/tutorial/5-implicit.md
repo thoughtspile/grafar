@@ -1,6 +1,6 @@
-# Equation solving
-
 The final method for generating point sets in grafar is `vsolve` that allows you to sample a zero set of a function (plot an implicit function, if you please). `vsolve` uses newton's method internally.
+
+!> `vsolve` is currently limited to generating point clouds (not a real surface with faces or curve with edges), and works best for smooth, bounded objects located around zero.
 
 ## Implicit surfaces
 
@@ -23,4 +23,20 @@ const surf = grafar.vsolve(
 grafar.pin(surf, grafar.panel(document.getElementById('isurf')));
 ```
 
-`vsolve` is currently limited to generating point clouds (not a real surface with faces), and works best for smooth shapes located around zero.
+## Implicit curves
+
+Naturally, `vsolve` also works for curves:
+
+<div data-sample>
+  <div id="icurve"></div>
+</div>
+
+```js
+const curve = grafar.vsolve(
+    v => Math.pow(v[0], 4) + Math.pow(v[1], 4) - 3,
+    5000,
+    2
+).select();
+
+grafar.pin(curve, grafar.panel(document.getElementById('icurve')).setAxes(['x', 'y']));
+```
