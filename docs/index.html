@@ -32,9 +32,23 @@
       opacity: 0.7;
     }
 
+    *[data-sample] {
+      position: relative;
+    }
+
     *[data-sample] > div {
       height: 50vh;
       background: white;
+    }
+
+    *[data-sample] .fade {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.7);
+      display: none;
     }
 
     @media (max-width: 768px) {
@@ -46,6 +60,15 @@
       .markdown-section pre code {
         padding-left: 15px;
         padding-right: 15px;
+      }
+    }
+
+    @media (max-width: 768px) and (hover: none) {
+      *[data-sample] .fade {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
       }
     }
   </style>
@@ -75,6 +98,22 @@
               script.innerHTML = '(function() {' + sample.innerText + '})()';
               document.body.appendChild(script);
             });
+            Array.from(document.querySelectorAll('div[data-sample]')).forEach(e => {
+              let isActive = false;
+              const fade = document.createElement('div');
+              fade.innerText = 'Tap again to interact';
+              fade.className = 'fade';
+              e.appendChild(fade);
+              e.addEventListener('touchstart', () => {
+                if (isActive) {
+                  fade.style.display = 'none';
+                } else {
+                  isActive = true;
+                  fade.style.opacity = '1';
+                  fade.style.pointerEvents = 'none';
+                }
+              })
+            });
           });
         }
       ]
@@ -87,7 +126,6 @@
   <script>
     let hasCoverPlot = false;
     function renderCoverPlot() {
-      console.log('render cover');
       const cover = document.querySelector('.cover');
       if (!cover || hasCoverPlot) return;
       hasCoverPlot = true;
