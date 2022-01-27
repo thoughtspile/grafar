@@ -16,7 +16,7 @@
   "dependencies": {
     "lodash": "^4.17.21",
     "stats.js": "^0.16.0",
-    "three": "^0.81.2"
+    "three": "^0.137.0"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.168",
