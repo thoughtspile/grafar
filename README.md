@@ -1,5 +1,7 @@
 # Grafar 4
 
+Psst! Check out the [official docs](https://thoughtspile.github.io/grafar/?new)
+
 Grafar is a javascript library for reactive, 3D mathematical visualization (data
 visualization capabilities coming sometime). Built on top of WebGL (via Three.js).
 If you've ever struggled with displaying lots of stuff with conventional charting
