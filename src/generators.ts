@@ -1,5 +1,5 @@
 import { zeros } from './array/ArrayUtils';
-import * as _ from 'lodash';
+import get from 'lodash/get';
 import { config } from './config';
 import { newton } from './math/newton';
 import { grad } from './math/grad';
@@ -125,7 +125,7 @@ export function vsolve(f: (pt: number[]) => number, size: number, dof: number, o
     const mean = [];
     const spread = [];
     const pt = [];
-    const acceptNeg = _.get(options, 'neq', false);
+    const acceptNeg = get(options, 'neq', false);
 
     let realSize = 0;
     let isEmpty = false;

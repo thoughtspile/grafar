@@ -1,4 +1,4 @@
-import { flatten } from 'lodash';
+import flatten  from 'lodash/flatten';
 
 import { InstanceGL, interleave } from './glUtils';
 import { Reactive } from '../core/Reactive';

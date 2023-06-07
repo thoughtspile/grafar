@@ -1,6 +1,6 @@
-import * as _ from 'lodash';
+import range from 'lodash/range';
 
-import { GrafarObject, ConstraintData } from './GrafarObject';
+import {  ConstraintData } from './GrafarObject';
 import { isExisty, makeID } from '../utils';
 import { registry } from './registry';
 
@@ -17,7 +17,7 @@ export class Generator {
      * Материализовать генератор
      */
     select() {
-        const names = _.range(this.getDimension())
+        const names = range(this.getDimension())
             .map(() => makeID());
         this.anonymousConstraint.what = names;
         return registry.extern(this.anonymousConstraint);

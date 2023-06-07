@@ -1,16 +1,17 @@
-import * as _ from 'lodash';
+import range from 'lodash/range';
+import merge from 'lodash/merge';
 
 import { config } from './config';
 import { registry } from './core/registry';
 import { Panel, panels } from './rendering/Panel';
-import { GrafarObject, ConstraintData } from './core/GrafarObject';
+import {  ConstraintData } from './core/GrafarObject';
 import { Generator } from './core/Generator';
 import { makeID, asArray } from './utils';
 import { Pin } from './rendering/Pin';
 
 const normalizeNames = (names: any[] | string, forceDim?: number) => {
     const flatVars = asArray(names).map(Generator.acceptConst);
-    return forceDim? _.range(forceDim).map(i => flatVars[i] || null): flatVars;
+    return forceDim? range(forceDim).map(i => flatVars[i] || null): flatVars;
 };
 
 export const version = process.env.GRAFAR_VERSION;
@@ -22,7 +23,7 @@ export const update = () => {
 };
 
 export const setup = (changes) => {
-    _.merge(config, changes);
+    merge(config, changes);
 };
 
 export { Panel };

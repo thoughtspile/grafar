@@ -1,6 +1,7 @@
-import * as _ from 'lodash';
+import extend from 'lodash/extend';
+import zipObject from 'lodash/zipObject';
 
-import { isExisty, asArray } from '../utils';
+import {  asArray } from '../utils';
 import { Buffer } from '../array/Buffer';
 import { Reactive } from './Reactive';
 import { Graph, Slice } from './Graph';
@@ -43,9 +44,9 @@ export class GrafarObject {
                 const lengthHack = length.value();
                 out.forEach(buff => Buffer.resize(buff, lengthHack));
                 /** Разложить массивы по именам */
-                const namedData = _.extend(
-                    _.zipObject(using, par.map(col => col.array)),
-                    _.zipObject(names, out.map(col => col.array))
+                const namedData = extend(
+                    zipObject(using, par.map(col => col.array)),
+                    zipObject(names, out.map(col => col.array))
                 );
                 as(namedData, lengthHack, names, {});
             })

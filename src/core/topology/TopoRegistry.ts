@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import union from 'lodash/union';
 
 import { Reactive } from '../Reactive';
 import { makeID } from '../../utils';
@@ -25,7 +25,7 @@ export class TopoRegistry {
 
     static derive(bases: Reactive<DimDescriptor[]>[]) {
         return new Reactive<DimDescriptor[]>([])
-            .lift(src => _.union.apply(_, src).sort((a, b) => a.id.localeCompare(b.id)))
+            .lift(src => union( src).sort((a:DimDescriptor, b:DimDescriptor) => a.id.localeCompare(b.id)))
             .bind(bases);
     }
 
