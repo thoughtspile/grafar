@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import * as _ from 'lodash';
+import range from 'lodash/range';
+import difference from 'lodash/difference';
 
 import { Pool } from '../array/Pool';
 import { Buffer, BufferLike } from '../array/Buffer';
@@ -23,7 +24,7 @@ export function interleave(tab: BufferLike[], buffer: THREE.BufferAttribute, ite
     const srcLen = tab[0].count;
     Buffer.resize(buffer, srcLen);
     const target = <Float32Array>buffer.array;
-    const existyIndices = _.range(itemsize).filter(i => !!tab[i]);
+    const existyIndices = range(itemsize).filter(i => !!tab[i]);
 
     /** Скопировать настоящие значения из tab */
     existyIndices.forEach(j => {
@@ -35,7 +36,7 @@ export function interleave(tab: BufferLike[], buffer: THREE.BufferAttribute, ite
     });
 
     /** Заполнить остальные нулями */
-    _.difference(_.range(itemsize), existyIndices).forEach(j => {
+    difference(range(itemsize), existyIndices).forEach(j => {
         for (var i = 0, k = j; i < srcLen; i++, k += itemsize) {
             target[k] = 0;
         }
