@@ -29,6 +29,8 @@ export { Panel };
 
 export const panel = (container: any, opts?: any) => new Panel(container, opts);
 
+export const destroyPanel = (panel: Panel) => panel.destroy();
+
 export const map = (using, fn) => {
     const uid = makeID();
     return registry.map(uid, using, fn);

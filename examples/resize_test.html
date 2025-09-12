@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Grafar Resize Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        
+        #plot_area {
+            margin: 10px 0;
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+            height: 60vh;
+            background: #f0f0f0;
+            border: 2px solid #333;
+            resize: both;
+            min-width: 300px;
+            min-height: 200px;
+        }
+        
+        #plot_area.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9998;
+            border: none;
+            margin: 0;
+            resize: none;
+        }
+        
+        .fullscreen-close {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border: 2px solid white;
+            border-radius: 4px;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            z-index: 99999;
+            display: none;
+            text-align: center;
+            line-height: 40px;
+            user-select: none;
+            pointer-events: auto;
+        }
+        
+        .fullscreen-close:hover {
+            background: rgba(0, 0, 0, 0.9);
+        }
+        
+        .controls {
+            margin: 10px 0;
+        }
+        
+        button {
+            margin: 5px;
+            padding: 10px 15px;
+            background: #007cba;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background: #005a87;
+        }
+        
+        .info {
+            background: #e7f3ff;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .test-results {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            border-left: 4px solid #28a745;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Grafar Resize Test</h1>
+    
+    <div class="info">
+        <strong>Instructions:</strong> 
+        <ul>
+            <li><strong>Window Resize:</strong> Resize the browser window - the graph should adjust automatically</li>
+            <li><strong>Container Resize:</strong> Drag the <strong>bottom-right corner</strong> of the plot area - the graph should resize with it (OrbitControls are disabled during resize)</li>
+            <li><strong>Button Resize:</strong> Click the size buttons below - the graph should resize programmatically</li>
+            <li><strong>Fullscreen:</strong> Click fullscreen to expand to window size (click × or press Escape to exit)</li>
+            <li><strong>3D Navigation:</strong> Click and drag anywhere else on the plot to rotate/zoom the 3D view</li>
+        </ul>
+    </div>
+    
+    <div class="controls">
+        <button onclick="resizeToSmall()">Small (400x300)</button>
+        <button onclick="resizeToMedium()">Medium (600x400)</button>
+        <button onclick="resizeToLarge()">Large (800x600)</button>
+        <button onclick="toggleFullscreen()">Toggle Fullscreen</button>
+        <button onclick="resetSize()">Reset to 100%</button>
+    </div>
+    
+    <figure class="panel" id="plot_area"></figure>
+    <button class="fullscreen-close" id="fullscreenClose">×</button>
+    
+    <div class="test-results">
+        <strong>Current Dimensions:</strong>
+        <div id="size_info" style="margin-top: 5px; font-weight: bold;"></div>
+        <div id="resize_status" style="margin-top: 5px; font-size: 12px; color: #666;"></div>
+    </div>
+
+    <script type="text/javascript" src="../build/grafar.js"></script>
+    <script type="text/javascript">
+        // Create the panel
+        var pan = new grafar.Panel(document.getElementById('plot_area')).drawAxes(2);
+        
+        // Create a more visible parametric surface
+        var u = grafar.range(0, 2 * Math.PI, 60).select();
+        var v = grafar.range(0, Math.PI, 40).select();
+        
+        // Create a torus for better visual reference
+        var x = grafar.map([u, v], (u, v) => (2 + Math.cos(v)) * Math.cos(u));
+        var y = grafar.map([u, v], (u, v) => (2 + Math.cos(v)) * Math.sin(u));
+        var z = grafar.map([u, v], (u, v) => Math.sin(v));
+        
+        grafar.pin([x, y, z], pan);
+        
+        let lastCanvasSize = { width: 0, height: 0 };
+        let resizeCount = 0;
+        let isFullscreen = false;
+        
+        // Update size info display
+        function updateSizeInfo() {
+            const canvas = pan.renderer.domElement;
+            const container = pan.container;
+            const containerRect = container.getBoundingClientRect();
+            
+            const canvasSize = `${canvas.width}x${canvas.height}`;
+            const containerSize = `${Math.round(containerRect.width)}x${Math.round(containerRect.height)}`;
+            const windowSize = `${window.innerWidth}x${window.innerHeight}`;
+            
+            document.getElementById('size_info').innerHTML = 
+                `Canvas: ${canvasSize} | Container: ${containerSize} | Window: ${windowSize}`;
+            
+            // Track resize events
+            if (canvas.width !== lastCanvasSize.width || canvas.height !== lastCanvasSize.height) {
+                resizeCount++;
+                lastCanvasSize = { width: canvas.width, height: canvas.height };
+                document.getElementById('resize_status').textContent = 
+                    `Resize events detected: ${resizeCount} | Last resize: ${new Date().toLocaleTimeString()}`;
+            }
+        }
+        
+        // Control functions
+        function resizeToSmall() {
+            const container = document.getElementById('plot_area');
+            container.style.width = '400px';
+            container.style.height = '300px';
+            updateSizeInfo();
+        }
+        
+        function resizeToMedium() {
+            const container = document.getElementById('plot_area');
+            container.style.width = '600px';
+            container.style.height = '400px';
+            updateSizeInfo();
+        }
+        
+        function resizeToLarge() {
+            const container = document.getElementById('plot_area');
+            container.style.width = '800px';
+            container.style.height = '600px';
+            updateSizeInfo();
+        }
+        
+        function resetSize() {
+            const container = document.getElementById('plot_area');
+            container.style.width = '100%';
+            container.style.height = '60vh';
+            updateSizeInfo();
+        }
+        
+        function toggleFullscreen() {
+            if (!isFullscreen) {
+                enterFullscreen();
+            } else {
+                exitFullscreen();
+            }
+        }
+        
+        function enterFullscreen() {
+            const container = document.getElementById('plot_area');
+            const closeBtn = document.getElementById('fullscreenClose');
+            
+            // Add fullscreen class for CSS styling
+            container.classList.add('fullscreen');
+            
+            // Set dimensions to window size
+            container.style.width = '100vw';
+            container.style.height = '100vh';
+            
+            // Show close button
+            closeBtn.style.display = 'block';
+            
+            isFullscreen = true;
+            updateSizeInfo();
+        }
+        
+        function exitFullscreen() {
+            const container = document.getElementById('plot_area');
+            const closeBtn = document.getElementById('fullscreenClose');
+            
+            // Remove fullscreen class
+            container.classList.remove('fullscreen');
+            
+            // Restore original dimensions
+            container.style.width = '100%';
+            container.style.height = '60vh';
+            
+            // Hide close button
+            if (closeBtn) {
+                closeBtn.style.display = 'none';
+            }
+            
+            isFullscreen = false;
+            updateSizeInfo();
+        }
+        
+        // Initialize
+        updateSizeInfo();
+        
+        // Update size info every second
+        setInterval(updateSizeInfo, 1000);
+        
+        // Test resize on window resize
+        window.addEventListener('resize', function() {
+            setTimeout(updateSizeInfo, 100);
+        });
+        
+        // Handle escape key to exit fullscreen
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && isFullscreen) {
+                exitFullscreen();
+            }
+        });
+        
+        // Handle close button click
+        document.getElementById('fullscreenClose').addEventListener('click', function() {
+            exitFullscreen();
+        });
+        
+        // Test resize on container resize (manual drag)
+        const container = document.getElementById('plot_area');
+        if (typeof ResizeObserver !== 'undefined') {
+            const resizeObserver = new ResizeObserver((entries) => {
+                for (let entry of entries) {
+                    if (entry.target === container) {
+                        updateSizeInfo();
+                    }
+                }
+            });
+            resizeObserver.observe(container);
+        } else {
+        }
+        
+        // Log initial state
+    </script>
+</body>
+</html>
