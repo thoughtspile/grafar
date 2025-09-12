@@ -2,37 +2,19 @@
 
 ## Overview
 
-The Grafar library now supports automatic window and container resizing! This enhancement allows 3D visualizations to dynamically adjust when the browser window or container element is resized, making the library much more robust for responsive web applications.
+The Grafar library now supports automatic window and container resizing! 3D visualizations dynamically adjust when the browser window or container element is resized.
 
 ## Key Features
 
-### Automatic Resize Handling
 - **Window Resize Events**: Panels automatically listen for window resize events
-- **Container Resize Detection**: Uses ResizeObserver API with fallback polling for older browsers
-- **Programmatic Resize Support**: Responds to CSS changes, JavaScript resizing, and dynamic layout changes
+- **Container Resize Detection**: Uses ResizeObserver API for container resize detection
+- **Programmatic Resize Support**: Responds to CSS changes and JavaScript resizing
 - **View Preservation**: Maintains camera position and target during resize
-- **Aspect Ratio Preservation**: Camera aspect ratios are automatically updated
-- **Flicker-Free Updates**: Debounced updates prevent visual artifacts during resize
-- **OrbitControls Integration**: Resize handle conflicts resolved with proper event handling
-
-### New Methods
-
-#### `Panel.destroy()`
-Clean up a panel and remove it from the global panels array:
-```javascript
-const panel = new grafar.Panel(container);
-panel.destroy(); // Clean up event listeners and remove from panels array
-```
-
-#### `grafar.destroyPanel(panel)`
-Global function to destroy a panel:
-```javascript
-grafar.destroyPanel(panel); // Same as panel.destroy()
-```
+- **Flicker-Free Updates**: 1ms debounced updates prevent visual artifacts
+- **OrbitControls Integration**: Canvas wrapper isolates resize events from controls
 
 ## Usage
 
-### Basic Usage
 Resize functionality works automatically with no additional code:
 
 ```javascript
@@ -70,28 +52,16 @@ container.style.height = '600px';
 
 ## Technical Implementation
 
-### Core Features
 - **Debounced Updates**: 1ms debounce prevents flickering during resize
-- **ResizeObserver API**: Modern container resize detection with polling fallback
+- **ResizeObserver API**: Modern container resize detection (96%+ browser support)
 - **Canvas Wrapper**: Isolates OrbitControls from container resize events
 - **View Preservation**: Maintains camera position during resize
 - **WebGL Integration**: Proper viewport and renderer size updates
 
-### Browser Support
-- All modern browsers with WebGL support
-- ResizeObserver API with fallback for older browsers
-- CSS `resize` property support
-
-### Performance
-- Minimal performance impact
-- Only redraws when dimensions change
-- Debounced updates prevent excessive redraws
-
 ## Testing
 
-Test example available at `examples/resize_test.html`:
+Test example: `examples/resize_test.html`
 - Window resize handling
 - Manual container resizing (drag corner)
 - Programmatic size changes
 - Fullscreen mode with close button
-- Real-time size information

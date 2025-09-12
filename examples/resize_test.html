@@ -49,8 +49,8 @@
             font-weight: bold;
             z-index: 99999;
             display: none;
-            text-align: center;
-            line-height: 40px;
+            justify-content: center;
+            align-items: center;
             user-select: none;
             pointer-events: auto;
         }
@@ -216,7 +216,7 @@
             container.style.height = '100vh';
             
             // Show close button
-            closeBtn.style.display = 'block';
+            closeBtn.style.display = 'flex';
             
             isFullscreen = true;
             updateSizeInfo();

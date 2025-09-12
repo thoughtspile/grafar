@@ -112,7 +112,6 @@ export class Panel {
     bgcolor;
     resizeHandler;
     resizeObserver;
-    sizePollingInterval;
     isResizing;
     resizeStartHandler;
     resizeEndHandler;
@@ -249,9 +248,6 @@ export class Panel {
                 }
             });
             this.resizeObserver.observe(this.container);
-        } else {
-            // Fallback for older browsers - poll container size
-            this.startSizePolling();
         }
         
         // Handle resize handle interactions to prevent conflicts with OrbitControls
@@ -293,25 +289,6 @@ export class Panel {
         }
     }
 
-    startSizePolling() {
-        // Fallback for browsers without ResizeObserver
-        let lastWidth = 0;
-        let lastHeight = 0;
-        
-        this.sizePollingInterval = setInterval(() => {
-            if (!this.container) return;
-            
-            const containerStyle = window.getComputedStyle(this.container);
-            const currentWidth = parseInt(containerStyle.width);
-            const currentHeight = parseInt(containerStyle.height);
-            
-            if (currentWidth !== lastWidth || currentHeight !== lastHeight) {
-                lastWidth = currentWidth;
-                lastHeight = currentHeight;
-                this.handleResize();
-            }
-        }, 100);
-    }
 
     setupResizeHandleHandling() {
         if (!this.container || !this.controls) return;
@@ -366,18 +343,6 @@ export class Panel {
         document.addEventListener('touchend', this.resizeEndHandler);
     }
 
-    throttle(func, limit) {
-        let inThrottle;
-        return function() {
-            const args = arguments;
-            const context = this;
-            if (!inThrottle) {
-                func.apply(context, args);
-                inThrottle = true;
-                setTimeout(() => inThrottle = false, limit);
-            }
-        };
-    }
 
     debounce(func, wait) {
         let timeout;
@@ -398,11 +363,6 @@ export class Panel {
         // Clean up ResizeObserver
         if (this.resizeObserver) {
             this.resizeObserver.disconnect();
-        }
-        
-        // Clean up polling interval
-        if (this.sizePollingInterval) {
-            clearInterval(this.sizePollingInterval);
         }
         
         // Clean up resize handle event listeners
