@@ -7,6 +7,23 @@ import { isExisty, makeID } from '../utils';
 import { Pool } from '../array/Pool';
 import { config } from '../config';
 
+// Type declaration for ResizeObserver
+declare const ResizeObserver: {
+    new(callback: (entries: ResizeObserverEntry[]) => void): ResizeObserver;
+    prototype: ResizeObserver;
+};
+
+interface ResizeObserver {
+    observe(target: Element): void;
+    unobserve(target: Element): void;
+    disconnect(): void;
+}
+
+interface ResizeObserverEntry {
+    target: Element;
+    contentRect: DOMRectReadOnly;
+}
+
 const Renderer = THREE.WebGLRenderer.bind(null, {antialias: config.antialias});
 // FIXME detect
     // renderMode = Detector.webgl? 'webgl': Detector.canvas? 'canvas': 'none',
@@ -20,43 +37,66 @@ export const panels = [];
 
 export class Panel {
     constructor(container, opts) {
-        opts = opts || {};
-        panels.push(this);
+        try {
+            opts = opts || {};
+            panels.push(this);
 
-        container = container || config.container;
-        const containerStyle = window.getComputedStyle(container);
-        const bgcolor = containerStyle.backgroundColor === 'transparent'
-            ? 'white'
-            : containerStyle.backgroundColor;
-        const width = parseInt(containerStyle.width);
-        const height = parseInt(containerStyle.height);
+            container = container || config.container;
+            const containerStyle = window.getComputedStyle(container);
+            const bgcolor = containerStyle.backgroundColor === 'transparent'
+                ? 'white'
+                : containerStyle.backgroundColor;
+            const width = parseInt(containerStyle.width);
+            const height = parseInt(containerStyle.height);
 
-        this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 500);
-        this.camera.position.set(-4, 4, 5);
 
-        this.scene = new THREE.Scene();
-        const pointLight = new THREE.PointLight(0xFFFFFF);
-        pointLight.position.set( 0, 5, 7 );
-        this.scene.add( pointLight );
+            this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 500);
+            this.camera.position.set(-4, 4, 5);
 
-        this.renderer = new Renderer();
-        this.renderer.antialias = config.antialias;
-        this.renderer.setSize(width, height);
-        this.renderer.setClearColor(bgcolor, 1);
+            this.scene = new THREE.Scene();
+            const pointLight = new THREE.PointLight(0xFFFFFF);
+            pointLight.position.set( 0, 5, 7 );
+            this.scene.add( pointLight );
 
-        this.controls = new OrbitControls(this.camera, container);
+            this.renderer = new Renderer();
+            this.renderer.antialias = config.antialias;
+            this.renderer.setSize(width, height);
+            this.renderer.setClearColor(bgcolor, 1);
 
-        this.setAxes(config.axes);
 
-        this.setContainer(container);
+            // Store container reference for resize handling
+            this.container = container;
+            this.bgcolor = bgcolor;
 
-        if (config.debug) {
-            this.stats = new Stats();
-            this.stats.domElement.style.position = 'absolute';
-            this.stats.domElement.style.top = '0px';
-            container.appendChild(this.stats.domElement);
-        } else {
-            this.stats = { update: () => {} };
+            this.setContainer(container);
+            
+            // Create controls after canvasWrapper is created
+            try {
+                this.controls = new OrbitControls(this.camera, this.canvasWrapper);
+            } catch (error) {
+                console.error('Failed to create OrbitControls with canvasWrapper:', error);
+                // Fallback: create controls with the container if canvasWrapper fails
+                this.controls = new OrbitControls(this.camera, container);
+            }
+
+            // Set axes after controls are created
+            this.setAxes(config.axes);
+
+            // Set up resize handling
+            this.setupResizeHandler();
+
+            if (config.debug) {
+                this.stats = new Stats();
+                this.stats.domElement.style.position = 'absolute';
+                this.stats.domElement.style.top = '0px';
+                container.appendChild(this.stats.domElement);
+            } else {
+                this.stats = { update: () => {} };
+            }
+
+        } catch (error) {
+            console.error('Failed to create Panel:', error);
+            throw error;
         }
     }
 
@@ -67,9 +107,30 @@ export class Panel {
     scene;
     axisObject;
     _axes;
+    container;
+    canvasWrapper;
+    bgcolor;
+    resizeHandler;
+    resizeObserver;
+    isResizing;
+    resizeStartHandler;
+    resizeEndHandler;
 
     setContainer(container) {
-        container.appendChild(this.renderer.domElement);
+        // Create a wrapper div for the canvas to isolate it from resize handle
+        this.canvasWrapper = document.createElement('div');
+        this.canvasWrapper.style.width = '100%';
+        this.canvasWrapper.style.height = '100%';
+        this.canvasWrapper.style.position = 'relative';
+        this.canvasWrapper.style.overflow = 'hidden';
+        
+        // Add the canvas to the wrapper
+        this.canvasWrapper.appendChild(this.renderer.domElement);
+        
+        // Add the wrapper to the container
+        container.appendChild(this.canvasWrapper);
+        
+        
         return this;
     }
 
@@ -165,6 +226,161 @@ export class Panel {
 
     labelAxis(axis, distance) {
         return this.axisText(axis, distance);
+    }
+
+    setupResizeHandler() {
+        // Create a debounced resize handler that waits for resize to complete
+        this.resizeHandler = this.debounce(() => {
+            this.handleResize();
+        }, 1); // Wait 1ms after resize stops
+
+        // Add window resize event listener
+        window.addEventListener('resize', this.resizeHandler);
+        
+        // Use ResizeObserver for container size changes (more reliable than window resize)
+        if (typeof ResizeObserver !== 'undefined') {
+            this.resizeObserver = new ResizeObserver((entries) => {
+                for (let entry of entries) {
+                    if (entry.target === this.container) {
+                        // Debounce container resize updates
+                        this.resizeHandler();
+                    }
+                }
+            });
+            this.resizeObserver.observe(this.container);
+        }
+        
+        // Handle resize handle interactions to prevent conflicts with OrbitControls
+        this.setupResizeHandleHandling();
+    }
+
+    handleResize() {
+        if (!this.container) return;
+
+        const containerStyle = window.getComputedStyle(this.container);
+        const newWidth = parseInt(containerStyle.width);
+        const newHeight = parseInt(containerStyle.height);
+
+        // Only resize if dimensions actually changed and are valid
+        if (newWidth > 0 && newHeight > 0 && 
+            (newWidth !== this.renderer.getSize().width || newHeight !== this.renderer.getSize().height)) {
+            
+            
+            // Store current camera position and target to maintain view
+            const currentPosition = this.camera.position.clone();
+            const currentTarget = this.controls ? this.controls.target.clone() : new THREE.Vector3();
+            
+            // Update camera aspect ratio
+            this.camera.aspect = newWidth / newHeight;
+            this.camera.updateProjectionMatrix();
+
+            // Update renderer size - let Three.js handle the WebGL context properly
+            this.renderer.setSize(newWidth, newHeight);
+
+            // Update controls if they exist
+            if (this.controls) {
+                this.controls.handleResize();
+                // Restore camera position and target to maintain view
+                this.camera.position.copy(currentPosition);
+                this.controls.target.copy(currentTarget);
+                this.controls.update();
+            }
+            
+        }
+    }
+
+
+    setupResizeHandleHandling() {
+        if (!this.container || !this.controls) return;
+        
+        // Detect when user starts resizing by dragging the resize handle
+        this.resizeStartHandler = (event) => {
+            // Check if the mouse is near the bottom-right corner (resize handle area)
+            const rect = this.container.getBoundingClientRect();
+            const mouseX = event.clientX;
+            const mouseY = event.clientY;
+            
+            // Define resize handle area (bottom-right 20x20 pixels)
+            const handleSize = 20;
+            const isInResizeHandle = 
+                mouseX >= rect.right - handleSize && 
+                mouseY >= rect.bottom - handleSize;
+            
+            if (isInResizeHandle) {
+                this.isResizing = true;
+                // Disable OrbitControls during resize
+                this.controls.enabled = false;
+                // Add visual feedback
+                this.container.style.cursor = 'nw-resize';
+                // Prevent the event from reaching OrbitControls
+                event.stopPropagation();
+            }
+        };
+        
+        this.resizeEndHandler = () => {
+            if (this.isResizing) {
+                this.isResizing = false;
+                // Re-enable OrbitControls
+                this.controls.enabled = true;
+                // Reset cursor
+                this.container.style.cursor = '';
+                
+                // Immediately update the graph when user stops dragging
+                setTimeout(() => {
+                    this.handleResize();
+                }, 1); // Small delay to ensure resize is complete
+            }
+        };
+        
+        // Add event listeners to the container (not the canvasWrapper)
+        // This way we can detect resize handle interactions without interfering with OrbitControls
+        this.container.addEventListener('mousedown', this.resizeStartHandler, true); // Use capture phase
+        document.addEventListener('mouseup', this.resizeEndHandler);
+        document.addEventListener('mouseleave', this.resizeEndHandler);
+        
+        // Also handle touch events for mobile
+        this.container.addEventListener('touchstart', this.resizeStartHandler, true);
+        document.addEventListener('touchend', this.resizeEndHandler);
+    }
+
+
+    debounce(func, wait) {
+        let timeout;
+        return function() {
+            const args = arguments;
+            const context = this;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), wait);
+        };
+    }
+
+    destroy() {
+        // Clean up resize event listener
+        if (this.resizeHandler) {
+            window.removeEventListener('resize', this.resizeHandler);
+        }
+        
+        // Clean up ResizeObserver
+        if (this.resizeObserver) {
+            this.resizeObserver.disconnect();
+        }
+        
+        // Clean up resize handle event listeners
+        if (this.container && this.resizeStartHandler) {
+            this.container.removeEventListener('mousedown', this.resizeStartHandler);
+            this.container.removeEventListener('touchstart', this.resizeStartHandler);
+        }
+        if (this.resizeEndHandler) {
+            document.removeEventListener('mouseup', this.resizeEndHandler);
+            document.removeEventListener('mouseleave', this.resizeEndHandler);
+            document.removeEventListener('touchend', this.resizeEndHandler);
+        }
+        
+        // Remove from panels array
+        const index = panels.indexOf(this);
+        if (index > -1) {
+            panels.splice(index, 1);
+        }
     }
 }
 
